@@ -69,7 +69,7 @@ X_test = X_test[..., np.newaxis]
 model = get_unet()
 model.summary()
 
-model.fit(x=X_train, y=y_train, epochs=200, batch_size=2, verbose=1, validation_split=.2)
+model.fit(x=X_train, y=y_train, epochs=100, batch_size=2, verbose=1, validation_split=.2)
 
 model.save("/storage/yw18581/data/trained_UNet_100epochs_inv_dice.hdf5")
 sys.exit()

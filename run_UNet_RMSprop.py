@@ -5,7 +5,7 @@ COL_SLICE = slice(1000, None)
 
 import os
 import numpy as np
-from UNet_inverted_dice import get_unet
+from UNet_rmsprop import get_unet
 from matplotlib.image import imread
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
@@ -69,7 +69,6 @@ X_test = X_test[..., np.newaxis]
 model = get_unet()
 model.summary()
 
-model.fit(x=X_train, y=y_train, epochs=100, batch_size=2, verbose=1, validation_split=.2)
+model.fit(x=X_train, y=y_train, epochs=200, batch_size=2, verbose=1, validation_split=.2)
 
-model.save("/storage/yw18581/data/trained_UNet_100epochs_inv_dice.hdf5")
-sys.exit()
+model.save("/storage/yw18581/data/trained_UNet_200epochs_rmsprop.hdf5")

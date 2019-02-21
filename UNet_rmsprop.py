@@ -1,14 +1,13 @@
+
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+
 import numpy as np
 from keras.models import Model
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose
 from keras.optimizers import Adam,RMSprop
 from keras.callbacks import ModelCheckpoint
 from keras import backend as K
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
-
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
 
 K.set_image_data_format('channels_last')  # TF dimension ordering in this code
 
@@ -24,7 +23,7 @@ def dice_coef(y_true, y_pred):
 
 
 def dice_coef_loss(y_true, y_pred):
-    return 1-dice_coef(y_true, y_pred)
+    return -dice_coef(y_true, y_pred)
 
 
 def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
@@ -73,6 +72,6 @@ def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
 
     model = Model(inputs=[inputs], outputs=[conv10])
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    model.compile(optimizer=RMSprop(lr=2e-4), loss=dice_coef_loss, metrics=[dice_coef])
 #adam ls=1e-5, RMSprop(lr=2e-4)
     return model

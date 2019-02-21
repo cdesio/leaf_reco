@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 ## Loading data
 print("Loading data filenames")
 
-data_dir = os.path.join(DATA_DIR_IH,"Jordan")
+data_dir = DATA_DIR_DEEPTHOUGHT
 
 fnames_orig_2mm = [os.path.join(data_dir,"10x10_2mm_8bit/{}".format(filename))
                for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_2mm_8bit/"))) 

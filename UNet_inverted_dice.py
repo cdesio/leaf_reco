@@ -5,6 +5,9 @@ from keras.optimizers import Adam,RMSprop
 from keras.callbacks import ModelCheckpoint
 from keras import backend as K
 
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+
 K.set_image_data_format('channels_last')  # TF dimension ordering in this code
 
 

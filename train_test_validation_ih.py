@@ -11,9 +11,11 @@ from sklearn.model_selection import train_test_split
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
-
 data_dir = DATA_DIR_IH
-source_data_folder = os.path.join(data_dir,'Jordan')
+
+source_data_folder = os.path.join(data_dir,"Jordan")
+print(data_dir)
+print(source_data_folder)
 TRAIN_VAL_TEST_DIR = os.path.join(data_dir,"train_validation_test")
 
 if not os.path.exists(TRAIN_VAL_TEST_DIR):
@@ -30,22 +32,23 @@ folder_4mm=os.path.join(source_data_folder,"10x10_4mm_v2 copy")
 folder_10mm=os.path.join(source_data_folder,"10x10_10mm_v2_8bit")
 folder_25mm=os.path.join(source_data_folder,"10x10_25mm_8bit")
 
-fnames_orig_2mm = [os.path.join(folder_2mm,"/{}".format(filename)) for filename in sorted(folder_2mm)
+fnames_orig_2mm = [os.path.join(folder_2mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_2mm))
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_4mm = [os.path.join(folder_4mm,"/{}".format(filename)) for filename in sorted(folder_4mm)
+print(fnames_orig_2mm[0])
+fnames_orig_4mm = [os.path.join(folder_4mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_4mm))
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_10mm = [os.path.join(folder_10mm,"/{}".format(filename)) for filename in sorted(folder_10mm)
+fnames_orig_10mm = [os.path.join(folder_10mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_10mm))
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_25mm = [os.path.join(folder_25mm,"/{}".format(filename)) for filename in sorted(folder_25mm)
+fnames_orig_25mm = [os.path.join(folder_25mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_25mm))
                if "mask" not in filename and filename.startswith('File')]
 
-fnames_mask_2mm = [os.path.join(folder_2mm,"/{}".format(filename)) for filename in sorted(folder_2mm)
+fnames_mask_2mm = [os.path.join(folder_2mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_2mm))
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_4mm = [os.path.join(folder_4mm,"/{}".format(filename)) for filename in sorted(folder_4mm)
+fnames_mask_4mm = [os.path.join(folder_4mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_4mm))
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_10mm = [os.path.join(folder_10mm,"/{}".format(filename)) for filename in sorted(folder_10mm)
+fnames_mask_10mm = [os.path.join(folder_10mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_10mm))
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_25mm = [os.path.join(folder_25mm,"/{}".format(filename)) for filename in sorted(folder_25mm)
+fnames_mask_25mm = [os.path.join(folder_25mm,"{}".format(filename)) for filename in sorted(os.listdir(folder_25mm))
                if "mask" in filename and filename.startswith('File')]
 
 print("check number of files per type")

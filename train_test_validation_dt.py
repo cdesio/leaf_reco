@@ -3,6 +3,12 @@ IMG_HEIGHT = 1400
 ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
 
+import os
+import numpy as np
+from matplotlib.image import imread
+from sklearn.model_selection import train_test_split
+
+
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
 TRAIN_VAL_TEST_DIR = os.path.join(data_dir,"train_validation_test")
@@ -10,10 +16,6 @@ TRAIN_VAL_TEST_DIR = os.path.join(data_dir,"train_validation_test")
 if not os.path.exists(TRAIN_VAL_TEST_DIR):
     os.makedirs(TRAIN_VAL_TEST_DIR)
 
-import os
-import numpy as np
-from matplotlib.image import imread
-from sklearn.model_selection import train_test_split
 
 
 ## Loading data

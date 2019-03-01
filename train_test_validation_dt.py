@@ -5,6 +5,10 @@ COL_SLICE = slice(1000, None)
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
+TRAIN_VAL_TEST_DIR = os.path.join(data_dir,"train_validation_test")
+
+if not os.path.exists(TRAIN_VAL_TEST_DIR):
+    os.makedirs(TRAIN_VAL_TEST_DIR)
 
 import os
 import numpy as np
@@ -77,18 +81,18 @@ print("Split train dataset into train and validation datasets")
 X_train_v, X_val, y_train_v, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
 
-print("Save train, validation and test data to output files in {} and {}".format(os.path.join(data_dir,"train_validation_test",
+print("Save train, validation and test data to output files in {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_train.npz"),
-                                                                                 os.path.join(data_dir,"train_validation_test",
+                                                                                 os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_val.npz"),
-                                                                                 os.path.join(data_dir,"train_validation_test",
+                                                                                 os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_test.npz")))
 
 
 
-np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_train.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train.npz"),
                             x=X_train_v, y=y_train_v)
-np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_test.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_test.npz"),
                             x=X_test, y=y_test)
-np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_val.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val.npz"),
                             x=X_val, y=y_val)

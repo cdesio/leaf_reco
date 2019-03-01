@@ -15,8 +15,9 @@ tf.keras.backend.clear_session()
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
 
-data_folder = DATA_DIR_DEEPTHOUGHT
+data_folder = DATA_DIR_IH
 TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
+
 
 N_FILES = 1
 BATCH_SIZE=3
@@ -37,8 +38,9 @@ HISTORY_FILEPATH = os.path.join(TASK_FOLDER_PATH,
 MODEL_JSON_FILEPATH = os.path.join(TASK_FOLDER_PATH, '{}.json'.format(model.name))
 
 
-fname_train = os.path.join(data_folder,"Xy_train.npz")
-fname_val = os.path.join(data_folder,"Xy_val.npz")
+
+fname_train = os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train.npz")
+fname_val = os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val.npz")
 
 steps_per_epoch, n_events = get_n_iterations(fname_train, batch_size=BATCH_SIZE)
 print(steps_per_epoch, n_events)

@@ -25,30 +25,27 @@ if not os.path.exists(TRAIN_VAL_TEST_DIR):
 print("Loading data filenames")
 
 
-folder_2mm=os.path.join(source_data_folder,"10x10_2mm_8bit"
-fnames_orig_2mm = [os.path.join(folder_2mm,"/{}".format(filename)) for filename in sorted(folder_2mm))) 
+folder_2mm=os.path.join(source_data_folder,"10x10_2mm_8bit")
+folder_4mm=os.path.join(source_data_folder,"10x10_4mm_v2 copy")
+folder_10mm=os.path.join(source_data_folder,"10x10_10mm_v2_8bit")
+folder_25mm=os.path.join(source_data_folder,"10x10_25mm_8bit")
+
+fnames_orig_2mm = [os.path.join(folder_2mm,"/{}".format(filename)) for filename in sorted(folder_2mm)
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_4mm = [os.path.join(data_dir,"10x10_4mm_v2 copy/{}".format(filename)) 
-           for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_4mm_v2 copy/"))) 
+fnames_orig_4mm = [os.path.join(folder_4mm,"/{}".format(filename)) for filename in sorted(folder_4mm)
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_10mm = [os.path.join(data_dir,"10x10_10mm_v2_8bit/{}".format(filename))
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_10mm_v2_8bit/"))) 
+fnames_orig_10mm = [os.path.join(folder_10mm,"/{}".format(filename)) for filename in sorted(folder_10mm)
                if "mask" not in filename and filename.startswith('File')]
-fnames_orig_25mm = [os.path.join(data_dir,"10x10_25mm_8bit/{}".format(filename)) 
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_25mm_8bit/"))) 
+fnames_orig_25mm = [os.path.join(folder_25mm,"/{}".format(filename)) for filename in sorted(folder_25mm)
                if "mask" not in filename and filename.startswith('File')]
 
-fnames_mask_2mm = [os.path.join(data_dir,"10x10_2mm_8bit/{}".format(filename)) 
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_2mm_8bit/"))) 
+fnames_mask_2mm = [os.path.join(folder_2mm,"/{}".format(filename)) for filename in sorted(folder_2mm)
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_4mm = [os.path.join(data_dir,"10x10_4mm_v2 copy/{}".format(filename)) 
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_4mm_v2 copy/"))) 
+fnames_mask_4mm = [os.path.join(folder_4mm,"/{}".format(filename)) for filename in sorted(folder_4mm)
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_10mm = [os.path.join(data_dir,"10x10_10mm_v2_8bit/{}".format(filename)) 
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_10mm_v2_8bit/"))) 
+fnames_mask_10mm = [os.path.join(folder_10mm,"/{}".format(filename)) for filename in sorted(folder_10mm)
                if "mask" in filename and filename.startswith('File')]
-fnames_mask_25mm = [os.path.join(data_dir,"10x10_25mm_8bit/{}".format(filename)) 
-               for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_25mm_8bit/"))) 
+fnames_mask_25mm = [os.path.join(folder_25mm,"/{}".format(filename)) for filename in sorted(folder_25mm)
                if "mask" in filename and filename.startswith('File')]
 
 print("check number of files per type")
@@ -93,7 +90,6 @@ print("Save train, validation and test data to output files in {} , {} and {}".f
                                                                                               "Xy_val.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_test.npz")))
-
 
 
 np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train.npz"),

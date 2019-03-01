@@ -21,9 +21,9 @@ TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
 
 N_FILES = 1
 BATCH_SIZE=3
-
+N_EPOCHS = 500
 CHECKPOINT_FOLDER_PATH = p.join(p.abspath(p.curdir), 'model')
-TASK_NAME = 'UNet_training_generator_10epochs'
+TASK_NAME = 'UNet_training_generator_{}epochs'.format(N_EPOCHS)
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not os.path.exists(TASK_FOLDER_PATH):
@@ -65,12 +65,8 @@ model.summary()
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
                                         validation_generator,
-                                        validation_steps, batch_size=BATCH_SIZE)
+                                        validation_steps, batch_size=BATCH_SIZE, epochs = N_EPOCHS)
 
-
-model.fit(x=X_train, y=y_train, epochs=200, batch_size=2, verbose=1, validation_split=.2)
-
-model.save(os.path.join(data_dir,"trained_UNet_200epochs.hdf5"))
 
 print('Saving Model (JSON), Training History & Weights...', end='')
 model_json_str = model.to_json()

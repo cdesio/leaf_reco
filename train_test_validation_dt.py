@@ -11,6 +11,8 @@ from sklearn.model_selection import train_test_split
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
+
+data_dir = DATA_DIR_DEEPTHOUGHT
 TRAIN_VAL_TEST_DIR = os.path.join(data_dir,"train_validation_test")
 
 if not os.path.exists(TRAIN_VAL_TEST_DIR):
@@ -21,7 +23,7 @@ if not os.path.exists(TRAIN_VAL_TEST_DIR):
 ## Loading data
 print("Loading data filenames")
 
-data_dir = DATA_DIR_DEEPTHOUGHT
+
 
 fnames_orig_2mm = [os.path.join(data_dir,"10x10_2mm_8bit/{}".format(filename))
                for filename in sorted(os.listdir(os.path.join(data_dir,"10x10_2mm_8bit/"))) 

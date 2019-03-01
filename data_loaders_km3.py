@@ -10,7 +10,7 @@ except ImportError:  # new Keras
 from keras.utils import to_categorical
 from numpy import concatenate as concat
 from sklearn.utils.class_weight import compute_class_weight
-from export_train_test import (INDEX_TRAINING_KEY, INDEX_TEST_KEY, INDEX_VALIDATION_KEY)
+#from export_train_test import (INDEX_TRAINING_KEY, INDEX_TEST_KEY, INDEX_VALIDATION_KEY)
 
 
 def data_generator(fnames, batch_size=64, fdata=lambda X: X, ftarget=lambda y: to_categorical(y)):

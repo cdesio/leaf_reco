@@ -34,7 +34,10 @@ HISTORY_FILEPATH = os.path.join(TASK_FOLDER_PATH,
 MODEL_JSON_FILEPATH = os.path.join(TASK_FOLDER_PATH, '{}.json'.format(model.name))
 
 data_folder = DATA_DIR_DEEPTHOUGHT
-fname_train = os.path.join(data_dir,"Jordan","Xy_train.npz")
+
+TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
+fname_train = os.path.join(data_folder,"Xy_train.npz")
+fname_val = os.path.join(data_folder,"Xy_val.npz")
 
 steps_per_epoch, n_events = get_n_iterations(fname_train, batch_size=BATCH_SIZE)
 print(steps_per_epoch, n_events)
@@ -44,11 +47,14 @@ print(steps_per_epoch, n_events)
 
 prediction_steps, n_evts_test = get_n_iterations(fname_test, batch_size=BATCH_SIZE)
 print(prediction_steps, n_evts_test)
+validation_steps, n_evts_val = get_n_iterations(fname_test, batch_size=BATCH_SIZE)
+print(validation_steps, n_evts_val)
 
 training_generator = data_generator(fname_train, batch_size=BATCH_SIZE,
                                     ftarget=lambda y: y)
 
-
+validation_generator = data_generator(fname_val, batch_size=BATCH_SIZE,
+                                      fdata=get_Time_Coord, ftarget=process_cosz)
 #data_dir = DATA_DIR_IH
 
 model = get_unet()

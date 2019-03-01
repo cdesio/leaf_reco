@@ -10,6 +10,7 @@ from os import path as p
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
+from keras.utils import multi_gpu_model
 
 tf.keras.backend.clear_session()
 
@@ -20,12 +21,11 @@ data_folder = DATA_DIR_IH
 TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
 
 N_FILES = 1
-BATCH_SIZE=3
+BATCH_SIZE=6
 N_EPOCHS = 500
 
 model = get_unet()
 model.summary()
-
 
 CHECKPOINT_FOLDER_PATH = p.join(data_folder, 'trained_models')
 TASK_NAME = 'UNet_training_generator_{}epochs'.format(N_EPOCHS)
@@ -46,6 +46,7 @@ prediction_steps, n_evts_test = get_n_iterations(fname_test, batch_size=BATCH_SI
 print("prediction steps per epoch:{}, n events:{}".format(prediction_steps, n_evts_test))
 
 print('INFERENCE STEP')
+parallel_model = multi_gpu_model(model,gpus=2)
 
 test_data_gen = data_generator(fname_test, batch_size=BATCH_SIZE,
                                ftarget=lambda y: y)
@@ -57,12 +58,13 @@ def inference_step(network_model, test_data_generator, predict_steps):
     for _ in tqdm(range(predict_steps)):
         X_batch, _ = next(test_data_generator)
         Y_batch_pred = network_model.predict_on_batch(X_batch)
-        y_pred.append(Y_batch_pred)
-    y_pred = np.concatenate(y_pred, axis=0)
+        y_pred.append(Y_batch_pred.ravel())
+    y_pred = np.vstack(np.asarray(y_pred))
 
     return y_pred
 
-y_pred = inference_step(model, test_data_gen, prediction_steps)
 
-np.savez_compressed(os.path.join(TASK_FOLDER_PATH,"Xy_pred.npz"),
+y_pred = inference_step(parallel_model, test_data_gen, prediction_steps)
+
+np.savez_compressed(os.path.join(TASK_FOLDER_PATH,"Xy_pred_gpus.npz"),
                             x=np.load(fname_test[0])['x'] , y=y_pred)

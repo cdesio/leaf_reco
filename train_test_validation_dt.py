@@ -85,7 +85,7 @@ print("Split train dataset into train and validation datasets")
 X_train_v, X_val, y_train_v, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
 
-print("Save train, validation and test data to output files in {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
+print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_train.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                               "Xy_val.npz"),

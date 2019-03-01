@@ -63,18 +63,32 @@ print("Create X(shape:{}) and y(shape:{})".format(X.shape, y.shape))
 print("Train test split")
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
 print("Add new dimension - for channels last data format in keras")
 X_train = X_train[..., np.newaxis]
 y_train = y_train[..., np.newaxis]
-
 X_test = X_test[..., np.newaxis]
-print("Save train and test data to output files in {} and {}".format(os.path.join(data_dir,"Xy_train.npz"),os.path.join(data_dir,"Xy_test.npz")))
- 
-      
-np.savez_compressed(os.path.join(data_dir,"Xy_train.npz"),
-                            x=X_train, y=y_train)
-np.savez_compressed(os.path.join(data_dir,"Xy_test.npz"),
+y_test = y_test[...,np.newaxis]
+
+print("Split train dataset into train and validation datasets")
+
+X_train_v, X_val, y_train_v, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+
+print("Save train, validation and test data to output files in {} and {}".format(os.path.join(data_dir,"train_validation_test",
+                                                                                              "Xy_train.npz"),
+                                                                                 os.path.join(data_dir,"train_validation_test",
+                                                                                              "Xy_val.npz"),
+                                                                                 os.path.join(data_dir,"train_validation_test",
+                                                                                              "Xy_test.npz")))
+
+
+
+np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_train.npz"),
+                            x=X_train_v, y=y_train_v)
+np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_test.npz"),
                             x=X_test, y=y_test)
+np.savez_compressed(os.path.join(data_dir,"train_validation_test","Xy_val.npz"),
+                            x=X_val, y=y_val)

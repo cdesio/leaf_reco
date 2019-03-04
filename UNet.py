@@ -26,7 +26,7 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 
-def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
+def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH, compile_model=True):
     """"""
     inputs = Input((img_rows, img_cols, 1))
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same', name='conv1_1')(inputs)
@@ -71,7 +71,7 @@ def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
     conv10 = Conv2D(1, (1, 1), activation='sigmoid', name='conv10_sigmoid')(conv9)
 
     model = Model(inputs=[inputs], outputs=[conv10])
-
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    if compile_model:
+        model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
 #adam ls=1e-5, RMSprop(lr=2e-4)
     return model

@@ -39,10 +39,10 @@ TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
 
 
 N_FILES = 1
-BATCH_SIZE=2
+BATCH_SIZE=1
 N_EPOCHS = 500
 
-model = get_unet()
+model = get_unet(compile_model=True)
 model.summary()
 
 
@@ -82,12 +82,12 @@ validation_generator = data_generator(fname_val, batch_size=BATCH_SIZE,
                                      ftarget=lambda y: y)
 #data_dir = DATA_DIR_IH
 
-parallel_model = multi_gpu_model(model, gpus=2)
-model=parallel_model
-model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+#model = multi_gpu_model(model, gpus=2)
+#model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
-                                        validation_generator,
-                                        validation_steps, batch_size=BATCH_SIZE, epochs = N_EPOCHS)
+                                        validation_generator, validation_steps, 
+                                        no_stopping=True,
+                                        batch_size=BATCH_SIZE, epochs=N_EPOCHS)
 
 
 print('Saving Model (JSON), Training History & Weights...', end='')

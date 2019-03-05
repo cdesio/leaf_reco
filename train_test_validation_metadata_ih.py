@@ -70,7 +70,7 @@ print("Create X(shape:{}) and y(shape:{})".format(X.shape, y.shape))
 
 print("Train test split")
 
-def train_validation_test(df, stratify=False, stratification_key=None)
+def train_validation_test(df, stratify=False, stratification_key=None):
     if stratify:
         df_out = df[stratification_key]
     else:

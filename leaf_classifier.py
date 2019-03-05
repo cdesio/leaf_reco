@@ -27,6 +27,12 @@ TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 if not os.path.exists(TASK_FOLDER_PATH):
     os.makedirs(TASK_FOLDER_PATH)
 
+tf.keras.backend.clear_session()
+
+model = TZ_updown_classification(num_classes=4, kernel_size=3, pooling_size=3)
+
+model.summary()
+
 TRAINING_WEIGHTS_FILEPATH = os.path.join(TASK_FOLDER_PATH,
                                          '{}_weights_training{}.hdf5'.format(model.name, TASK_NAME))
 

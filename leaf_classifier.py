@@ -6,8 +6,6 @@ COL_SLICE = slice(1000, None)
 import os
 from os import path as p
 import tensorflow as tf
-
-if __name__ == '__main__':
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from network_models import leaf_classification, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations

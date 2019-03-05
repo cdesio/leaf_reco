@@ -7,7 +7,7 @@ import os
 from os import path as p
 import tensorflow as tf
 
-from network_models_km3 import leaf_classification, train_neural_network
+from network_models import leaf_classification, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH="/data/uob"

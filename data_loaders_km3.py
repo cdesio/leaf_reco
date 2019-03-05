@@ -159,3 +159,103 @@ def get_class_weights(fnames_list, target_key="y"):
             y_all = np.concatenate((y_all, yf))
     class_weight_vect = compute_class_weight('balanced', np.unique(y_all), y_all)
     return {i: w for i, w in enumerate(class_weight_vect)}
+
+def metadata_generator(index_filelist, xy_filelist, metadata_keylist,
+                       index_key=INDEX_TEST_KEY, batch_size=64):
+    """
+    Function to generate a set of current_file_metadata associated to each batch of events (identified by the
+    corresponding index set, namely "training", "validation", "test").
+    Parameters
+    ----------
+    index_filelist: list or tuple
+        List of paths to files containing indices for events
+    xy_filelist: list or tuple
+        List of paths to files containing current_file_metadata so that
+        len(xy_filelist) == len(index_filelist)
+        If current_file_metadata are organised in multiple files, a list of tuples
+        must be provided, and current_file_metadata will be stacked accordingly.
+    metadata_keylist: list or tuple
+        List of keys to extract for each event from the current_file_metadata file
+    index_key: str (default: "test")
+        The key identifying the set of indices to consider
+    batch_size: int (default:64)
+        The size of the batch
+    Returns
+    -------
+    current_file_metadata: pd.DataFrame
+        DataFrame containing current_file_metadata ...
+    """
+
+    if index_key not in (INDEX_TEST_KEY, INDEX_VALIDATION_KEY, INDEX_TRAINING_KEY):
+        raise ValueError('The index key should be one of the following: %s, %s, %s' % (INDEX_TEST_KEY,
+                                                                                       INDEX_VALIDATION_KEY,
+                                                                                       INDEX_TRAINING_KEY))
+
+    def _create_dataframe():
+        md_batch = OrderedDict()
+        for key in metadata_keylist:
+            md_batch[key] = current_file_metadata[key][idx_batch]
+        md_batch['file_evt_index'] = file_idx
+        md_batch['evt_index'] = idx_batch
+        return pd.DataFrame(md_batch)
+
+    while True:
+        file_idx = 0
+        df_metadata_buff, df_metadata_batch = None, None
+        residual = False
+        while file_idx < len(index_filelist):
+            index_fname = index_filelist[file_idx]
+            # Get set of indices
+            indices = np.load(index_fname)[index_key]
+
+            metadata_fnames = xy_filelist[file_idx]
+            if not isinstance(metadata_fnames, tuple):
+                metadata_fnames = (metadata_fnames,)
+
+            # load current_file_metadata
+            current_file_metadata = {}
+            for key in metadata_keylist:
+                md_key = None
+                for path in metadata_fnames:
+                    if md_key is None:
+                        md_key = np.load(path)[key]
+                    else:
+                        md_key = np.hstack((md_key, np.load(path)[key]))
+
+                assert np.all(np.isin(indices, np.arange(md_key.shape[0])) == True)
+                current_file_metadata[key] = md_key
+
+            idx = 0  # batch current file
+            idx_batch = None
+            while idx < indices.shape[0]:
+                if residual:  # i.e. there are samples stored from previous iteration
+                    incr = (batch_size - df_metadata_buff.shape[0])
+                else:
+                    incr = batch_size
+                start, end = idx, idx + incr
+
+                if end > indices.shape[0]:  # current file is completed
+                    idx_batch = indices[start:]
+                    df = _create_dataframe()
+                    if df_metadata_buff is None:
+                        df_metadata_buff = df
+                    else:
+                        df_metadata_buff = pd.concat((df_metadata_buff, df))
+                    residual = True
+                    break
+
+                idx_batch = indices[start:end]
+                df_metadata_batch = _create_dataframe()
+                if residual:
+                    df_metadata_batch = pd.concat((df_metadata_buff, df_metadata_batch))
+                else:
+                    df_metadata_buff = None
+
+                yield df_metadata_batch
+                idx += incr
+                residual = False
+            file_idx += 1
+        else:
+            if residual:
+                yield df_metadata_buff
+

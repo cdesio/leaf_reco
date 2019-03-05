@@ -1091,7 +1091,6 @@ def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
     pooling_size: tuple (default: (6, 6))
         The size of each pooling mask
     """
-
     input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
     x = _tz_topology(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
 

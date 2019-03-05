@@ -24,7 +24,6 @@ if not os.path.exists(TRAIN_VAL_TEST_DIR):
     os.makedirs(TRAIN_VAL_TEST_DIR)
 
 
-
 ## Loading data
 print("Loading data filenames")
 
@@ -33,9 +32,6 @@ folder_2mm=os.path.join(source_data_folder,"10x10_2mm_8bit")
 folder_4mm=os.path.join(source_data_folder,"10x10_4mm_v2 copy")
 folder_10mm=os.path.join(source_data_folder,"10x10_10mm_v2_8bit")
 folder_25mm=os.path.join(source_data_folder,"10x10_25mm_8bit")
-
-[[os.path.join(folder_2mm,"{}".format(filename)), regex.findall(filename)[-2], regex.findall(filename)[-1]]
- for filename in sorted(os.listdir(folder_2mm)) if "mask" in filename and filename.startswith('File')]
 
 def get_filename_and_data(folder):
     images_list = [[os.path.join(folder,"{}".format(filename)), regex.findall(folder)[2]]
@@ -61,13 +57,7 @@ print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm), len(fna
 df_mask = pd.concat([fnames_mask_2mm,fnames_mask_4mm, fnames_mask_10mm, fnames_mask_25mm], ignore_index=True)
 df_orig = pd.concat([fnames_orig_2mm,fnames_orig_4mm, fnames_orig_10mm, fnames_orig_25mm], ignore_index=True)
 print("check total number of files")
-print("original images:{}, mask files:{}".format(len(fnames_orig),len(fnames_mask) ))
-print("Import data (this may take some time)")
-
-X = np.asarray([imread(img)[ROW_SLICE, COL_SLICE] for img in fnames_orig['path']])
-y = np.asarray([imread(img)[ROW_SLICE, COL_SLICE] for img in fnames_mask['path']])
-print("Create X(shape:{}) and y(shape:{})".format(X.shape, y.shape))
-
+print("original images:{}, mask files:{}".format(len(df_orig),len(df_mask) ))
 
 print("Train test split")
 
@@ -89,10 +79,13 @@ df_orig_test = df_orig.iloc[test_indices]
 df_mask_train = df_mask.iloc[train_indices]
 df_mask_test = df_mask.iloc[test_indices]
 
+print("Import data (this may take some time)")
+
 X_train = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in train_indices])
 X_test = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in test_indices])
 y_train = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in train_indices])
 y_test = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in test_indices])
+
 
 print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
 
@@ -106,6 +99,8 @@ print("Split train dataset into train and validation datasets")
 
 
 X_train_v, X_val, y_train_v, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+print("Train, validation, test data shape")
 
 print(X_train_v.shape, y_train_v.shape, X_val.shape, y_val.shape, X_test.shape, y_test.shape)
 

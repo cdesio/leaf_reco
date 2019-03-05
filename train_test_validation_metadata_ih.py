@@ -7,6 +7,7 @@ import os
 import numpy as np
 from matplotlib.image import imread
 from sklearn.model_selection import train_test_split
+import pandas as pd
 import re
 regex = re.compile(r'\d+')
 

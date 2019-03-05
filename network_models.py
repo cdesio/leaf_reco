@@ -1099,6 +1099,6 @@ def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
     predictions = Dense(num_classes, activation='softmax', name='prediction')(x)
 
     # Model
-    model = Model(inputs=tz_layer, outputs=predictions, name='tz_updown_classification')
+    model = Model(inputs=input_layer, outputs=predictions, name='leaf_position_classification')
     model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
     return model

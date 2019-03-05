@@ -43,8 +43,8 @@ MODEL_JSON_FILEPATH = os.path.join(TASK_FOLDER_PATH, '{}.json'.format(model.name
 
 
 
-fname_train = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train.npz")]
-fname_val = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val.npz")]
+fname_train = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train_stratified_dist.npz")]
+fname_val = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val_stratified_dist.npz")]
 
 steps_per_epoch, n_events = get_n_iterations(fname_train, batch_size=BATCH_SIZE)
 print("training steps per epoc:{}, number of events:{}".format(steps_per_epoch, n_events))
@@ -55,17 +55,14 @@ print("validation steps per epoch:{}, number of events:{}".format(validation_ste
 
 training_generator = data_generator(fname_train, batch_size=BATCH_SIZE,
                                     fdata = lambda y: y,
-                                    ftarget=lambda dist: dist)
+                                    ftarget= ohe)
 
 validation_generator = data_generator(fname_val, batch_size=BATCH_SIZE,
                                       fdata=lambda y: y,
-                                      ftarget=lambda dist: dist)
+                                      ftarget= ohe)
 
-tf.keras.backend.clear_session()
 
-model = TZ_updown_classification(num_classes=4, kernel_size=3, pooling_size=3)
 
-model.summary()
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
                                         validation_generator,

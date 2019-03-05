@@ -62,62 +62,69 @@ print("original images:{}, mask files:{}".format(len(df_orig),len(df_mask) ))
 print("Train test split")
 
 def train_validation_test(df, stratify=False, stratification_key=None):
-    if stratify:
-        df_out = df[stratification_key]
-    else:
-        df_out = df
+     if stratify:
+         df_out = df[stratification_key]
+     else:
+         df_out = df
 
-    indices = np.arange(len(df_out))
-    train_indices, test_indices = train_test_split(indices)
-    return train_indices, test_indices
+     indices = np.arange(len(df_out))
+     train_indices, test_indices = train_test_split(indices, test_size=0.20,random_state=42)
+     train_v_indices, val_indices = train_test_split(train_indices, test_size=0.20,random_state=42)
+     return train_indices, test_indices, train_v_indices, val_indices
 
-train_indices, test_indices = train_validation_test(df_mask, stratify=True, stratification_key='dist')
+_, test_indices, train_indices, val_indices = train_validation_test(df_mask)
 
 print("Train dataset:{} files, Test dataset:{} files".format(len(train_indices), len(test_indices)))
 
 df_orig_train = df_orig.iloc[train_indices]
 df_orig_test = df_orig.iloc[test_indices]
+df_orig_val = df_orig.iloc[val_indices]
 
 df_mask_train = df_mask.iloc[train_indices]
 df_mask_test = df_mask.iloc[test_indices]
+df_mask_val = df_mask.iloc[val_indices]
 
 print("Import data (this may take some time)")
 
 X_train = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in train_indices])
 X_test = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in test_indices])
+X_val = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in val_indices])
+
 y_train = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in train_indices])
 y_test = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in test_indices])
+y_val = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in val_indices])
 
+metadata_train = np.asarray(df_orig['dist'].iloc[train_indices], dtype=int)
+metadata_test = np.asarray(df_orig['dist'].iloc[test_indices], dtype=int)
+metadata_val = np.asarray(df_orig['dist'].iloc[val_indices], dtype=int)
 
-print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+print("Train, validation, test data shape")
+
+print(X_train.shape, y_train.shape, metadata_train.shape,
+      X_val.shape, y_val.shape, metadata_val.shape,
+      X_test.shape, y_test.shape, metadata_test.shape)
 
 print("Add new dimension - for channels last data format in keras")
 X_train = X_train[..., np.newaxis]
 y_train = y_train[..., np.newaxis]
 X_test = X_test[..., np.newaxis]
 y_test = y_test[...,np.newaxis]
+X_val = X_val[..., np.newaxis]
+y_val = y_val[...,np.newaxis]
 
-print("Split train dataset into train and validation datasets")
-
-
-X_train_v, X_val, y_train_v, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
-
-print("Train, validation, test data shape")
-
-print(X_train_v.shape, y_train_v.shape, X_val.shape, y_val.shape, X_test.shape, y_test.shape)
 
 
 print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_train_stratified_dist.npz"),
+                                                                                              "Xy_multi_data_train.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_val_stratified_dist.npz"),
+                                                                                              "Xy_multi_data_val.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_test_stratified_dist.npz")))
+                                                                                              "Xy_multi_data_test.npz")))
 
 np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train_stratified_dist.npz"),
-                            x=X_train_v, y=y_train_v)
+                            x=X_train, y=y_train, dist=metadata_train)
 np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_test_stratified_dist.npz"),
-                            x=X_test, y=y_test)
+                            x=X_test, y=y_test,  dist=metadata_test)
 np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val_stratified_dist.npz"),
-                            x=X_val, y=y_val)
+                            x=X_val, y=y_val, dist = metadata_val)
 

@@ -1,3 +1,8 @@
+INDEX_TRAINING_KEY = 'train'
+INDEX_TEST_KEY = 'test'
+INDEX_VALIDATION_KEY = 'val'
+
+
 from math import ceil
 import numpy as np
 import pandas as pd

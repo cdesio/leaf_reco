@@ -4,14 +4,11 @@ ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
 
 import os
-from UNet import get_unet
-from data_loaders_km3 import data_generator, get_n_iterations
-from network_models_km3 import train_neural_network
 from os import path as p
 import tensorflow as tf
 
 from network_models_km3 import TZ_updown_classification, train_neural_network
-from data_loaders_km3 import data_generator, metadata_generator, get_n_iterations
+from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"

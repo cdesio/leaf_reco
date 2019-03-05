@@ -7,7 +7,7 @@ import os
 from os import path as p
 import tensorflow as tf
 
-from network_models_km3 import TZ_updown_classification, train_neural_network
+from network_models_km3 import leaf_classification, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH="/data/uob"
@@ -29,7 +29,7 @@ if not os.path.exists(TASK_FOLDER_PATH):
 
 tf.keras.backend.clear_session()
 
-model = TZ_updown_classification(num_classes=4, kernel_size=3, pooling_size=3)
+model = leaf_classification(num_classes=4, kernel_size=3, pooling_size=3)
 
 model.summary()
 

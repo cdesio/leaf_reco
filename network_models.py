@@ -37,12 +37,14 @@ if K.image_data_format() == 'channels_first':
     TY_SHAPE = (1, 75, 15)
     XY_SHAPE = (1, 16, 15)
     TXYZ_SHAPE_TIME_DISTRIBUTED = (75, 1, 16, 15, 18)
+    LEAF_SHAPE = (1, 1400, 1400)
 elif K.image_data_format() == 'channels_last':
     TZ_SHAPE = (75, 18, 1)
     TX_SHAPE = (75, 16, 1)
     TY_SHAPE = (75, 15, 1)
     XY_SHAPE = (16, 15, 1)
     TXYZ_SHAPE_TIME_DISTRIBUTED = (75, 16, 15, 18, 1)
+    LEAF_SHAPE = (1400, 1400, 1)
 else:
     raise ValueError('Please check Keras configuration file for Image data format')
 
@@ -1065,3 +1067,38 @@ def inference_step(network_model, test_data_generator, predict_steps,
     if categorical:
         return metadata, y_true, y_pred, Y_probs
     return metadata, y_true, y_pred
+
+
+def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
+                             conv_layer=Conv2D, pooling_layer=AveragePooling2D,
+                             kernel_size=(3, 3), pooling_size=(3, 3)):
+    """VGG inspired Convolutional Networks
+    Parameters
+    ----------
+    num_classes : int
+        Number of classes to predict
+    optimizer : keras.optimizers.Optimizer (default: Adadelta() - with def params)
+        Instance of Keras optimizer to attach to the resulting network
+    Other Parameters
+    ----------------
+    These parameters are passed to `_vgg_conv_block` function
+    conv_layer: keras.layers.convolutional._Conv (default: Conv2D)
+        The convolutional layer to plug in each block
+    pooling_layer: keras.layers.pooling._Pooling (default: AveragePooling2D)
+        The pooling layer to plug in each block
+    kernel_size: tuple (default: (12, 12))
+        The size of each convolutional kernel
+    pooling_size: tuple (default: (6, 6))
+        The size of each pooling mask
+    """
+
+    input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
+    x = _tz_topology(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
+
+    # prediction layer
+    predictions = Dense(num_classes, activation='softmax', name='prediction')(x)
+
+    # Model
+    model = Model(inputs=tz_layer, outputs=predictions, name='tz_updown_classification')
+    model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
+    return model

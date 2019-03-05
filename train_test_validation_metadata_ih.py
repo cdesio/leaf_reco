@@ -74,7 +74,7 @@ def train_validation_test(df, stratify=False, stratification_key=None):
 
 _, test_indices, train_indices, val_indices = train_validation_test(df_mask)
 
-print("Train dataset:{} files, Test dataset:{} files".format(len(train_indices), len(test_indices)))
+print("Train dataset:{} files, Validation dataset:{}, Test dataset:{} files".format(len(train_indices), len(val_indices),len(test_indices)))
 
 df_orig_train = df_orig.iloc[train_indices]
 df_orig_test = df_orig.iloc[test_indices]

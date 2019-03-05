@@ -64,20 +64,15 @@ def ohe(values):
 
 training_generator = data_generator(fname_train, data_key='x', label_key='dist',
                                     batch_size=BATCH_SIZE,
-                                    fdata = lambda y: y,
-                                    ftarget= ohe)
+                                    fdata = lambda y: y, ftarget= ohe)
 
 validation_generator = data_generator(fname_val, data_key='x', label_key='dist',
                                       batch_size=BATCH_SIZE,
-                                      fdata=lambda y: y,
-                                      ftarget= ohe)
-
-
-next(validation_generator)
+                                      fdata=lambda y: y, ftarget= ohe)
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
-                                        validation_generator,
-                                        validation_steps, batch_size=BATCH_SIZE, epochs = N_EPOCHS)
+                                        validation_generator, validation_steps,
+                                        batch_size=BATCH_SIZE, epochs = N_EPOCHS)
 
 print('Saving Model (JSON), Training History & Weights...', end='')
 model_json_str = model.to_json()

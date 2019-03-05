@@ -53,7 +53,7 @@ fnames_mask_10mm['dist']=10
 fnames_orig_25mm, fnames_mask_25mm = get_filename_and_data(folder_25mm)
 
 print("check number of files per type")
-print(len(fnames_mask_2mm, len(fnames_mask_4mm), len(fnames_mask_10mm), len(fnames_mask_25mm))
+print(len(fnames_mask_2mm), len(fnames_mask_4mm), len(fnames_mask_10mm), len(fnames_mask_25mm))
 print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm), len(fnames_orig_25mm))
 
 

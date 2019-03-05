@@ -108,16 +108,16 @@ print(X_train_v.shape, y_train_v.shape, X_val.shape, y_val.shape, X_test.shape, 
 
 
 print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_train.npz"),
+                                                                                              "Xy_train_stratified_dist.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_val.npz"),
+                                                                                              "Xy_val_stratified_dist.npz"),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_test.npz")))
+                                                                                              "Xy_test_stratified_dist.npz")))
 
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train_strarified_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train_stratified_dist.npz"),
                             x=X_train_v, y=y_train_v)
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_test_strarified_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_test_stratified_dist.npz"),
                             x=X_test, y=y_test)
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val_strarified_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val_stratified_dist.npz"),
                             x=X_val, y=y_val)
 

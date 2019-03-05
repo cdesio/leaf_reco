@@ -73,7 +73,7 @@ validation_generator = data_generator(fname_val, data_key='x', label_key='dist',
                                       ftarget= ohe)
 
 
-
+next(validation_generator)
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
                                         validation_generator,

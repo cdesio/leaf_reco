@@ -935,7 +935,7 @@ def TZXY_numu_nue_classification(num_classes, optimizer=DEFAULT_OPT):
 
 def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,
-                             kernel_size=(3, 3), pooling_size=(3, 3)):
+                             kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
     """VGG inspired Convolutional Networks
     Parameters
     ----------
@@ -963,9 +963,10 @@ def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
 
     # Model
     model = Model(inputs=input_layer, outputs=predictions, name='leaf_position_classification')
-    model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
-    return model
 
+    if compile_model:
+        model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
+    return model
 
 def train_neural_network(network_model, training_generator, steps_per_epoch,
                          validation_generator=None, validation_steps=None,

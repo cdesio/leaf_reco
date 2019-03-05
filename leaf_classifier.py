@@ -30,7 +30,9 @@ if not os.path.exists(TASK_FOLDER_PATH):
 tf.keras.backend.clear_session()
 
 model = leaf_classification(num_classes=4, kernel_size=3, pooling_size=3)
-
+from keras.optimizers import Adadelta
+from keras.losses import categorical_crossentropy
+model.compile(loss=categorical_crossentropy, optimizer=Adadelta(), metrics=['accuracy'])
 model.summary()
 
 TRAINING_WEIGHTS_FILEPATH = os.path.join(TASK_FOLDER_PATH,

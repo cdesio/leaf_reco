@@ -18,7 +18,7 @@ from sklearn.utils.class_weight import compute_class_weight
 #from export_train_test import (INDEX_TRAINING_KEY, INDEX_TEST_KEY, INDEX_VALIDATION_KEY)
 
 
-def data_generator(fnames, batch_size=64, fdata=lambda X: X, ftarget=lambda y: to_categorical(y)):
+def data_generator(fnames, batch_size=64, data_key='x', label_key='y',fdata=lambda X: X, ftarget=lambda y: to_categorical(y)):
     """
     Function to generate generator, according to the batch size(default=64)
 
@@ -69,7 +69,7 @@ def data_generator(fnames, batch_size=64, fdata=lambda X: X, ftarget=lambda y: t
         while file_idx < len(fnames):
             fname = fnames[file_idx]
             Xy = np.load(fname)
-            X, y = Xy['x'], Xy['y']
+            X, y = Xy[data_key], Xy[label_key]
             Y = ftarget(y)
             X = _to_list(fdata(X))  # X will be finally a list
             idx = 0  # batch current file

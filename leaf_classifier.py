@@ -7,6 +7,8 @@ import os
 from os import path as p
 import tensorflow as tf
 
+if __name__ == '__main__':
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from network_models import leaf_classification, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
 
@@ -52,12 +54,23 @@ print("training steps per epoc:{}, number of events:{}".format(steps_per_epoch, 
 validation_steps, n_evts_val = get_n_iterations(fname_val, batch_size=BATCH_SIZE)
 print("validation steps per epoch:{}, number of events:{}".format(validation_steps, n_evts_val))
 
+def ohe(values):
 
-training_generator = data_generator(fname_train, batch_size=BATCH_SIZE,
+    label_encoder = LabelEncoder()
+    integer_encoded = label_encoder.fit_transform(values)
+    onehot_encoder = OneHotEncoder(sparse=False)
+    integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
+    onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
+    return onehot_encoded
+
+
+training_generator = data_generator(fname_train, data_key='x', label_key='dist',
+                                    batch_size=BATCH_SIZE,
                                     fdata = lambda y: y,
                                     ftarget= ohe)
 
-validation_generator = data_generator(fname_val, batch_size=BATCH_SIZE,
+validation_generator = data_generator(fname_val, data_key='x', label_key='dist',
+                                      batch_size=BATCH_SIZE,
                                       fdata=lambda y: y,
                                       ftarget= ohe)
 

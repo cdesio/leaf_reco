@@ -114,18 +114,20 @@ X_val = X_val[..., np.newaxis]
 y_val = y_val[...,np.newaxis]
 
 
-
+train_out_str = 'Xy_train_dist.npz'
+val_out_str = 'Xy_val_dist.npz'
+test_out_str = 'Xy_test_dist.npz'
 print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_multi_data_train.npz"),
+                                                                                              train_out_str),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_multi_data_val.npz"),
+                                                                                              val_out_str),
                                                                                  os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                              "Xy_multi_data_test.npz")))
+                                                                                             test_out_str)))
 
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,train_out_str),
                             x=X_train, y=y_train, dist=metadata_train)
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_test_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,test_out_str),
                             x=X_test, y=y_test,  dist=metadata_test)
-np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val_dist.npz"),
+np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR,val_out_str),
                             x=X_val, y=y_val, dist = metadata_val)
 

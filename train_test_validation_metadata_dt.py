@@ -34,10 +34,11 @@ folder_10mm=os.path.join(source_data_folder,"10x10_10mm_v2_8bit")
 folder_25mm=os.path.join(source_data_folder,"10x10_25mm_8bit")
 
 def get_filename_and_data(folder):
-    images_list = [[os.path.join(folder,"{}".format(filename)), regex.findall(folder)[2]]
+    dist_selection = np.ravel([regex.findall(i) for i in folder.split('_') if i.endswith('mm')])[0]
+    images_list = [[os.path.join(folder,"{}".format(filename)), dist_selection]
                    for filename in sorted(os.listdir(folder)) if "mask" not in filename and filename.startswith("File")]
     masks_list = [[os.path.join(folder,"{}".format(filename)),
-                   regex.findall(folder)[2]]
+                   dist_selection]
                   for filename in sorted(os.listdir(folder)) if "mask" in filename and filename.startswith("File")]
     df_images = pd.DataFrame.from_records(images_list, columns=('path', 'dist'))
     df_masks = pd.DataFrame.from_records(masks_list, columns=('path', 'dist'))
@@ -46,7 +47,7 @@ def get_filename_and_data(folder):
 fnames_orig_2mm, fnames_mask_2mm = get_filename_and_data(folder_2mm)
 fnames_orig_4mm, fnames_mask_4mm = get_filename_and_data(folder_4mm)
 fnames_orig_10mm, fnames_mask_10mm = get_filename_and_data(folder_10mm)
-fnames_mask_10mm['dist']=10
+#fnames_mask_10mm['dist']=10
 fnames_orig_25mm, fnames_mask_25mm = get_filename_and_data(folder_25mm)
 
 print("check number of files per type")

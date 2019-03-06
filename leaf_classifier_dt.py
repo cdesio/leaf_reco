@@ -7,7 +7,7 @@ import os
 from os import path as p
 import tensorflow as tf
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from network_models import leaf_classification, train_neural_network
+from network_models import leaf_classification_half, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH="/data/uob"
@@ -29,7 +29,7 @@ if not os.path.exists(TASK_FOLDER_PATH):
 
 tf.keras.backend.clear_session()
 
-model = leaf_classification(num_classes=4, kernel_size=3, pooling_size=3)
+model = leaf_classification_half(num_classes=4, kernel_size=3, pooling_size=3)
 from keras.optimizers import Adadelta
 from keras.losses import categorical_crossentropy
 model.compile(loss=categorical_crossentropy, optimizer=Adadelta(), metrics=['accuracy'])

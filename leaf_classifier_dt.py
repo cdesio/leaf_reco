@@ -57,7 +57,7 @@ print("validation steps per epoch:{}, number of events:{}".format(validation_ste
 def ohe(values):
 
     values_reshaped = values.reshape(-1,1)
-    onehot_encoder = OneHotEncoder(sparse=False)
+    onehot_encoder = OneHotEncoder(sparse=False, categories='auto')
     onehot_encoded = onehot_encoder.fit_transform(values_reshaped)
     return onehot_encoded
 

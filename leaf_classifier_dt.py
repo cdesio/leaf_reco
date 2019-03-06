@@ -17,11 +17,11 @@ data_folder = DATA_DIR_DEEPTHOUGHT
 TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
 
 N_FILES = 1
-BATCH_SIZE=3
+BATCH_SIZE=2
 N_EPOCHS = 10
 
 CHECKPOINT_FOLDER_PATH = p.join(data_folder, 'trained_models')
-TASK_NAME = 'CNN_leaf_classifier_training_{}epochs'.format(N_EPOCHS)
+TASK_NAME = 'CNN_leaf_classifier_half_training_{}epochs'.format(N_EPOCHS)
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not os.path.exists(TASK_FOLDER_PATH):

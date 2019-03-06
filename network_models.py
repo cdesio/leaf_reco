@@ -198,6 +198,87 @@ def _vgg_conv_block(input_layer, conv_layer=Conv2D,
     x = Flatten(name='{}_flatten_1'.format(prefix))(x)
     return x
 
+def _vgg_conv_block_half(input_layer, conv_layer=Conv2D,
+                    pooling_layer=AveragePooling2D,
+                    kernel_size=(12, 12), pooling_size=(6, 6),
+                    conv_layer_activation='relu'):
+    """
+    VGG-like highly customisable convolutional network
+    Parameters
+    ----------
+    input_layer: keras.layers.Input
+        The first input layer of the network to plug on top of the VGG-like conv blocks
+    conv_layer: keras.layers.convolutional._Conv (default: Conv2D)
+        The convolutional layer to plug in each block
+    pooling_layer: keras.layers.pooling._Pooling (default: AveragePooling2D)
+        The pooling layer to plug in each block
+    kernel_size: tuple (default: (12, 12))
+        The size of each convolutional kernel
+    pooling_size: tuple (default: (6, 6))
+        The size of each pooling mask
+    conv_layer_activation: object or str (default: 'relu')
+        The activation function to be used after each convolutional layer.
+        This parameter can be either a string or a custom keras layer
+        object. If a string, this must correspond to one of the
+        default activation functions supported by Keras.
+    Returns
+    -------
+        keras tensor of the last layer of the network
+    Notes:
+    ------
+        Please make sure that `conv_layer` and `pooling_layer` have the same rank
+        (i.e. both 2D or both 3D) as well as the len of corresponding
+        `kernel_size` and `pooling_size`.
+    """
+
+    prefix = input_layer.name.split('_')[0]
+
+    if isinstance(conv_layer_activation, str):
+        conv_activation_function = conv_layer_activation
+        stack_activation_layer = False
+    elif issubclass(conv_layer_activation, Layer):
+        conv_activation_function = 'linear'
+        stack_activation_layer = True
+    else:
+        conv_activation_function = conv_layer_activation
+        stack_activation_layer = False
+
+    # Block 1
+    x = conv_layer(32, kernel_size=kernel_size, activation=conv_activation_function,
+                   padding='same', name='{}_block1_conv1'.format(prefix))(input_layer)
+
+    if stack_activation_layer:
+        x = conv_layer_activation()(x)
+
+
+
+    x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
+                      padding='same', name='{}_block1_pool'.format(prefix))(x)
+
+    # Block 2
+    x = conv_layer(64, kernel_size=kernel_size, activation=conv_activation_function,
+                   padding='same', name='{}_block2_conv1'.format(prefix))(x)
+
+
+
+    if stack_activation_layer:
+        x = conv_layer_activation()(x)
+
+    x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
+                      padding='same', name='{}_block2_pool'.format(prefix))(x)
+
+    # Block 3
+    x = conv_layer(128, kernel_size=kernel_size, activation=conv_activation_function,
+                   padding='same', name='{}_block3_conv2'.format(prefix))(x)
+
+    if stack_activation_layer:
+        x = conv_layer_activation()(x)
+
+    x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
+                      padding='same', name='{}_block3_pool'.format(prefix))(x)
+    x = Flatten(name='{}_flatten_1'.format(prefix))(x)
+    return x
+
 
 def _tz_topology(zt_layer, conv_layer, kernel_size, pooling_layer, pooling_size,
                  dense_layer_activation='relu', conv_layer_activation='relu'):
@@ -210,6 +291,17 @@ def _tz_topology(zt_layer, conv_layer, kernel_size, pooling_layer, pooling_size,
     x = Dense(512, activation=dense_layer_activation, name='fc-2')(x)
     return x
 
+
+def _tz_topology_half(zt_layer, conv_layer, kernel_size, pooling_layer, pooling_size,
+                 dense_layer_activation='relu', conv_layer_activation='relu'):
+    """utility function to build tz-convnet network topology"""
+    zt_branch = _vgg_conv_block_half(input_layer=zt_layer,
+                                conv_layer=conv_layer, kernel_size=kernel_size,
+                                conv_layer_activation=conv_layer_activation,
+                                pooling_layer=pooling_layer, pooling_size=pooling_size, )
+    x = Dense(512, activation=dense_layer_activation, name='fc-1')(zt_branch)
+    x = Dense(512, activation=dense_layer_activation, name='fc-2')(x)
+    return x
 
 def TZ_updown_classification(num_classes, optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,
@@ -957,6 +1049,42 @@ def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
     """
     input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
     x = _tz_topology(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
+
+    # prediction layer
+    predictions = Dense(num_classes, activation='softmax', name='prediction')(x)
+
+    # Model
+    model = Model(inputs=input_layer, outputs=predictions, name='leaf_position_classification')
+
+    if compile_model:
+        model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
+    return model
+
+
+def leaf_classification_half(num_classes, optimizer=DEFAULT_OPT,
+                             conv_layer=Conv2D, pooling_layer=AveragePooling2D,
+                             kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
+    """VGG inspired Convolutional Networks
+    Parameters
+    ----------
+    num_classes : int
+        Number of classes to predict
+    optimizer : keras.optimizers.Optimizer (default: Adadelta() - with def params)
+        Instance of Keras optimizer to attach to the resulting network
+    Other Parameters
+    ----------------
+    These parameters are passed to `_vgg_conv_block` function
+    conv_layer: keras.layers.convolutional._Conv (default: Conv2D)
+        The convolutional layer to plug in each block
+    pooling_layer: keras.layers.pooling._Pooling (default: AveragePooling2D)
+        The pooling layer to plug in each block
+    kernel_size: tuple (default: (12, 12))
+        The size of each convolutional kernel
+    pooling_size: tuple (default: (6, 6))
+        The size of each pooling mask
+    """
+    input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
+    x = _tz_topology_half(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
 
     # prediction layer
     predictions = Dense(num_classes, activation='softmax', name='prediction')(x)

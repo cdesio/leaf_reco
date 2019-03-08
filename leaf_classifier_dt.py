@@ -61,11 +61,11 @@ def ohe(values):
     onehot_encoded = onehot_encoder.fit_transform(values_reshaped)
     return onehot_encoded
 
-training_generator = data_generator(fname_train, data_key='x', label_key='dist',
+training_generator = data_generator(fname_train, data_key='y', label_key='dist',
                                     batch_size=BATCH_SIZE,
                                     fdata = lambda y: y, ftarget= ohe)
 
-validation_generator = data_generator(fname_val, data_key='x', label_key='dist',
+validation_generator = data_generator(fname_val, data_key='y', label_key='dist',
                                       batch_size=BATCH_SIZE,
                                       fdata=lambda y: y, ftarget= ohe)
 

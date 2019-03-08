@@ -1096,7 +1096,7 @@ def leaf_classification_half(num_classes, optimizer=DEFAULT_OPT,
         model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
     return model
 
-def leaf_classification_regression(num_classes, optimizer=DEFAULT_OPT,
+def leaf_position_regression(optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,
                              kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
     """VGG inspired Convolutional Networks

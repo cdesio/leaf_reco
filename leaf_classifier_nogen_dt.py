@@ -8,6 +8,7 @@ from os import path as p
 import tensorflow as tf
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from network_models import leaf_classification_half, train_neural_network
+import numpy as np
 #from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH="/data/uob"

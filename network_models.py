@@ -1130,9 +1130,9 @@ def leaf_position_regression(optimizer=DEFAULT_OPT,
     x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
                       padding='same', name='pool-2')(x)
     x = Flatten(name='flatten')(x)
-    x = Dense(128, activation='ReLU', name='fc-1')(x)
-    x = Dense(64, activation='ReLU', name='fc-2')(x)
-    x = Dense(32, activation='ReLU', name = 'fc-3')(x)
+    x = Dense(128, activation='relu', name='fc-1')(x)
+    x = Dense(64, activation='relu', name='fc-2')(x)
+    x = Dense(32, activation='relu', name = 'fc-3')(x)
     # prediction layer
     predictions = Dense(1, activation='linear', name='prediction')(x)
 

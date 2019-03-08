@@ -30,7 +30,9 @@ if not os.path.exists(TASK_FOLDER_PATH):
 tf.keras.backend.clear_session()
 
 model = leaf_position_regression(kernel_size=3, pooling_size=3, compile_model=True)
-#from keras.optimizers import Adadelta
+from keras.optimizers import Adadelta
+from keras.losses import mse
+model.compile(loss=mse,optimizer=Adadelta())
 model.summary()
 
 TRAINING_WEIGHTS_FILEPATH = os.path.join(TASK_FOLDER_PATH,

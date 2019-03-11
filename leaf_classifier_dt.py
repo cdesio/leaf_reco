@@ -1,14 +1,16 @@
+import os
+from os import path as p
+import tensorflow as tf
+from sklearn.preprocessing import OneHotEncoder
+from network_models import leaf_classification_half, train_neural_network
+from data_loaders_km3 import data_generator, get_n_iterations
+from keras.optimizers import Adadelta
+from keras.losses import categorical_crossentropy
+
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
 ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
-
-import os
-from os import path as p
-import tensorflow as tf
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from network_models import leaf_classification_half, train_neural_network
-from data_loaders_km3 import data_generator, get_n_iterations
 
 DATA_DIR_IH = "/data/uob"
 DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
@@ -30,9 +32,6 @@ if not os.path.exists(TASK_FOLDER_PATH):
 tf.keras.backend.clear_session()
 
 model = leaf_classification_half(num_classes=4, kernel_size=3, pooling_size=3)
-from keras.optimizers import Adadelta
-from keras.losses import categorical_crossentropy
-
 model.compile(loss=categorical_crossentropy, optimizer=Adadelta(), metrics=['accuracy'])
 model.summary()
 
@@ -71,7 +70,8 @@ validation_generator = data_generator(fname_val, data_key='y', label_key='dist',
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
                                         validation_generator, validation_steps,
-                                        batch_size=BATCH_SIZE, epochs=N_EPOCHS)
+                                        batch_size=BATCH_SIZE, epochs=N_EPOCHS,
+                                        no_stopping=True)
 
 print('Saving Model (JSON), Training History & Weights...', end='')
 model_json_str = model.to_json()

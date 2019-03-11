@@ -2,7 +2,6 @@ INDEX_TRAINING_KEY = 'train'
 INDEX_TEST_KEY = 'test'
 INDEX_VALIDATION_KEY = 'val'
 
-
 from math import ceil
 import numpy as np
 import pandas as pd
@@ -15,10 +14,13 @@ except ImportError:  # new Keras
 from keras.utils import to_categorical
 from numpy import concatenate as concat
 from sklearn.utils.class_weight import compute_class_weight
-#from export_train_test import (INDEX_TRAINING_KEY, INDEX_TEST_KEY, INDEX_VALIDATION_KEY)
 
 
-def data_generator(fnames, batch_size=64, data_key='x', label_key='y',fdata=lambda X: X, ftarget=lambda y: to_categorical(y)):
+# from export_train_test import (INDEX_TRAINING_KEY, INDEX_TEST_KEY, INDEX_VALIDATION_KEY)
+
+
+def data_generator(fnames, batch_size=64, data_key='x', label_key='y', fdata=lambda X: X,
+                   ftarget=lambda y: to_categorical(y)):
     """
     Function to generate generator, according to the batch size(default=64)
 
@@ -71,7 +73,7 @@ def data_generator(fnames, batch_size=64, data_key='x', label_key='y',fdata=lamb
             Xy = np.load(fname)
             X, y = Xy[data_key], Xy[label_key]
             Y = ftarget(y)
-            X = _to_list(fdata(X))  # X will be finally a list
+            X = fdata(X)
             idx = 0  # batch current file
             while idx < Y.shape[0]:
                 if residual:  # i.e. there are samples stored from previous iteration
@@ -83,15 +85,15 @@ def data_generator(fnames, batch_size=64, data_key='x', label_key='y',fdata=lamb
 
                 if end > Y.shape[0]:  # current file is completed
                     if X_buff is None:
-                        X_buff, Y_buff = [X_in[start:] for X_in in X], Y[start:]
+                        X_buff, Y_buff = X[start:], Y[start:]
                     else:
-                        X_buff = [concat((X_in_buff, X_in[start:])) for X_in_buff, X_in in zip(X_buff, X)]
+                        X_buff = concat((X_buff, X[start:]))
                         Y_buff = concat((Y_buff, Y[start:]))
                     residual = True
                     break
-                X_batch, Y_batch = [X_in[start:end] for X_in in X], Y[start:end]
+                X_batch, Y_batch = X[start:end], Y[start:end]
                 if residual:
-                    X_batch = [concat((X_in_buff, X_in_batch)) for X_in_buff, X_in_batch in zip(X_buff, X_batch)]
+                    X_batch = concat((X_buff, X_batch))
                     Y_batch = concat((Y_buff, Y_batch))
                 else:
                     X_buff = Y_buff = None
@@ -164,6 +166,7 @@ def get_class_weights(fnames_list, target_key="y"):
             y_all = np.concatenate((y_all, yf))
     class_weight_vect = compute_class_weight('balanced', np.unique(y_all), y_all)
     return {i: w for i, w in enumerate(class_weight_vect)}
+
 
 def metadata_generator(index_filelist, xy_filelist, metadata_keylist,
                        index_key=INDEX_TEST_KEY, batch_size=64):
@@ -263,4 +266,3 @@ def metadata_generator(index_filelist, xy_filelist, metadata_keylist,
         else:
             if residual:
                 yield df_metadata_buff
-

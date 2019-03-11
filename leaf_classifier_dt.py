@@ -6,6 +6,7 @@ from network_models import leaf_classification_half, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
 from keras.optimizers import Adadelta
 from keras.losses import categorical_crossentropy
+from pickle import dump
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
@@ -47,7 +48,7 @@ fname_train = [os.path.join(TRAIN_VAL_TEST_DIR, "Xy_train_dist.npz")]
 fname_val = [os.path.join(TRAIN_VAL_TEST_DIR, "Xy_val_dist.npz")]
 
 steps_per_epoch, n_events = get_n_iterations(fname_train, batch_size=BATCH_SIZE)
-print("training steps per epoc:{}, number of events:{}".format(steps_per_epoch, n_events))
+print("training steps per epoch:{}, number of events:{}".format(steps_per_epoch, n_events))
 
 validation_steps, n_evts_val = get_n_iterations(fname_val, batch_size=BATCH_SIZE)
 print("validation steps per epoch:{}, number of events:{}".format(validation_steps, n_evts_val))

@@ -15,9 +15,10 @@ from keras.models import Model
 from keras.losses import categorical_crossentropy, mse
 from keras.optimizers import Adadelta
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-try: #old Keras
+
+try:  # old Keras
     from keras.applications.resnet50 import conv_block, identity_block
-except ImportError: # new Keras
+except ImportError:  # new Keras
     from keras_applications.resnet50 import conv_block, identity_block
 
 from keras import backend as K
@@ -198,10 +199,11 @@ def _vgg_conv_block(input_layer, conv_layer=Conv2D,
     x = Flatten(name='{}_flatten_1'.format(prefix))(x)
     return x
 
+
 def _vgg_conv_block_half(input_layer, conv_layer=Conv2D,
-                    pooling_layer=AveragePooling2D,
-                    kernel_size=(12, 12), pooling_size=(6, 6),
-                    conv_layer_activation='relu'):
+                         pooling_layer=AveragePooling2D,
+                         kernel_size=(12, 12), pooling_size=(6, 6),
+                         conv_layer_activation='relu'):
     """
     VGG-like highly customisable convolutional network
     Parameters
@@ -250,16 +252,12 @@ def _vgg_conv_block_half(input_layer, conv_layer=Conv2D,
     if stack_activation_layer:
         x = conv_layer_activation()(x)
 
-
-
     x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
                       padding='same', name='{}_block1_pool'.format(prefix))(x)
 
     # Block 2
     x = conv_layer(64, kernel_size=kernel_size, activation=conv_activation_function,
                    padding='same', name='{}_block2_conv1'.format(prefix))(x)
-
-
 
     if stack_activation_layer:
         x = conv_layer_activation()(x)
@@ -293,15 +291,16 @@ def _tz_topology(zt_layer, conv_layer, kernel_size, pooling_layer, pooling_size,
 
 
 def _tz_topology_half(zt_layer, conv_layer, kernel_size, pooling_layer, pooling_size,
-                 dense_layer_activation='relu', conv_layer_activation='relu'):
+                      dense_layer_activation='relu', conv_layer_activation='relu'):
     """utility function to build tz-convnet network topology"""
     zt_branch = _vgg_conv_block_half(input_layer=zt_layer,
-                                conv_layer=conv_layer, kernel_size=kernel_size,
-                                conv_layer_activation=conv_layer_activation,
-                                pooling_layer=pooling_layer, pooling_size=pooling_size, )
-    x = Dense(512, activation=dense_layer_activation, name='fc-1')(zt_branch)
-    x = Dense(512, activation=dense_layer_activation, name='fc-2')(x)
+                                     conv_layer=conv_layer, kernel_size=kernel_size,
+                                     conv_layer_activation=conv_layer_activation,
+                                     pooling_layer=pooling_layer, pooling_size=pooling_size, )
+    x = Dense(64, activation=dense_layer_activation, name='fc-1')(zt_branch)
+    x = Dense(32, activation=dense_layer_activation, name='fc-2')(x)
     return x
+
 
 def TZ_updown_classification(num_classes, optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,
@@ -472,7 +471,7 @@ def distance_loss(y_true, y_pred):
 
 def sum_of_square_f(tensors):
     tx, ty, tz = tensors
-    return K.square(tx)+K.square(ty)+K.square(tz)
+    return K.square(tx) + K.square(ty) + K.square(tz)
 
 
 def DirectionNet(optimizer=DEFAULT_OPT, loss_weights=(1, 1, 1, 1, 1)):
@@ -502,6 +501,7 @@ def DirectionNet(optimizer=DEFAULT_OPT, loss_weights=(1, 1, 1, 1, 1)):
 def DirectionNetShared(optimizer=DEFAULT_OPT, loss_weights=(1, 1, 1, 1, 1)):
     """
     """
+
     def build_shared_layers(kernel_size=(12, 12), activation_fn='tanh', pool_size=(6, 6)):
         """"""
         # Block 1
@@ -588,7 +588,6 @@ def DirectionNetShared(optimizer=DEFAULT_OPT, loss_weights=(1, 1, 1, 1, 1)):
                           loss=['mse', 'mse', 'mse', 'cosine_proximity', 'mse'],
                           loss_weights=list(loss_weights))
     return direction_net
-
 
 
 # def TZXY_regression_energy_old(optimizer=DEFAULT_OPT):
@@ -1026,8 +1025,8 @@ def TZXY_numu_nue_classification(num_classes, optimizer=DEFAULT_OPT):
 
 
 def leaf_classification(num_classes, optimizer=DEFAULT_OPT,
-                             conv_layer=Conv2D, pooling_layer=AveragePooling2D,
-                             kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
+                        conv_layer=Conv2D, pooling_layer=AveragePooling2D,
+                        kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
     """VGG inspired Convolutional Networks
     Parameters
     ----------
@@ -1096,6 +1095,7 @@ def leaf_classification_half(num_classes, optimizer=DEFAULT_OPT,
         model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
     return model
 
+
 def leaf_position_regression(optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,
                              kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
@@ -1121,18 +1121,18 @@ def leaf_position_regression(optimizer=DEFAULT_OPT,
     input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
     x = _tz_topology_half(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
 
-    x = conv_layer(32, kernel_size=kernel_size, activation='relu', name ='conv1')(input_layer)
-    x = conv_layer(64, kernel_size=kernel_size, activation='relu', name ='conv2')(x)
+    x = conv_layer(32, kernel_size=kernel_size, activation='relu', name='conv1')(input_layer)
+    x = conv_layer(64, kernel_size=kernel_size, activation='relu', name='conv2')(x)
     x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
                       padding='same', name='pool-1')(x)
-    x = conv_layer(128, kernel_size=kernel_size, activation='relu', name ='conv3')(x)
-    x = conv_layer(128, kernel_size=kernel_size, activation='relu', name ='conv4')(x)
+    x = conv_layer(128, kernel_size=kernel_size, activation='relu', name='conv3')(x)
+    x = conv_layer(128, kernel_size=kernel_size, activation='relu', name='conv4')(x)
     x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
                       padding='same', name='pool-2')(x)
     x = Flatten(name='flatten')(x)
     x = Dense(128, activation='relu', name='fc-1')(x)
     x = Dense(64, activation='relu', name='fc-2')(x)
-    x = Dense(32, activation='relu', name = 'fc-3')(x)
+    x = Dense(32, activation='relu', name='fc-3')(x)
     # prediction layer
     predictions = Dense(1, activation='linear', name='prediction')(x)
 
@@ -1142,6 +1142,7 @@ def leaf_position_regression(optimizer=DEFAULT_OPT,
     if compile_model:
         model.compile(loss=mse, optimizer=optimizer)
     return model
+
 
 def train_neural_network(network_model, training_generator, steps_per_epoch,
                          validation_generator=None, validation_steps=None,
@@ -1195,9 +1196,9 @@ def train_neural_network(network_model, training_generator, steps_per_epoch,
 
     checkpoint_fname = p.join(checkpoint_folder_path, "{}_{}_{}_{}.hdf5".format(network_model.name,
                                                                                 batch_size, epochs, log_suffix))
-    default_callbacks = [ModelCheckpoint(checkpoint_fname, save_best_only=save_best_only),]
+    default_callbacks = [ModelCheckpoint(checkpoint_fname, save_best_only=save_best_only), ]
     if not no_stopping:
-        default_callbacks.append(EarlyStopping(monitor="val_loss", patience=5),)
+        default_callbacks.append(EarlyStopping(monitor="val_loss", patience=5), )
 
     if callbacks is None:
         callbacks = default_callbacks
@@ -1277,5 +1278,3 @@ def inference_step(network_model, test_data_generator, predict_steps,
     if categorical:
         return metadata, y_true, y_pred, Y_probs
     return metadata, y_true, y_pred
-
-

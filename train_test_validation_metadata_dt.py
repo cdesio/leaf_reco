@@ -1,7 +1,3 @@
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
-ROW_SLICE = slice(0, 1400)
-COL_SLICE = slice(1000, None)
 
 import os
 import numpy as np
@@ -11,6 +7,11 @@ import pandas as pd
 import re
 
 regex = re.compile(r'\d+')
+
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+ROW_SLICE = slice(0, 1400)
+COL_SLICE = slice(1000, None)
 
 DATA_DIR_IH = "/data/uob"
 DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
@@ -87,9 +88,7 @@ print(
     "Train dataset:{} files, Validation dataset:{}, Test dataset:{} files".format(len(train_indices), len(val_indices),
                                                                                   len(test_indices)))
 
-df_orig_train = df_orig.iloc[train_indices]
-df_orig_test = df_orig.iloc[test_indices]
-df_orig_val = df_orig.iloc[val_indices]
+
 
 df_mask_train = df_mask.iloc[train_indices]
 df_mask_test = df_mask.iloc[test_indices]

@@ -1121,8 +1121,7 @@ def leaf_position_classification(num_classes, optimizer=Adadelta,
     x = _tz_topology_half(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
 
     x = conv_layer(32, kernel_size=kernel_size, activation='relu', name='conv1')(input_layer)
-    x = conv_layer(64, kernel_size=kernel_size, activation='relu', name='conv2')(x)
-    x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
+    x = pooling_layer(pool_size=pooling_size, strides=(3, 3),
                       padding='same', name='pool-1')(x)
 
     x = Flatten(name='flatten')(x)

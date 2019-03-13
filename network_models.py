@@ -1125,7 +1125,7 @@ def leaf_position_classification(num_classes, optimizer=Adadelta,
                       padding='same', name='pool-1')(x)
 
     x = Flatten(name='flatten')(x)
-    x = Dense(64, activation='relu', name='fc-1')(x)
+#    x = Dense(64, activation='relu', name='fc-1')(x)
     x = Dense(32, activation='relu', name='fc-2')(x)
     x = Dense(32, activation='relu', name='fc-3')(x)
     x = Dense(16, activation='relu', name='fc-4')(x)

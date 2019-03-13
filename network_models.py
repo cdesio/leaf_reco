@@ -1095,6 +1095,53 @@ def leaf_classification_half(num_classes, optimizer=DEFAULT_OPT,
         model.compile(loss=categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
     return model
 
+def leaf_position_classification(num_classes, optimizer=Adadelta,
+                             conv_layer=Conv2D, pooling_layer=AveragePooling2D,
+                             kernel_size=(3, 3), pooling_size=(3, 3), compile_model=False):
+    """VGG inspired Convolutional Networks
+    Parameters
+    ----------
+    num_classes : int
+        Number of classes to predict
+    optimizer : keras.optimizers.Optimizer (default: Adadelta() - with def params)
+        Instance of Keras optimizer to attach to the resulting network
+    Other Parameters
+    ----------------
+    These parameters are passed to `_vgg_conv_block` function
+    conv_layer: keras.layers.convolutional._Conv (default: Conv2D)
+        The convolutional layer to plug in each block
+    pooling_layer: keras.layers.pooling._Pooling (default: AveragePooling2D)
+        The pooling layer to plug in each block
+    kernel_size: tuple (default: (12, 12))
+        The size of each convolutional kernel
+    pooling_size: tuple (default: (6, 6))
+        The size of each pooling mask
+    """
+    input_layer = Input(shape=LEAF_SHAPE, name='leaf_input')
+    x = _tz_topology_half(input_layer, conv_layer, kernel_size, pooling_layer, pooling_size)
+
+    x = conv_layer(32, kernel_size=kernel_size, activation='relu', name='conv1')(input_layer)
+    x = conv_layer(64, kernel_size=kernel_size, activation='relu', name='conv2')(x)
+    x = pooling_layer(pool_size=pooling_size, strides=(2, 2),
+                      padding='same', name='pool-1')(x)
+
+    x = Flatten(name='flatten')(x)
+    x = Dense(256, activation='relu', name='fc-1')(x)
+    x = Dense(128, activation='relu', name='fc-2')(x)
+    x = Dense(64, activation='relu', name='fc-3')(x)
+    x = Dense(32, activation='relu', name='fc-4')(x)
+    x = Dense(16, activation='relu', name='fc-5')(x)
+    x = Dense(8, activation='relu', name='fc-6')(x)
+    # prediction layer
+    predictions = Dense(num_classes, activation='softmax', name='prediction')(x)
+
+    # Model
+    model = Model(inputs=input_layer, outputs=predictions, name='leaf_position_regression')
+
+    if compile_model:
+        model.compile(loss=mse, optimizer=optimizer)
+    return model
+
 
 def leaf_position_regression(optimizer=DEFAULT_OPT,
                              conv_layer=Conv2D, pooling_layer=AveragePooling2D,

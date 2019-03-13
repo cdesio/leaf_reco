@@ -4,7 +4,7 @@ import tensorflow as tf
 from sklearn.preprocessing import OneHotEncoder
 from network_models import leaf_classification_half, train_neural_network
 from data_loaders_km3 import data_generator, get_n_iterations
-from keras.optimizers import Adadelta
+from keras.optimizers import Adadelta, sgd, Adam
 from keras.losses import categorical_crossentropy
 from pickle import dump
 
@@ -21,10 +21,10 @@ TRAIN_VAL_TEST_DIR = os.path.join(data_folder, "train_validation_test")
 
 N_FILES = 1
 BATCH_SIZE = 2
-N_EPOCHS = 10
+N_EPOCHS = 30
 
 CHECKPOINT_FOLDER_PATH = p.join(data_folder, 'trained_models')
-TASK_NAME = 'CNN_leaf_classifier_half_training_{}epochs'.format(N_EPOCHS)
+TASK_NAME = 'CNN_leaf_classifier_half_training_Adam_{}epochs'.format(N_EPOCHS)
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not os.path.exists(TASK_FOLDER_PATH):
@@ -33,7 +33,7 @@ if not os.path.exists(TASK_FOLDER_PATH):
 tf.keras.backend.clear_session()
 
 model = leaf_classification_half(num_classes=4, kernel_size=3, pooling_size=3)
-model.compile(loss=categorical_crossentropy, optimizer=Adadelta(), metrics=['accuracy'])
+model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 model.summary()
 
 TRAINING_WEIGHTS_FILEPATH = os.path.join(TASK_FOLDER_PATH,

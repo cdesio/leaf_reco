@@ -31,6 +31,7 @@ print("Loading data filenames")
 folder_2mm = os.path.join(source_data_folder, "10x10_2mm_8bit")
 folder_4mm = os.path.join(source_data_folder, "10x10_4mm_v2 copy")
 folder_10mm = os.path.join(source_data_folder, "10x10_10mm_v2_8bit")
+folder_15mm = os.path.join(source_data_folder, "10x10_15mm_v2_8bit")
 folder_25mm = os.path.join(source_data_folder, "10x10_25mm_8bit")
 
 
@@ -49,15 +50,15 @@ def get_filename_and_data(folder):
 fnames_orig_2mm, fnames_mask_2mm = get_filename_and_data(folder_2mm)
 fnames_orig_4mm, fnames_mask_4mm = get_filename_and_data(folder_4mm)
 fnames_orig_10mm, fnames_mask_10mm = get_filename_and_data(folder_10mm)
-# fnames_mask_10mm['dist']=10
+fnames_orig_15mm, fnames_mask_15mm = get_filename_and_data(folder_15mm)
 fnames_orig_25mm, fnames_mask_25mm = get_filename_and_data(folder_25mm)
 
 print("check number of files per type")
-print(len(fnames_mask_2mm), len(fnames_mask_4mm), len(fnames_mask_10mm), len(fnames_mask_25mm))
-print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm), len(fnames_orig_25mm))
+print(len(fnames_mask_2mm), len(fnames_mask_4mm), len(fnames_mask_10mm), len(fnames_mask_15mm), len(fnames_mask_25mm))
+print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm), len(fnames_orig_15mm), len(fnames_orig_25mm))
 
-df_mask = pd.concat([fnames_mask_2mm, fnames_mask_4mm, fnames_mask_10mm, fnames_mask_25mm], ignore_index=True)
-df_orig = pd.concat([fnames_orig_2mm, fnames_orig_4mm, fnames_orig_10mm, fnames_orig_25mm], ignore_index=True)
+df_mask = pd.concat([fnames_mask_2mm, fnames_mask_4mm, fnames_mask_10mm, fnames_mask_15mm, fnames_mask_25mm], ignore_index=True)
+df_orig = pd.concat([fnames_orig_2mm, fnames_orig_4mm, fnames_orig_10mm, fnames_orig_15mm, fnames_orig_25mm], ignore_index=True)
 print("check total number of files")
 print("original images:{}, mask files:{}".format(len(df_orig), len(df_mask)))
 
@@ -122,9 +123,9 @@ y_test = y_test[..., np.newaxis]
 X_val = X_val[..., np.newaxis]
 y_val = y_val[..., np.newaxis]
 
-train_out_str = 'Xy_train_strat_dist.npz'
-val_out_str = 'Xy_val_strat_dist.npz'
-test_out_str = 'Xy_test_strat_dist.npz'
+train_out_str = 'Xy_train_strat_dist_5classes.npz'
+val_out_str = 'Xy_val_strat_dist_5classes.npz'
+test_out_str = 'Xy_test_strat_dist_5classes.npz'
 print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
                                                                                                    train_out_str),
                                                                                       os.path.join(TRAIN_VAL_TEST_DIR,

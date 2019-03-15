@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 from skimage.segmentation import (morphological_chan_vese,
                                   checkerboard_level_set)
 import sys 
-
+import os
 f_no = sys.argv[1]
-img_path ="/data/10x10_4mm_v2/File_{}.tiff".format(f_no)
+
+data_dir = '/storage/yw18581/data'
+img_path =os.path.join(data_dir, '10x10_15mm_v2_8bit', 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -51,6 +53,4 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig("/data/10x10_4mm_v2/File_{}_4mm_mask_{}.tiff".format(f_no,leaf_position))
-plt.cla()
-plt.close()
+plt.savefig(os.path.join(data_dir, "10x10_15mm_v2_8bit",'File_{}_15mm_mask_{}.tiff'.format(f_no,leaf_position)))

@@ -56,7 +56,6 @@ X_train_RF = np.vstack((X_train_RF, X_val_RF))
 print(X_train_RF.shape)
 y_train = np.hstack((y_train,y_val))
 
-y_train.shape
 print(X_train_RF.shape, y_train.shape)
 
 from sklearn.model_selection import StratifiedKFold
@@ -68,11 +67,11 @@ skf.get_n_splits(X, y)
 
 from sklearn.model_selection import RandomizedSearchCV
 # Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start = 10, stop = 1000, num = 10)]
+n_estimators = [int(x) for x in np.linspace(start = 10, stop = 50, num = 5)]
 # Number of features to consider at every split
 max_features = ['auto', 'sqrt']
 # Maximum number of levels in tree
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth = [int(x) for x in np.linspace(10, 50, num = 11)]
 max_depth.append(None)
 # Minimum number of samples required to split a node
 min_samples_split = [2, 5, 10]

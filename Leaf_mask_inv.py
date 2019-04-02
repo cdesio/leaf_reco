@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib; matplotlib.use('agg')
 from matplotlib.image import imread
 import matplotlib.pyplot as plt
 from skimage.segmentation import (morphological_chan_vese,
@@ -8,7 +9,7 @@ import os
 f_no = sys.argv[1]
 
 data_dir = '/storage/yw18581/data'
-img_path =os.path.join(data_dir, '10x10_15mm_v2_8bit', 'File_{}.tiff'.format(f_no))
+img_path =os.path.join(data_dir, '10x10_1mm_v1', 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -53,4 +54,4 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(data_dir, "10x10_15mm_v2_8bit",'File_{}_15mm_mask_{}.tiff'.format(f_no,leaf_position)))
+plt.savefig(os.path.join(data_dir, "10x10_1mm_v1",'File_{}_1mm_mask_{}.tiff'.format(f_no,leaf_position)))

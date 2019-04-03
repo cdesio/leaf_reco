@@ -9,7 +9,7 @@ import os
 f_no = sys.argv[1]
 
 data_dir = '/storage/yw18581/data'
-img_path =os.path.join(data_dir, '10x10_3mm_v1', 'File_{}.tiff'.format(f_no))
+img_path =os.path.join(data_dir, '10x10_20mm_v1', 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -54,5 +54,5 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(data_dir, "10x10_3mm_v1",'File_{}_3mm_mask_{}.tiff'.format(f_no,leaf_position)))
+plt.savefig(os.path.join(data_dir, "10x10_20mm_v1",'File_{}_20mm_mask_{}.tiff'.format(f_no,leaf_position)))
 plt.close('all')

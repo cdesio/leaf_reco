@@ -9,7 +9,7 @@ import re
 regex = re.compile(r'\d+')
 
 if not len(sys.argv)==2:
-    raise Exception("Please insert folder name and out_str"
+    raise Exception("Please insert folder name and out_str")
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"

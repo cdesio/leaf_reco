@@ -11,6 +11,8 @@ import pandas as pd
 import re
 regex = re.compile(r'\d+')
 
+if not len(sys.argv)==2:
+    raise Exception("Please insert folder name and out_str"
 
 DATA_DIR_IH="/data/uob"
 DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
@@ -28,34 +30,35 @@ if not os.path.exists(TRAIN_VAL_TEST_DIR):
 
 ## Loading data
 print("Loading data filenames")
+folder = os.path.join(source_data_folder, sys.argv[1])
 
-folder_15mm = os.path.join(source_data_folder, "10x10_15mm_v2_8bit")
+#folder_15mm = os.path.join(source_data_folder, "10x10_15mm_v2_8bit")
 
 from train_test_validation_metadata_dt import get_filename_and_data
 
 
-df_orig, df_mask = get_filename_and_data(folder_15mm)
+df_orig, df_mask = get_filename_and_data(folder)
 
 print("check number of files") 
 print(len(df_orig), len(df_mask))
 
-X_15mm = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in range(len(df_orig))])
+X = np.asarray([imread(df_orig['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in range(len(df_orig))])
 
-y_15mm = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in range(len(df_mask))])
+y = np.asarray([imread(df_mask['path'].iloc[i])[ROW_SLICE, COL_SLICE] for i in range(len(df_mask))])
 
 metadata = np.asarray(df_orig['dist'], dtype=int)
 
 
-print(X_15mm.shape, y_15mm.shape, metadata.shape)
+print(X.shape, y.shape, metadata.shape)
 
 print("Add new dimension - for channels last data format in keras")
-X_15mm = X_15mm[..., np.newaxis]
-y_15mm = y_15mm[..., np.newaxis]
+X = X[..., np.newaxis]
+y = y[..., np.newaxis]
 
-out_str = 'Xy_15mm.npz'
+out_str = sys.argv[2]
 print("Save data to output file in {}".format(os.path.join(TRAIN_VAL_TEST_DIR, out_str)))
 
 np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR, out_str),
-                        x=X_15mm, y=y_15mm, dist=metadata)
+                        x=X, y=y, dist=metadata)
 
   

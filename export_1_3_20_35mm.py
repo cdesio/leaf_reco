@@ -4,10 +4,7 @@ ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
 
 import os
-import numpy as np
-from matplotlib.image import imread
-from sklearn.model_selection import train_test_split
-import pandas as pd
+import sys
 import re
 regex = re.compile(r'\d+')
 

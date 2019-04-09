@@ -91,7 +91,7 @@ if __name__ == '__main__':
     #      len(fnames_mask_20mm), len(fnames_mask_30mm))
     #print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm),
     #      len(fnames_orig_20mm), len(fnames_orig_30mm))
-
+    print(folders)
     df_orig = pd.concat([get_filename_and_data_image(os.path.join(source_data_folder, folder)) for folder in folders])
     df_mask = pd.concat([get_filename_and_data_mask(os.path.join(source_data_folder, folder)) for folder in folders])
 

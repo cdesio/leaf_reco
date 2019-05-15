@@ -8,8 +8,8 @@ import sys
 import os
 f_no = sys.argv[1]
 
-data_dir = '/storage/yw18581/data'
-img_path =os.path.join(data_dir, '10x10_30mm_v1', 'File_{}.tiff'.format(f_no))
+data_dir = '/Users/cdesio/UoB/Jordan'
+img_path =os.path.join(data_dir, '10x10_25mm_8bit_copy', 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -41,7 +41,16 @@ if leaf_position>=2300:
     leaf = select_profile(ls_inv[1000:1280])
     leaf_position = np.min(leaf[:,1])
     print("new leaf position: {}".format(leaf_position)) 
-    
+# test1
+#for i, (j, k) in enumerate(leaf):
+#    if k>leaf[i-1][1]+100:
+#        leaf[i][1]=leaf[i-1][1] 
+#test2
+for i, (j, k) in enumerate(leaf):
+    if i >3 and i < len(leaf)-3: 
+        if np.abs(k-leaf[i-1][1])>150:
+            leaf[i][1]=np.mean([leaf[i-3][1], leaf[i+3][1]])
+
 plt.figure(figsize=(2400/96, 2800/96), dpi=96)
 plt.style.use('dark_background')
 plt.axes([0,0,1,1], frameon=False)
@@ -54,5 +63,5 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(data_dir, "10x10_30mm_v1",'File_{}_30mm_mask_{}.tiff'.format(f_no,leaf_position)))
+plt.savefig(os.path.join(data_dir, "10x10_25mm_8bit_copy",'File_{}_25mm_mask_{}.tiff'.format(f_no,leaf_position)))
 plt.close('all')

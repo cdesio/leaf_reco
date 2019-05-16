@@ -50,7 +50,20 @@ for i, (j, k) in enumerate(leaf):
     if i >3 and i < len(leaf)-3: 
         if np.abs(k-leaf[i-1][1])>150:
             leaf[i][1]=np.mean([leaf[i-3][1], leaf[i+3][1]])
+#test3
 
+index = []
+for i, (j, k) in enumerate(leaf):
+    if i< len(leaf)-1:
+        if np.abs(k-leaf[i+1][1])>200 or np.abs(k-leaf[i+1][1])==0 :
+            if leaf[i][1]>= leaf[i+1][1]:
+                index.append(i)
+            elif leaf[i+1][1]> leaf[i][1]:
+                index.append(i+1)
+
+leaf = np.delete(leaf, index, axis=0)
+
+#end test 3
 plt.figure(figsize=(2400/96, 2800/96), dpi=96)
 plt.style.use('dark_background')
 plt.axes([0,0,1,1], frameon=False)

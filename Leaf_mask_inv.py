@@ -6,10 +6,15 @@ from skimage.segmentation import (morphological_chan_vese,
                                   checkerboard_level_set)
 import sys 
 import os
-f_no = sys.argv[1]
+import re
 
-data_dir = '/Users/cdesio/UoB/Jordan'
-img_path =os.path.join(data_dir, '10x10_25mm_8bit_copy', 'File_{}.tiff'.format(f_no))
+regex = re.compile(r'\d+')
+in_folder = sys.argv[1]
+f_no = sys.argv[2]
+dist = sys.argv[3]
+out_folder = sys.argv[4]
+#data_dir = '/Users/cdesio/UoB/Jordan'
+img_path =os.path.join(in_folder, 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -83,5 +88,5 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(data_dir, "10x10_25mm_8bit_copy",'File_{}_25mm_mask_{}.tiff'.format(f_no,leaf_position)))
+plt.savefig(os.path.join(out_folder,'File_{}_{}mm_mask_{}.tiff'.format(f_no, dist, leaf_position)))
 plt.close('all')

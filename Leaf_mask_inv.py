@@ -46,12 +46,11 @@ if leaf_position>=2300:
 #    if k>leaf[i-1][1]+100:
 #        leaf[i][1]=leaf[i-1][1] 
 #test2
-for i, (j, k) in enumerate(leaf):
-    if i >3 and i < len(leaf)-3: 
-        if np.abs(k-leaf[i-1][1])>150:
-            leaf[i][1]=np.mean([leaf[i-3][1], leaf[i+3][1]])
+#for i, (j, k) in enumerate(leaf):
+#    if i >3 and i < len(leaf)-3: 
+#        if np.abs(k-leaf[i-1][1])>150:
+#            leaf[i][1]=np.mean([leaf[i-3][1], leaf[i+3][1]])
 #test3
-
 index = []
 for i, (j, k) in enumerate(leaf):
     if i< len(leaf)-1:
@@ -60,8 +59,16 @@ for i, (j, k) in enumerate(leaf):
                 index.append(i)
             elif leaf[i+1][1]> leaf[i][1]:
                 index.append(i+1)
-
 leaf = np.delete(leaf, index, axis=0)
+
+print("check the borders")
+if np.abs(leaf[-1][1]-leaf[-2][1]>=200):
+    print("found it")
+    if leaf[-1][1]>leaf[-2][1]:
+        print("and change it")
+        leaf[-1][1]=leaf[-2][1]
+        print(leaf[-1][1])
+print("done")
 
 #end test 3
 plt.figure(figsize=(2400/96, 2800/96), dpi=96)

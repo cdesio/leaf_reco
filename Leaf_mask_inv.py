@@ -6,10 +6,15 @@ from skimage.segmentation import (morphological_chan_vese,
                                   checkerboard_level_set)
 import sys 
 import os
-f_no = sys.argv[1]
+import re
 
-data_dir = '/storage/yw18581/data'
-img_path =os.path.join(data_dir, '10x10_30mm_v1', 'File_{}.tiff'.format(f_no))
+regex = re.compile(r'\d+')
+in_folder = sys.argv[1]
+f_no = sys.argv[2]
+dist = sys.argv[3]
+out_folder = sys.argv[4]
+#data_dir = '/Users/cdesio/UoB/Jordan'
+img_path =os.path.join(in_folder, 'File_{}.tiff'.format(f_no))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -41,7 +46,36 @@ if leaf_position>=2300:
     leaf = select_profile(ls_inv[1000:1280])
     leaf_position = np.min(leaf[:,1])
     print("new leaf position: {}".format(leaf_position)) 
-    
+# test1
+#for i, (j, k) in enumerate(leaf):
+#    if k>leaf[i-1][1]+100:
+#        leaf[i][1]=leaf[i-1][1] 
+#test2
+#for i, (j, k) in enumerate(leaf):
+#    if i >3 and i < len(leaf)-3: 
+#        if np.abs(k-leaf[i-1][1])>150:
+#            leaf[i][1]=np.mean([leaf[i-3][1], leaf[i+3][1]])
+#test3
+index = []
+for i, (j, k) in enumerate(leaf):
+    if i< len(leaf)-1:
+        if np.abs(k-leaf[i+1][1])>200 or np.abs(k-leaf[i+1][1])==0 :
+            if leaf[i][1]>= leaf[i+1][1]:
+                index.append(i)
+            elif leaf[i+1][1]> leaf[i][1]:
+                index.append(i+1)
+leaf = np.delete(leaf, index, axis=0)
+
+print("check the borders")
+if np.abs(leaf[-1][1]-leaf[-2][1]>=200):
+    print("found it")
+    if leaf[-1][1]>leaf[-2][1]:
+        print("and change it")
+        leaf[-1][1]=leaf[-2][1]
+        print(leaf[-1][1])
+print("done")
+
+#end test 3
 plt.figure(figsize=(2400/96, 2800/96), dpi=96)
 plt.style.use('dark_background')
 plt.axes([0,0,1,1], frameon=False)
@@ -54,5 +88,5 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(data_dir, "10x10_30mm_v1",'File_{}_30mm_mask_{}.tiff'.format(f_no,leaf_position)))
+plt.savefig(os.path.join(out_folder,'File_{}_{}mm_mask_{}.tiff'.format(f_no, dist, leaf_position)))
 plt.close('all')

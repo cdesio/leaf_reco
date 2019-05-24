@@ -56,9 +56,9 @@ export_indices(distances)
 
 def load_indices(d, key):
     indices = np.load(os.path.join(TASK_FOLDER_PATH,"train_val_test_indices_{}mm.npz".format(d)))
-    if key=="train"
+    if key=="train":
         return indices["train"]
-    elif key=="val"
+    elif key=="val":
         return indices["val"]
 
 fnames_list=[os.path.join(clean_dir, "Xy_{}mm_clean_300.npz".format(d)) for d in distances]

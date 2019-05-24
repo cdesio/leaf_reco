@@ -20,13 +20,13 @@ tf.keras.backend.clear_session()
 print("Loading data")
 
 data_dir = DATA_DIR_DEEPTHOUGHT
-clean_dir = os.path.join(DATA_DIR_DEEPTHOUGHT,"clean_300")
+clean_dir = os.path.join(DATA_DIR_DEEPTHOUGHT,"train_validation_test","clean_300")
 
 CHECKPOINT_FOLDER_PATH = os.path.join(data_dir, 'trained_models')
 TASK_NAME = 'UNet_retrain_new_data_clean_300'
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
-if not p.exists(TASK_FOLDER_PATH):
+if not os.path.exists(TASK_FOLDER_PATH):
     os.makedirs(TASK_FOLDER_PATH)
 
 
@@ -34,17 +34,17 @@ BATCH_SIZE=2
 EPOCHS=1500
 
 def import_and_split(dist):
-    with open(os.path.join(clean_dir, "Xy_{}mm_clean_300.npz".format(dist))) as Xy:
-        X = Xy["x"]
-        y = Xy["y"]
-        _, test_indices, train_indices, val_indices = train_validation_test(X)
-        Xy.close()
+    Xy = np.load(os.path.join(clean_dir, "Xy_{}mm_clean_300.npz".format(dist)))
+    X = Xy["x"]
+    y = Xy["y"]
+    _, test_indices, train_indices, val_indices = train_validation_test(X)
+    Xy.close()
     return X, y, train_indices, val_indices, test_indices
 
 def export_indices(dist_list):
     for d in dist_list:
         print("loading {}mm".format(d))
-        X_d, y_d, train_indices_d, val_indices_d, test_indices_d = import_and_split(d)
+        _, _, train_indices_d, val_indices_d, test_indices_d = import_and_split(d)
         print("saving indices for {}mm".format(d))
         np.savez_compressed(os.path.join(TASK_FOLDER_PATH, "train_val_test_indices_{}mm.npz".format(d)),
                             train=train_indices_d, val = val_indices_d, test = test_indices_d)

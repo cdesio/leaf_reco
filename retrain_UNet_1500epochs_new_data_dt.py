@@ -22,9 +22,9 @@ print("Loading data")
 data_dir = DATA_DIR_DEEPTHOUGHT
 clean_dir = os.path.join(DATA_DIR_DEEPTHOUGHT,"clean_300")
 
-CHECKPOINT_FOLDER_PATH = p.join(data_dir, 'trained_models')
+CHECKPOINT_FOLDER_PATH = os.path.join(data_dir, 'trained_models')
 TASK_NAME = 'UNet_retrain_new_data_clean_300'
-TASK_FOLDER_PATH = p.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
+TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not p.exists(TASK_FOLDER_PATH):
     os.makedirs(TASK_FOLDER_PATH)

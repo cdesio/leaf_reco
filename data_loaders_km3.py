@@ -255,8 +255,9 @@ def get_n_iterations_index(fnames_list, index_list, target_key="y", batch_size=6
     for i, fil in enumerate(fnames_list):
         yf = np.load(fil)[target_key]
         print(fil)
-        print(yf.shape)
+
         yf_idx = yf[index_list[i]]
+        print(yf_idx.shape)
         tot_events += yf_idx.shape[0]
     iterations = int(ceil(tot_events / float(batch_size)))
     return iterations, tot_events

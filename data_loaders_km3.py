@@ -108,8 +108,8 @@ def data_generator(fnames, batch_size=64, data_key='x', label_key='y', fdata=lam
 
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-def data_generator_index_list(fnames, batch_size=64, data_key='x', label_key='y', fdata=lambda X: X,
-                   ftarget=lambda y: to_categorical(y), index_list):
+def data_generator_index_list(fnames, index_list, batch_size=64, data_key='x', label_key='y', fdata=lambda X: X,
+                   ftarget=lambda y: to_categorical(y)):
     """
     Function to generate generator, according to the batch size(default=64)
 

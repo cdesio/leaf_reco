@@ -10,7 +10,7 @@ import os
 import numpy as np
 import keras
 from UNet import get_unet
-from data_loaders_km3 import data_generator_index_list, get_n_iterations
+from data_loaders_km3 import data_generator_index_list, get_n_iterations_index
 from train_test_validation_metadata_arguments_dt import train_validation_test
 from network_models import train_neural_network
 import tensorflow as tf 
@@ -65,8 +65,8 @@ fnames_list=[os.path.join(clean_dir, "Xy_{}mm_clean_300.npz".format(d)) for d in
 index_list_train = [load_indices(d, "train") for d in distances]
 index_list_val = [load_indices(d, "val") for d in distances]
 
-train_generator = data_generator_index_list(fnames_list, batch_size=BATCH_SIZE, ftarget = lambda y: y, index_list=index_list_train)
-validation_generator = data_generator_index_list(fnames_list, batch_size=BATCH_SIZE, ftarget=lambda y: y, index_list= index_list_val)
+train_generator = data_generator_index_list(fnames_list,index_list=index_list_train,  batch_size=BATCH_SIZE, ftarget = lambda y: y, )
+validation_generator = data_generator_index_list(fnames_list,index_list= index_list_val,  batch_size=BATCH_SIZE, ftarget=lambda y: y, )
 
 steps_per_epoch, n_events = get_n_iterations_index(fnames_list, index_list_train,  batch_size=BATCH_SIZE)
 validation_steps, n_events = get_n_iterations_index(fnames_list, index_list_val,  batch_size=BATCH_SIZE)

@@ -108,6 +108,97 @@ def data_generator(fnames, batch_size=64, data_key='x', label_key='y', fdata=lam
 
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+def data_generator_index_list(fnames, batch_size=64, data_key='x', label_key='y', fdata=lambda X: X,
+                   ftarget=lambda y: to_categorical(y), index_list):
+    """
+    Function to generate generator, according to the batch size(default=64)
+
+    Parameters
+    ----------
+    fnames : list
+          list of input filenames
+    batch_size : np.int (default: 64)
+          value of the batch size
+    fdata
+    ftarget
+    Returns
+    -------
+    Examples
+    --------
+    Example usage of a classification problem generating categorical
+    labels from cosz values (float), and TZ features from (batch, T,X,Y,Z) input tensor
+    >>> def process_cosz(y):
+    ...     y[y>0] = 1
+    ...     y[y<=0] = 0
+    ...     return to_categorical(y)
+    >>> def get_TZ_only(X):
+    ...     TZ = np.sum(X, axis=(2, 3))
+    ...     TZ = TZ[:, np.newaxis, ...]
+    ...     return TZ
+    >>> data_generator(fnames, batch_size=64, fdata=get_TZ_only, ftarget=process_cosz)
+    Example usage for regression problem with no change to labels
+    >>> data_generator(fnames, batch_size=64, ftarget=lambda y: y)
+    Example usage for generating multiple batches of data for multi-input networks
+    >>> from keras import backend as K
+    >>> def get_TZXY_data(X):
+    ...     TZ = np.sum(X, axis=(2, 3))
+    ...     XY = np.sum(X, axis=(1, 4))
+    ...     if K.image_data_format() == "channels_first":
+    ...         TZ = TZ[:, np.newaxis, ...]
+    ...         XY = XY[:, np.newaxis, ...]
+    ...     else:
+    ...         TZ = TZ[..., np.newaxis]
+    ...         XY = XY[..., np.newaxis]
+    ...     return [TZ, XY]
+    >>> data_generator(fnames, batch_size=64, fdata=get_TZXY_data)
+    """
+
+    while True:
+        file_idx = 0
+        X_buff = Y_buff = None
+        residual = False
+        while file_idx < len(fnames):
+            fname = fnames[file_idx]
+            Xy = np.load(fname)
+            X, y = Xy[data_key], Xy[label_key]
+
+            X = X[index_list[file_idx]]
+            y = y[index_list[file_idx]]
+            Y = ftarget(y)
+            X = fdata(X)
+
+            idx = 0  # batch current file
+            while idx < Y.shape[0]:
+                if residual:  # i.e. there are samples stored from previous iteration
+                    incr = (batch_size - X_buff[0].shape[0])
+                else:
+                    incr = batch_size
+
+                start, end = idx, idx + incr
+
+                if end > Y.shape[0]:  # current file is completed
+                    if X_buff is None:
+                        X_buff, Y_buff = X[start:], Y[start:]
+                    else:
+                        X_buff = concat((X_buff, X[start:]))
+                        Y_buff = concat((Y_buff, Y[start:]))
+                    residual = True
+                    break
+                X_batch, Y_batch = X[start:end], Y[start:end]
+                if residual:
+                    X_batch = concat((X_buff, X_batch))
+                    Y_batch = concat((Y_buff, Y_batch))
+                else:
+                    X_buff = Y_buff = None
+
+                yield X_batch, Y_batch
+                idx += incr
+                residual = False
+            file_idx += 1
+        else:
+            if residual:
+                yield X_buff, Y_buff
+
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -137,6 +228,36 @@ def get_n_iterations(fnames_list, target_key="y", batch_size=64):
         print(fil)
         print(yf.shape)
         tot_events += yf.shape[0]
+    iterations = int(ceil(tot_events / float(batch_size)))
+    return iterations, tot_events
+
+def get_n_iterations_index(fnames_list, index_list, target_key="y", batch_size=64):
+    """
+    Function to get the number of iterations required to
+    process the total set of samples extracted from the list
+    of data files in input.
+    Parameters
+    ----------
+    fnames_list: list
+        List of data files to read from. Expected file format is Numpy/Compressed
+        as created from `numpy.savez_compressed`.
+    target_key: str (default "y")
+        The key in the file to be used to calculate the number of samples
+    batch_size: int (default 64)
+        The size of the batch that is expected to be used in the training process.
+    Returns
+    -------
+        int, int: total number of iterations and total number of events
+        extracted from list of input files.
+    """
+    tot_events = 0
+    print(fnames_list)
+    for i, fil in enumerate(fnames_list):
+        yf = np.load(fil)[target_key]
+        print(fil)
+        print(yf.shape)
+        yf_idx = yf[index_list[i]]
+        tot_events += yf_idx.shape[0]
     iterations = int(ceil(tot_events / float(batch_size)))
     return iterations, tot_events
 

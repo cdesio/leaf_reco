@@ -15,7 +15,7 @@ from train_test_validation_metadata_arguments_dt import train_validation_test
 from network_models import train_neural_network
 import tensorflow as tf 
 tf.keras.backend.clear_session()
-
+import pickle
 ## Loading data
 print("Loading data")
 
@@ -30,7 +30,7 @@ if not os.path.exists(TASK_FOLDER_PATH):
     os.makedirs(TASK_FOLDER_PATH)
 
 
-BATCH_SIZE=1
+BATCH_SIZE=2
 EPOCHS=1500
 
 def import_and_split(dist):
@@ -73,15 +73,26 @@ steps_per_epoch, n_events = get_n_iterations_index(fnames_list, index_list_train
 validation_steps, n_events = get_n_iterations_index(fnames_list, index_list_val,  batch_size=BATCH_SIZE)
 ##X_train = np.load(os.path.join(data_dir,"Xy_train.npz"))["x"]
 #y_train = np.load(os.path.join(data_dir,"Xy_train.npz"))["y"]
-model = get_unet()
-model.summary()
-print("training model")
-history = train_neural_network(model, train_generator, steps_per_epoch, validation_generator, validation_steps, epochs=EPOCHS, no_stopping=True)
+print("retraining model")
+TRAINING_WEIGHTS_FILEPATH=os.path.join(TASK_FOLDER_PATH, 'retrained_UNet_1500_epochs_clean_300.hdf5')
+model_1500 = get_unet()
+model_1500.load_weights(TRAINING_WEIGHTS_FILEPATH)
+hist_2000 = train_neural_network(model_1500, train_generator, steps_per_epoch, validation_generator, validation_steps, epochs=500)
 #model.load_weights(os.path.join(data_dir,"trained_models/retrained_UNet_500+250+250epochs.hdf5"))
 
 #model.fit(x=X_train, y=y_train, epochs=250, batch_size=1, verbose=1, validation_split=.2)
 print("saving trained model")
-model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_1500_epochs_clean_300_batch1.hdf5"))
+model_1500.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_2000_epochs_clean_300.hdf5"))
+pickle.dump(hist_2000, open(os.path.join(TASK_FOLDER_PATH, "hist_retrained_UNet_2000_epochs_clean_300.pkl"),'wb'))
+print("keep training for 500 more epochs")
+hist_2500 = train_neural_network(model_1500, train_generator, steps_per_epoch, validation_generator, validation_steps, epochs=500)
+model_1500.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_2500_epochs_clean_300.hdf5"))
+pickle.dump(hist_2500, open(os.path.join(TASK_FOLDER_PATH, "hist_retrained_UNet_2500_epochs_clean_300.pkl")),'wb')
+print("keep training for 500 more epochs")
 
+hist_3000 = train_neural_network(model_1500, train_generator, steps_per_epoch, validation_generator, validation_steps, epochs=500)
+model_1500.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_3000_epochs_clean_300.hdf5"))
+pickle.dump(hist_3000, open(os.path.join(TASK_FOLDER_PATH, "hist_retrained_UNet_3000_epochs_clean_300.pkl")),'wb')
+print("done") 
 #model.fit(x=X_train, y=y_train, epochs=250, batch_size=1, verbose=1, validation_split=.2)
 #model.save(os.path.join(data_dir,"trained_models","retrained_UNet_1000+500epochs.hdf5"))

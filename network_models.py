@@ -1253,7 +1253,8 @@ def train_neural_network(network_model, training_generator, steps_per_epoch,
 
     net_history = network_model.fit_generator(training_generator, steps_per_epoch=steps_per_epoch, epochs=epochs,
                                               validation_data=validation_generator, validation_steps=validation_steps,
-                                              verbose=verbose, class_weight=class_weights, callbacks=callbacks)
+                                              verbose=verbose, class_weight=class_weights, callbacks=callbacks,
+                                              use_multiprocessing=True)
     return net_history
 
 

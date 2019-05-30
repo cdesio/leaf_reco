@@ -82,10 +82,11 @@ def train_and_save(nn_model, n_epochs):
     history = train_neural_network(nn_model, train_generator, steps_per_epoch, validation_generator,
                                    validation_steps, epochs=n_epochs, no_stopping=True)
     nn_model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300.hdf5".format(n_epochs)))
-    pickle.dump(history, open(os.path.join(TASK_FOLDER_PATH, "history_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
+    dump(history, open(os.path.join(TASK_FOLDER_PATH, "history_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
     return nn_model
 
-model_250 = train_and_save(model, 250)
+model_1 = train_and_save(model, 1)
+model_250 = train_and_save(model_1, 249)
 model_500 = train_and_save(model_250, 250)
 model_750 = train_and_save(model_500, 250)
 model_1000 = train_and_save(model_750, 250)

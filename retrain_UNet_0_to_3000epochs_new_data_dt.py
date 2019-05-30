@@ -13,7 +13,8 @@ from UNet import get_unet
 from data_loaders_km3 import data_generator_index_list, get_n_iterations_index
 from train_test_validation_metadata_arguments_dt import train_validation_test
 from network_models import train_neural_network
-import tensorflow as tf 
+import tensorflow as tf
+from pickle import dump
 tf.keras.backend.clear_session()
 
 ## Loading data
@@ -75,13 +76,29 @@ validation_steps, n_events = get_n_iterations_index(fnames_list, index_list_val,
 #y_train = np.load(os.path.join(data_dir,"Xy_train.npz"))["y"]
 model = get_unet()
 model.summary()
-print("training model")
-history = train_neural_network(model, train_generator, steps_per_epoch, validation_generator, validation_steps, epochs=EPOCHS, no_stopping=True)
+print("training model and save")
+
+def train_and_save(nn_model, n_epochs):
+    history = train_neural_network(nn_model, train_generator, steps_per_epoch, validation_generator,
+                                   validation_steps, epochs=n_epochs, no_stopping=True)
+    model_.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300.hdf5".format(n_epochs)))
+    pickle.dump(history, open(os.path.join(TASK_FOLDER_PATH, "hist_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
+    return nn_model
+
+model_250 = train_and_save(model, 250)
+model_500 = train_and_save(model_250, 250)
+model_750 = train_and_save(model_500, 250)
+model_1000 = train_and_save(model_750, 250)
+model_1500 =  train_and_save(model_1000, 500)
+model_2000 = train_and_save(model_1500, 500)
+model_2500 = train_and_save(model_2000, 500)
+model_3000 = train_and_save(model_2500, 500)
+
 #model.load_weights(os.path.join(data_dir,"trained_models/retrained_UNet_500+250+250epochs.hdf5"))
 
 #model.fit(x=X_train, y=y_train, epochs=250, batch_size=1, verbose=1, validation_split=.2)
-print("saving trained model")
-model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_1500_epochs_clean_300_batch1.hdf5"))
+#print("saving trained model")
+#model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_1500_epochs_clean_300_batch1.hdf5"))
 
 #model.fit(x=X_train, y=y_train, epochs=250, batch_size=1, verbose=1, validation_split=.2)
 #model.save(os.path.join(data_dir,"trained_models","retrained_UNet_1000+500epochs.hdf5"))

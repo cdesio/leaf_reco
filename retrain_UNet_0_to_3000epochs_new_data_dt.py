@@ -81,8 +81,8 @@ print("training model and save")
 def train_and_save(nn_model, n_epochs):
     history = train_neural_network(nn_model, train_generator, steps_per_epoch, validation_generator,
                                    validation_steps, epochs=n_epochs, no_stopping=True)
-    model_.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300.hdf5".format(n_epochs)))
-    pickle.dump(history, open(os.path.join(TASK_FOLDER_PATH, "hist_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
+    nn_model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300.hdf5".format(n_epochs)))
+    pickle.dump(history, open(os.path.join(TASK_FOLDER_PATH, "history_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
     return nn_model
 
 model_250 = train_and_save(model, 250)
@@ -93,7 +93,7 @@ model_1500 =  train_and_save(model_1000, 500)
 model_2000 = train_and_save(model_1500, 500)
 model_2500 = train_and_save(model_2000, 500)
 model_3000 = train_and_save(model_2500, 500)
-
+print("done.")
 #model.load_weights(os.path.join(data_dir,"trained_models/retrained_UNet_500+250+250epochs.hdf5"))
 
 #model.fit(x=X_train, y=y_train, epochs=250, batch_size=1, verbose=1, validation_split=.2)

@@ -86,7 +86,7 @@ def train_and_save(nn_model, n_epochs):
     return nn_model
 
 model_1 = train_and_save(model, 1)
-model_250 = train_and_save(model_1, 249)
+model_250 = train_and_save(model_1, 250)
 model_500 = train_and_save(model_250, 250)
 model_750 = train_and_save(model_500, 250)
 model_1000 = train_and_save(model_750, 250)

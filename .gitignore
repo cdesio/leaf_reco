@@ -5,3 +5,8 @@ notebooks/.ipynb_checkpoints/*
 .idea/*
 *.pkl
 notebooks/*pkl
+notebooks/ipynb_checkpoints
+notebooks/ipynb_checkpoints
+*.png
+*npz
+notebooks/keras-regression-cnns/.ipynb_checkpoints/*

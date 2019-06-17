@@ -21,10 +21,10 @@ tf.keras.backend.clear_session()
 print("Loading data")
 
 data_dir = DATA_DIR_DEEPTHOUGHT
-clean_dir = os.path.join(DATA_DIR_DEEPTHOUGHT,"train_validation_test","clean_300")
+clean_dir = os.path.join(DATA_DIR_DEEPTHOUGHT,"train_validation_test","clean_300_june")
 
 CHECKPOINT_FOLDER_PATH = os.path.join(data_dir, 'trained_models')
-TASK_NAME = 'UNet_retrain_new_data_clean_300'
+TASK_NAME = 'UNet_retrain_new_data_clean_300_june'
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not os.path.exists(TASK_FOLDER_PATH):
@@ -35,7 +35,7 @@ BATCH_SIZE=1
 EPOCHS=1500
 
 def import_and_split(dist):
-    Xy = np.load(os.path.join(clean_dir, "Xy_{}mm_clean_300.npz".format(dist)))
+    Xy = np.load(os.path.join(clean_dir, "Xy_{}mm_clean300_june.npz".format(dist)))
     X = Xy["x"]
     y = Xy["y"]
     _, test_indices, train_indices, val_indices = train_validation_test(X)
@@ -79,14 +79,15 @@ model.summary()
 print("training model and save")
 
 def train_and_save(nn_model, n_epochs):
-    history = train_neural_network(nn_model, train_generator, steps_per_epoch, validation_generator,
-                                   validation_steps, epochs=n_epochs, no_stopping=True)
-    nn_model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300.hdf5".format(n_epochs)))
-    dump(history, open(os.path.join(TASK_FOLDER_PATH, "history_retrained_UNet_{}_epochs_clean_300.pkl".format(n_epochs)),'wb'))
+    history = nn_model.fit_generator(train_generator, steps_per_epoch=steps_per_epoch, epochs=n_epochs,
+                                              validation_data=validation_generator, validation_steps=validation_steps,
+                                              verbose=verbose, use_multiprocessing=True)
+
+    nn_model.save(os.path.join(TASK_FOLDER_PATH,"retrained_UNet_{}_epochs_clean_300_june.hdf5".format(n_epochs)))
+    dump(history, open(os.path.join(TASK_FOLDER_PATH, "history_retrained_UNet_{}_epochs_clean_300_june.pkl".format(n_epochs)),'wb'))
     return nn_model
 
-model_1 = train_and_save(model, 1)
-model_250 = train_and_save(model_1, 250)
+model_250 = train_and_save(model, 250)
 model_500 = train_and_save(model_250, 250)
 model_750 = train_and_save(model_500, 250)
 model_1000 = train_and_save(model_750, 250)

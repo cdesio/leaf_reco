@@ -18,15 +18,15 @@ tf.keras.backend.clear_session()
 print("Loading data")
 
 data_dir = DATA_DIR_DEEPTHOUGHT
-train_test = os.path.join(data_dir, "train_validation_test"
+train_test = os.path.join(data_dir, "train_validation_test")
 X_tr = np.load(os.path.join(train_test, "Xy_train_clean_300_24_10_25.npz"))["x"]
 y_tr = np.load(os.path.join(train_test,"Xy_train_clean_300_24_10_25.npz"))["y"]
 
 X_val = np.load(os.path.join(train_test, "Xy_val_clean_300_24_10_25.npz"))["x"]
 y_val = np.load(os.path.join(train_test,"Xy_val_clean_300_24_10_25.npz"))["y"]
 
-X_train = np.vstack(X_tr, X_val)
-y_train = np.vstack(y_tr, y_val)
+X_train = np.vstack((X_tr, X_val))
+y_train = np.vstack((y_tr, y_val))
 
 model = get_unet()
 model.summary()

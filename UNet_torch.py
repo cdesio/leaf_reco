@@ -20,7 +20,7 @@ class UNet(nn.Module):
         self.conv_block_down3 = double_conv(128, 256)
         self.conv_block_down4 = double_conv(256, 512)
 
-        self.maxpool = nn.MaxPool2d(2)
+        self.maxpool = nn.MaxPool2d(2, ceil_mode=True)
 
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
@@ -33,13 +33,13 @@ class UNet(nn.Module):
 
     def forward(self, x):
         convb1 = self.conv_block_down1(x)
-        x = self.maxpool(convb1, ceil_mode=True)
+        x = self.maxpool(convb1)
 
         convb2 = self.conv_block_down2(x)
-        x = self.maxpool(convb2, ceil_mode=True)
+        x = self.maxpool(convb2)
 
         convb3 = self.conv_block_down3(x)
-        x = self.maxpool(convb3, ceil_mode=True)
+        x = self.maxpool(convb3)
 
         x = self.conv_block_down4(x)
         x = self.upsample(x)

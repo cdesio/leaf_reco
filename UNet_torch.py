@@ -33,13 +33,13 @@ class UNet(nn.Module):
 
     def forward(self, x):
         convb1 = self.conv_block_down1(x)
-        x = self.maxpool(convb1)
+        x = self.maxpool(convb1, ceil_mode=True)
 
         convb2 = self.conv_block_down2(x)
-        x = self.maxpool(convb2)
+        x = self.maxpool(convb2, ceil_mode=True)
 
         convb3 = self.conv_block_down3(x)
-        x = self.maxpool(convb3)
+        x = self.maxpool(convb3, ceil_mode=True)
 
         x = self.conv_block_down4(x)
         x = self.upsample(x)

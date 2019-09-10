@@ -40,8 +40,7 @@ class UNet(nn.Module):
         self.conv_transpose9 = conv_transpose(32 , 32)
         self.conv_block_up9 = double_conv(32+ 64, 32)
 
-        self.conv_last = nn.Sequential(nn.Conv2d(32, 1, 1),
-                                       nn.Sigmoid())
+        self.conv_last = nn.Conv2d(32, 1, 1)
 
 
 

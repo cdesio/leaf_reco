@@ -1,16 +1,12 @@
 import torch
 import torch.nn as nn
 
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
-
 
 def double_conv(in_channels, out_channels):
-    conv_block = nn.Sequential(
-        nn.Conv2d(in_channels, out_channels, 3, padding=1),
-	nn.ReLU(inplace=True),
-	nn.Conv2d(out_channels, out_channels, 3, padding=1),
-	nn.ReLU(inplace=True))
+    conv_block = nn.Sequential(nn.Conv2d(in_channels, out_channels, 3, padding=1),
+                               nn.ReLU(inplace=True),
+                               nn.Conv2d(out_channels, out_channels, 3, padding=1),
+                               nn.ReLU(inplace=True))
     return conv_block
 
 
@@ -26,7 +22,7 @@ class UNet(nn.Module):
 
         self.maxpool = nn.MaxPool2d(2)
 
-        self.upsample = nn.Upsample(scale_factor=2, model='bilinear', align_corners=True)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
         self.conv_block_up3 = double_conv(256 + 512, 256)
         self.conv_block_up2 = double_conv(128 + 256, 128)

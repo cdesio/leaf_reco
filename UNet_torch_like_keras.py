@@ -34,7 +34,7 @@ class UNet(nn.Module):
         self.conv_transpose7 = conv_transpose(256, 128)
         self.conv_block_up7 = double_conv(128 + 256, 128)
 
-        self.conv_transpose8 = conv_transpose(128, 64))
+        self.conv_transpose8 = conv_transpose(128, 64)
         self.conv_block_up8 = double_conv(64+128, 64)
 
         self.conv_transpose9 = conv_transpose(32 , 32)

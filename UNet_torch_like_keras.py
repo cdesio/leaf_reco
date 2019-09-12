@@ -39,7 +39,8 @@ class UNet(nn.Module):
         self.conv_transpose9 = conv_transpose(64 , 32, out_padding=1)
         self.conv_block_up9 = double_conv(64, 32)
 
-        self.conv_last = nn.Conv2d(32, 1, 1)
+        self.conv_last = nn.Sequential(nn.Conv2d(32, 1, 1),
+                                       nn.Sigmoid())
 
 
     def forward(self, x):

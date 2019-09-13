@@ -15,7 +15,7 @@ def conv_transpose(in_channels, out_channels, out_padding):
     return transpose
 
 
-class UNet(nn.Module):
+class cUNet(nn.Module):
 
     def __init__(self):
         super().__init__()
@@ -109,7 +109,7 @@ class UNet(nn.Module):
         print('convb9: {}'.format(convb9.size()))
 
         mask = self.conv_last(convb9)
-        print(mask.size())
+        print("mask: {}".format(mask.size()))
         return mask, classification
 
 

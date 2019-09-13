@@ -29,17 +29,17 @@ class UNet(nn.Module):
 
         self.maxpool = nn.MaxPool2d(2, ceil_mode=True)
 
-        self.conv_transpose6 = conv_transpose(256, 128, out_padding=1)
-        self.conv_block_up6 = double_conv(256, 128)
+        self.conv_transpose6 = dilated_conv(256, 128)
+        self.conv_block_up6 = conv(256, 128)
 
-        self.conv_transpose7 = conv_transpose(128, 64, out_padding=1)
-        self.conv_block_up7 = double_conv(128, 64)
+        self.conv_transpose7 = dilated_conv(128, 64)
+        self.conv_block_up7 = conv(128, 64)
 
-        self.conv_transpose8 = conv_transpose(64, 32, out_padding=0)
-        self.conv_block_up8 = double_conv(64, 32)
+        self.conv_transpose8 = dilated_conv(64, 32)
+        self.conv_block_up8 = conv(64, 32)
 
-        self.conv_transpose9 = conv_transpose(32, 16, out_padding=1)
-        self.conv_block_up9 = double_conv(32, 16)
+        self.conv_transpose9 = dilated_conv(32, 16)
+        self.conv_block_up9 = conv(32, 16)
 
         self.fc_classifier = nn.Linear(112896, 4)
 

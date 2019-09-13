@@ -10,7 +10,7 @@ class UNetDataset(Dataset):
         self.transform = transform
         self._X = X
         self._Y = Y
-        self._dist = np.asarray(dist)
+        self._dist = dist
 
     def __getitem__(self, idx):
         if self._dist is not None:

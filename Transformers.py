@@ -14,7 +14,7 @@ class UNetDataset(Dataset):
             self._dist = dist
 
     def __getitem__(self, idx):
-        if dist:
+        if self._dist is not None:
             image = self._X[idx]
             mask = self._Y[idx]
             dist = self._dist[idx]

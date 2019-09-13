@@ -3,7 +3,7 @@ import torch
 
 from torch.utils.data import Dataset
 from functools import partial
-
+import numpy as np
 
 class UNetDataset(Dataset):
     def __init__(self, X, Y, transform=None, dist = None):
@@ -11,7 +11,7 @@ class UNetDataset(Dataset):
         self._X = X
         self._Y = Y
         if dist is not None:
-            self._dist = dist
+            self._dist = np.asarray(dist)
 
     def __getitem__(self, idx):
         if self._dist is not None:

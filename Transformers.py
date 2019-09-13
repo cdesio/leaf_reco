@@ -10,11 +10,10 @@ class UNetDataset(Dataset):
         self.transform = transform
         self._X = X
         self._Y = Y
-        if dist is not None:
-            self._dist = np.asarray(dist)
+        self._dist = np.asarray(dist)
 
     def __getitem__(self, idx):
-        if self._dist:
+        if self._dist is not None:
             image = self._X[idx]
             mask = self._Y[idx]
             dist = self._dist[idx]

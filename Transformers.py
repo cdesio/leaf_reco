@@ -81,8 +81,8 @@ class ToTensor:
 
         img_tensor = torch.from_numpy(image)
         mask_tensor = torch.from_numpy(mask)
-        if dist:
-            dist_tensor = torch.from_numpy(dist)
+        if dist is not None:
+            dist_tensor = torch.from_numpy(np.asarray(dist))
 
         if len(sample.keys()) == 3:
             sample_out = {'image': img_tensor, 'mask': mask_tensor, 'dist': dist_tensor}

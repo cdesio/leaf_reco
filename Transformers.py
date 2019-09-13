@@ -75,16 +75,13 @@ class ToTensor:
     def __call__(self, sample):
         if len(sample.keys()) == 3:
             image, mask, dist = sample['image'], sample['mask'], sample['dist']
-        elif len(sample.keys()) == 2:
-            image, mask = sample['image'], sample['mask']
-
-        img_tensor = torch.from_numpy(image)
-        mask_tensor = torch.from_numpy(mask)
-        if dist is not None:
+            img_tensor = torch.from_numpy(image)
+            mask_tensor = torch.from_numpy(mask)
             dist_tensor = torch.from_numpy(np.asarray(dist))
-
-        if len(sample.keys()) == 3:
             sample_out = {'image': img_tensor, 'mask': mask_tensor, 'dist': dist_tensor}
         elif len(sample.keys()) == 2:
+            image, mask = sample['image'], sample['mask']
+            img_tensor = torch.from_numpy(image)
+            mask_tensor = torch.from_numpy(mask)
             sample_out = {'image': img_tensor, 'mask': mask_tensor}
         return sample_out

@@ -14,7 +14,7 @@ class UNetDataset(Dataset):
             self._dist = np.asarray(dist)
 
     def __getitem__(self, idx):
-        if self._dist is not None:
+        if self._dist:
             image = self._X[idx]
             mask = self._Y[idx]
             dist = self._dist[idx]

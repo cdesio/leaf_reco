@@ -10,9 +10,8 @@ def double_conv(in_channels, out_channels):
     return conv_block
 
 
-def dilated_conv(in_channels, out_channels):
-    transpose = nn.Conv2d(in_channels, out_channels, kernel_size=(3,3), padding=1, stride=1,
-                          dilation=1)
+def conv_transpose(in_channels, out_channels, out_padding):
+    transpose = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=(3,3), padding=1, stride=2, output_padding=out_padding)
     return transpose
 
 
@@ -29,17 +28,17 @@ class UNet(nn.Module):
 
         self.maxpool = nn.MaxPool2d(2, ceil_mode=True)
 
-        self.conv_transpose6 = dilated_conv(256, 128)
-        self.conv_block_up6 = conv(256, 128)
+        self.conv_transpose6 = conv_transpose(256, 128, out_padding=1)
+        self.conv_block_up6 = double_conv(256, 128)
 
-        self.conv_transpose7 = dilated_conv(128, 64)
-        self.conv_block_up7 = conv(128, 64)
+        self.conv_transpose7 = conv_transpose(128, 64, out_padding=1)
+        self.conv_block_up7 = double_conv(128, 64)
 
-        self.conv_transpose8 = dilated_conv(64, 32)
-        self.conv_block_up8 = conv(64, 32)
+        self.conv_transpose8 = conv_transpose(64, 32, out_padding=0)
+        self.conv_block_up8 = double_conv(64, 32)
 
-        self.conv_transpose9 = dilated_conv(32, 16)
-        self.conv_block_up9 = conv(32, 16)
+        self.conv_transpose9 = conv_transpose(32, 16, out_padding=1)
+        self.conv_block_up9 = double_conv(32, 16)
 
         self.fc_classifier = nn.Linear(112896, 4)
 

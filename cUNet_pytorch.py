@@ -129,7 +129,7 @@ class cUNet(nn.Module):
         
         
         mask = self.conv_last(convb9)
-        print(out.size())
+        print(mask.size())
         return mask, classification
 
 

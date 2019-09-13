@@ -6,16 +6,23 @@ from functools import partial
 
 
 class UNetDataset(Dataset):
-    def __init__(self, X, Y, transform=None):
+    def __init__(self, X, Y, transform=None, dist = None):
         self.transform = transform
         self._X = X
         self._Y = Y
+        if dist:
+            self._dist = dist
 
     def __getitem__(self, idx):
-        image = self._X[idx]
-        mask = self._Y[idx]
-        sample = {'image': image, 'mask': mask}
-
+        if dist:
+            image = self._X[idx]
+            mask = self._Y[idx]
+            dist = self._dist[idx]
+            sample = {'image': image, 'mask': mask, 'dist': dist}
+        else:
+            image = self._X[idx]
+            mask = self._Y[idx]
+            sample = {'image': image, 'mask': mask}
         if self.transform:
             sample = self.transform(sample)
         return sample
@@ -26,13 +33,18 @@ class UNetDataset(Dataset):
 
 class ChannelsFirst:
     def __call__(self, sample):
-        image, mask = sample['image'], sample['mask']
-
+        if len(sample.keys())==3:
+            image, mask, dist = sample['image'], sample['mask'], sample['dist']
+        elif len(sample.keys()) ==2:
+            image, mask = sample['image'], sample['mask']
         image = image.swapaxes(2,0)
         mask = mask.swapaxes(2,0)
 
-        return {'image': image,
-                'mask': mask}
+        if len(sample.keys())==3:
+            sample_out = {'image': image, 'mask': mask, 'dist': dist}
+        elif len(sample.keys())==2:
+            sample_out = {'image': image, 'mask': mask}
+        return sample_out
 
 
 class Rescale:
@@ -42,22 +54,38 @@ class Rescale:
         self.output_scale = scale
 
     def __call__(self, sample):
-        image, mask = sample['image'], sample['mask']
+        if len(sample.keys()) == 3:
+            image, mask, dist = sample['image'], sample['mask'], sample['dist']
+        elif len(sample.keys()) ==2:
+            image, mask = sample['image'], sample['mask']
 
         resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
         out_image = resizer(image)
         out_mask = resizer(mask)
 
-        return {'image': out_image,
-                'mask': out_mask}
+        if len(sample.keys()) == 3:
+            sample_out = {'image': out_image, 'mask': out_mask, 'dist': dist}
+        elif len(sample.keys()) == 2:
+            sample_out = {'image': out_image, 'mask': out_mask}
+        return sample_out
+
 
 
 class ToTensor:
 
     def __call__(self, sample):
-        image, mask = sample['image'], sample['mask']
+        if len(sample.keys()) == 3:
+            image, mask, dist = sample['image'], sample['mask'], sample['dist']
+        elif len(sample.keys()) == 2:
+            image, mask = sample['image'], sample['mask']
+
         img_tensor = torch.from_numpy(image)
         mask_tensor = torch.from_numpy(mask)
+        if dist:
+            dist_tensor = torch.from_numpy(dist)
 
-        return {'image': img_tensor,
-                'mask': mask_tensor}
+        if len(sample.keys()) == 3:
+            sample_out = {'image': img_tensor, 'mask': mask_tensor, 'dist': dist_tensor}
+        elif len(sample.keys()) == 2:
+            sample_out = {'image': img_tensor, 'mask': mask_tensor}
+        return sample_out

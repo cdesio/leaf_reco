@@ -77,7 +77,8 @@ class ToTensor:
             image, mask, dist = sample['image'], sample['mask'], sample['dist']
             img_tensor = torch.from_numpy(image)
             mask_tensor = torch.from_numpy(mask)
-            dist_tensor = torch.from_numpy(np.unique(np.asarray(dist), return_inverse=True)[1])
+            #dist_tensor = torch.from_numpy(np.unique(dist, return_inverse=True)[1])
+            dist_tensor = torch.from_numpy(np.asarray(dist))
             sample_out = {'image': img_tensor, 'mask': mask_tensor, 'dist': dist_tensor}
         elif len(sample.keys()) == 2:
             image, mask = sample['image'], sample['mask']

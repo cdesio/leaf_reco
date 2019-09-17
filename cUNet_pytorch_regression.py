@@ -18,7 +18,7 @@ def conv_transpose(in_channels, out_channels, out_padding):
 
 class cUNet(nn.Module):
 
-    def __init__(self):
+    def __init__(self, out_size):
         super().__init__()
 
         self.conv_block_down1 = double_conv(1, 16)
@@ -41,7 +41,7 @@ class cUNet(nn.Module):
         self.conv_transpose9 = conv_transpose(32, 16, out_padding=1)
         self.conv_block_up9 = double_conv(32, 16)
 
-        self.fc_classifier = nn.Linear(123904, 1)
+        self.fc_linear = nn.Linear(123904, out_size=1)
 
         self.conv_last = nn.Sequential(nn.Conv2d(16, 1, 1),
                                        nn.Sigmoid())
@@ -75,7 +75,7 @@ class cUNet(nn.Module):
         # print('convb5: {}'.format(convb5.size()))
         flatt = convb5.view(convb5.size(0), -1)
         # print('flatten: {}'.format(flatt.size()))
-        fc = self.fc_classifier(flatt)
+        fc = self.fc_linear(flatt)
         # print('fc : {}'.format(fc.size()))
 
         up6 = self.conv_transpose6(convb5)

@@ -4,6 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from functools import partial
 import numpy as np
+from torch.utils.data.sampler import  SubsetRandomSampler
 
 class UNetDataset(Dataset):
     def __init__(self, X, Y, transform=None, dist = None):
@@ -86,3 +87,19 @@ class ToTensor:
             mask_tensor = torch.from_numpy(mask)
             sample_out = {'image': img_tensor, 'mask': mask_tensor}
         return sample_out
+
+
+
+def splitter(dataset, validation_split=0.2):
+    dataset_len = len(dataset)
+    indices = list(range(dataset_len))
+    val_len = int(np.floor(validation_split * dataset_len))
+    validation_idx = np.random.choice(indices, size=val_len, replace=False)
+    train_idx = list(set(indices) - set(validation_idx))
+
+    train_sampler = SubsetRandomSampler(train_idx)
+    validation_sampler = SubsetRandomSampler(validation_idx)
+
+    return train_sampler, validation_sampler
+
+

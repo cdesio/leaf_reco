@@ -90,7 +90,7 @@ class ToTensor:
 
 
 
-def splitter(dataset, validation_split=0.2):
+def splitter(dataset, validation_split=0.2, batch = 16, workers = 4):
     dataset_len = len(dataset)
     indices = list(range(dataset_len))
     val_len = int(np.floor(validation_split * dataset_len))
@@ -100,6 +100,10 @@ def splitter(dataset, validation_split=0.2):
     train_sampler = SubsetRandomSampler(train_idx)
     validation_sampler = SubsetRandomSampler(validation_idx)
 
-    return train_sampler, validation_sampler
+    train_loader = DataLoader(dataset, sampler =train_sampler, batch_size=batch, num_workers = workers)
+    validation_loader = DataLoader(dataset, sampler =validation_sampler, batch_size=batch, num_workers = workers)
 
+    data_loaders = {"train": train_loader, "val": validation_loader}
+    data_lengths = {"train": len(train_idx), "val": val_len}
+    return data_loaders, data_lengths
 

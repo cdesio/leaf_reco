@@ -1,7 +1,7 @@
 from skimage.transform import rescale
 import torch
 
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from functools import partial
 import numpy as np
 from torch.utils.data.sampler import  SubsetRandomSampler

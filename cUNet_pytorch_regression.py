@@ -18,7 +18,7 @@ def conv_transpose(in_channels, out_channels, out_padding):
 
 class cUNet(nn.Module):
 
-    def __init__(self, out_size):
+    def __init__(self, out_size=1):
         super().__init__()
 
         self.conv_block_down1 = double_conv(1, 16)
@@ -41,7 +41,7 @@ class cUNet(nn.Module):
         self.conv_transpose9 = conv_transpose(32, 16, out_padding=1)
         self.conv_block_up9 = double_conv(32, 16)
 
-        self.fc_linear = nn.Linear(123904, out_size=1)
+        self.fc_linear = nn.Linear(123904, out_size)
 
         self.conv_last = nn.Sequential(nn.Conv2d(16, 1, 1),
                                        nn.Sigmoid())

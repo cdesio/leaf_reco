@@ -40,7 +40,7 @@ class cUNet(nn.Module):
         self.conv_transpose9 = conv_transpose(32, 16, out_padding=1)
         self.conv_block_up9 = double_conv(32, 16)
 
-        self.fc_classifier = nn.Linear(123904, out_size)
+        self.fc_linear = nn.Linear(123904, out_size)
 
         self.conv_last = nn.Sequential(nn.Conv2d(16, 1, 1),
                                        nn.Sigmoid())

@@ -72,9 +72,15 @@ class Rescale:
         elif len(sample.keys()) ==2:
             image, mask = sample['image'], sample['mask']
 
-        resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
-        out_image = resizer(image)
-        out_mask = resizer(mask)
+        if len(image.shape)==3:
+            resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
+            out_image = resizer(image)
+            out_mask = resizer(mask)
+        elif len(image.shape)==2:
+            resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=False)
+            out_image = resizer(image)
+            out_mask = resizer(mask)
+
 
         if len(sample.keys()) == 3:
             sample_out = {'image': out_image, 'mask': out_mask, 'dist': dist}
@@ -173,7 +179,7 @@ class Dataset_from_folders(Dataset):
     def __getitem__(self, idx):
         image = imread(self.images_list[idx])
         mask = imread(self.masks_list[idx])
-        distance = self.distances
+        distance = self.distances[idx]
         sample = {'image': image, 'mask': mask, 'dist': distance}
 
         if self.transform:

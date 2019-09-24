@@ -161,11 +161,13 @@ class Dataset_from_folders(Dataset):
 
             folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
             folder_masks = sorted(folder_masks, key=self.file_sort_key)
+
             images_list.extend(folder_imgs)
             masks_list.extend(folder_masks)
             dist = regex.findall(fold)[2]
+
             if image_found:
-                distances.extend(dist for _ in range(image_found))
+                distances.extend(int(dist) for _ in range(image_found))
             return distances, images_list, masks_list
 
     def __getitem__(self, idx):

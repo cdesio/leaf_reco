@@ -36,14 +36,22 @@ def select_profile(array):
         #print(i,np.max(np.argwhere(array)[:,1][np.argwhere(array)[:,0]==i]))
     sel = np.asarray(sel)
     return sel
+def select_profile_2(array):
+    arr = np.argwhere(array)
+    y = arr[:,0]
+    X = arr[:,1]
+    y_uniques = np.unique(y)
+    y_out = [np.max(X[y==yi]) for yi in y_uniques]
+    return np.column_stack((y_uniques, y_out))
 
-leaf = select_profile(ls[1000:1280])
+#leaf = select_profile(ls[1000:1280])
+leaf = select_profile_2(ls[1000:1280])
 leaf_position = np.min(leaf[:,1])
 print("calculated leaf position:{}".format(leaf_position))
 
 if leaf_position>=2300:
     ls_inv=(~ls.astype(bool)).astype(int)
-    leaf = select_profile(ls_inv[1000:1280])
+    leaf = select_profile_2(ls_inv[1000:1280])
     leaf_position = np.min(leaf[:,1])
     print("new leaf position: {}".format(leaf_position)) 
 # test1

@@ -10,6 +10,13 @@ from torch.utils.data.sampler import  SubsetRandomSampler
 import re
 import os
 
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+ROW_SLICE = slice(0, 1400)
+COL_SLICE = slice(1000, None)
+
+
+
 class UNetDataset(Dataset):
     def __init__(self, X, Y, transform=None, dist = None):
         self.transform = transform
@@ -186,10 +193,6 @@ class Dataset_from_folders(Dataset):
     def __len__(self):
         return len(self.images_list)
 
-    IMG_WIDTH = 1400
-    IMG_HEIGHT = 1400
-    ROW_SLICE = slice(0, 1400)
-    COL_SLICE = slice(1000, None)
 
 
 class Cut:

@@ -45,8 +45,13 @@ class ChannelsFirst:
             image, mask, dist = sample['image'], sample['mask'], sample['dist']
         elif len(sample.keys()) ==2:
             image, mask = sample['image'], sample['mask']
-        image = image.swapaxes(2,0)
-        mask = mask.swapaxes(2,0)
+
+        if len(image.shape)==3:
+            image = image.swapaxes(2,0)
+            mask = mask.swapaxes(2,0)
+        elif len(image.shape)==2:
+            image = image[np.newaxis, ...]
+            mask = mask[np.newaxis, ...]
 
         if len(sample.keys())==3:
             sample_out = {'image': image, 'mask': mask, 'dist': dist}

@@ -190,9 +190,12 @@ class Cut:
             image, mask, dist = sample['image'], sample['mask'], sample['dist']
         elif len(sample.keys()) ==2:
             image, mask = sample['image'], sample['mask']
-
-        out_image = image[ROW_SLICE, COL_SLICE]
-        out_mask = mask[ROW_SLICE, COL_SLICE]
+        if self.cut:
+            out_image = image[ROW_SLICE, COL_SLICE]
+            out_mask = mask[ROW_SLICE, COL_SLICE]
+        else:
+            out_image=image
+            out_mask=mask
 
         if len(sample.keys()) == 3:
             sample_out = {'image': out_image, 'mask': out_mask, 'dist': dist}

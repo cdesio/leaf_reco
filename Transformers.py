@@ -1,10 +1,18 @@
-from skimage.transform import rescale
-import torch
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+ROW_SLICE = slice(0, 1400)
+COL_SLICE = slice(1000, None)
 
+from skimage.transform import rescale
+
+import torch
 from torch.utils.data import Dataset, DataLoader
 from functools import partial
 import numpy as np
+from matplotlib.image import imread
 from torch.utils.data.sampler import  SubsetRandomSampler
+import re
+import os
 
 class UNetDataset(Dataset):
     def __init__(self, X, Y, transform=None, dist = None):
@@ -107,3 +115,87 @@ def splitter(dataset, validation_split=0.2, batch = 16, workers = 4):
     data_lengths = {"train": len(train_idx), "val": val_len}
     return data_loaders, data_lengths
 
+class Dataset_from_folders(Dataset):
+
+    def __init__(self, folder, transform=None):
+        self.transform = transform
+        self._folder = folder
+        self.distances, self.images_list, self.masks_list = self.create_list()
+
+    @staticmethod
+    def file_sort_key(fpath: str):
+        # os.path.split(fpath) --> base, fname
+        # os.path.splitext(fname) --> name, ext
+        # example_filename: File_3_1mm_mask_2155.tiff
+        _, fname = os.path.split(fpath)
+        fname, _ = os.path.splitext(fname)
+        _, dist, *rest = fname.split('_')
+        return int(dist)
+
+    @staticmethod
+    def create_list(self):
+        regex = re.compile(r'\d+')
+        distances = []
+        images_list = []
+        masks_list = []
+        list_dirs = os.listdir(self.folder)
+        for fold in list_dirs:
+            image_found = 0
+
+            folder_imgs = []
+            folder_masks = []
+
+            for fname in sorted(os.listdir(os.path.join(self.folder, fold))):
+                if fname.startswith("File"):
+                    if "mask" not in fname:
+                        image_found+=1
+                        folder_imgs.append(os.path.join(self.folder, fold, fname))
+                    else:
+                        folder_masks.append(os.path.join(self.folder, fold, fname))
+            assert len(folder_imgs) == len(folder_masks)
+
+            folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
+            folder_masks = sorted(folder_masks, key=self.file_sort_key)
+            images_list.extend(folder_imgs)
+            masks_list.extend(folder_masks)
+            dist = regex.findall(fold)[2]
+            if image_found:
+                distances.extend(dist for _ in range(image_found))
+            return distances, images_list, masks_list
+
+    def __getitem__(self, idx):
+        dist, images_list, masks_list = self.create_list()
+        image = imread(images_list[idx])
+        mask = imread(masks_list[idx])
+        distance = dist
+        sample = {'image': image, 'mask': mask, 'dist': distance}
+
+        if self.transform:
+            sample = self.transform(sample)
+        return sample
+
+    def __len__(self):
+        _, images_list, _ = self.create_list()
+        return len(images_list)
+
+
+class Cut:
+
+    def __init__(self, cut=True):
+        assert isinstance(cut, bool)
+        self.cut = cut
+
+    def __call__(self, sample):
+        if len(sample.keys()) == 3:
+            image, mask, dist = sample['image'], sample['mask'], sample['dist']
+        elif len(sample.keys()) ==2:
+            image, mask = sample['image'], sample['mask']
+
+        out_image = image[ROW_SLICE, COL_SLICE]
+        out_mask = mask[ROW_SLICE, COL_SLICE]
+
+        if len(sample.keys()) == 3:
+            sample_out = {'image': out_image, 'mask': out_mask, 'dist': dist}
+        elif len(sample.keys()) == 2:
+            sample_out = {'image': out_image, 'mask': out_mask}
+        return sample_out

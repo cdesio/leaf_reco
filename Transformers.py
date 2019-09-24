@@ -174,8 +174,7 @@ class Dataset_from_folders(Dataset):
         return sample
 
     def __len__(self):
-        _, images_list, _ = self.create_list()
-        return len(images_list)
+        return len(self.images_list)
 
 
 class Cut:

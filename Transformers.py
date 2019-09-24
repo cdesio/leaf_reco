@@ -1,7 +1,3 @@
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
-ROW_SLICE = slice(0, 1400)
-COL_SLICE = slice(1000, None)
 
 from skimage.transform import rescale
 
@@ -128,9 +124,9 @@ def splitter(dataset, validation_split=0.2, batch = 16, workers = 4):
 
 class Dataset_from_folders(Dataset):
 
-    def __init__(self, folder, transform=None):
+    def __init__(self, root_path, transform=None):
         self.transform = transform
-        self.folder = folder
+        self.root_path = root_path
         self.distances, self.images_list, self.masks_list = self.create_list(self)
 
     @staticmethod
@@ -149,20 +145,21 @@ class Dataset_from_folders(Dataset):
         distances = []
         images_list = []
         masks_list = []
-        list_dirs = os.listdir(self.folder)
-        for fold in list_dirs:
+        list_dirs = os.listdir(self.root_path)
+
+        for folder in list_dirs:
             image_found = 0
 
             folder_imgs = []
             folder_masks = []
 
-            for fname in sorted(os.listdir(os.path.join(self.folder, fold))):
+            for fname in sorted(os.listdir(os.path.join(self.root_path, folder))):
                 if fname.startswith("File"):
                     if "mask" not in fname:
                         image_found+=1
-                        folder_imgs.append(os.path.join(self.folder, fold, fname))
+                        folder_imgs.append(os.path.join(self.root_path, folder, fname))
                     else:
-                        folder_masks.append(os.path.join(self.folder, fold, fname))
+                        folder_masks.append(os.path.join(self.root_path, folder, fname))
             assert len(folder_imgs) == len(folder_masks)
 
             folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
@@ -170,7 +167,7 @@ class Dataset_from_folders(Dataset):
 
             images_list.extend(folder_imgs)
             masks_list.extend(folder_masks)
-            dist = regex.findall(fold)[2]
+            dist = regex.findall(folder)[2]
 
             if image_found:
                 distances.extend(int(dist) for _ in range(image_found))
@@ -189,6 +186,11 @@ class Dataset_from_folders(Dataset):
     def __len__(self):
         return len(self.images_list)
 
+    IMG_WIDTH = 1400
+    IMG_HEIGHT = 1400
+    ROW_SLICE = slice(0, 1400)
+    COL_SLICE = slice(1000, None)
+
 
 class Cut:
 
@@ -201,6 +203,7 @@ class Cut:
             image, mask, dist = sample['image'], sample['mask'], sample['dist']
         elif len(sample.keys()) ==2:
             image, mask = sample['image'], sample['mask']
+
         if self.cut:
             out_image = image[ROW_SLICE, COL_SLICE]
             out_mask = mask[ROW_SLICE, COL_SLICE]

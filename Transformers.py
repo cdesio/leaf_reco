@@ -164,10 +164,9 @@ class Dataset_from_folders(Dataset):
             return distances, images_list, masks_list
 
     def __getitem__(self, idx):
-        dist, images_list, masks_list = self.create_list()
-        image = imread(images_list[idx])
-        mask = imread(masks_list[idx])
-        distance = dist
+        image = imread(self.images_list[idx])
+        mask = imread(self.masks_list[idx])
+        distance = self.distances
         sample = {'image': image, 'mask': mask, 'dist': distance}
 
         if self.transform:

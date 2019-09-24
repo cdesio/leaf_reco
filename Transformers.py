@@ -119,7 +119,7 @@ class Dataset_from_folders(Dataset):
 
     def __init__(self, folder, transform=None):
         self.transform = transform
-        self._folder = folder
+        self.folder = folder
         self.distances, self.images_list, self.masks_list = self.create_list(self)
 
     @staticmethod

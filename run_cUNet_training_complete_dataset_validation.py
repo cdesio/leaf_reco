@@ -18,11 +18,7 @@ composed = transforms.Compose([Cut(), Rescale(0.25), ChannelsFirst(), ToTensor()
 
 complete_dataset = UNetDatasetFromFolders(root_folder, transform=composed)
 
-data_loaders, data_lengths = splitter_train_val_test(complete_dataset,
-                                                     validation_split=0.20,
-                                                     test_split=0.20,
-                                                     batch=16,
-                                                     workers=4)
+data_loaders, data_lengths = splitter_train_val_test(complete_dataset, validation_split=0.2, test_split = 0.2, batch=16, workers=4)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

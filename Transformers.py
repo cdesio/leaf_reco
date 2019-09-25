@@ -125,7 +125,7 @@ def splitter(dataset, validation_split=0.2, batch=16, workers=4):
     return data_loaders, data_lengths
 
 
-class Dataset_from_folders(Dataset):
+class DatasetFromFolders(Dataset):
 
     def __init__(self, root_path, transform=None):
         self.transform = transform

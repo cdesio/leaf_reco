@@ -14,7 +14,7 @@ data_dir = DATA_DIR_DEEPTHOUGHT
 
 root_folder = os.path.join(data_dir, "dataset")
 
-composed = transforms.Compose([Cut(), Rescale(0.25, ChannelsFirst(), ToTensor())])
+composed = transforms.Compose([Cut(), Rescale(0.25), ChannelsFirst(), ToTensor()])
 
 complete_dataset = UNetDatasetFromFolders(root_folder, transform=composed)
 

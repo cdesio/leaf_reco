@@ -164,7 +164,7 @@ class DatasetFromFolders(Dataset):
                         folder_masks.append(os.path.join(root_dir, fname))
 
             assert len(folder_imgs) == len(folder_masks)
-            assest(image_found==mask_found)
+            assert image_found==mask_found
 
             folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
             folder_masks = sorted(folder_masks, key=self.file_sort_key)

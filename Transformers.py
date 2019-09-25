@@ -120,7 +120,7 @@ def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch
     validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch, num_workers=workers)
     test_loader = DataLoader(dataset, sampler = test_sampler, batch_size=batch, num_workers=workers)
     data_loaders = {"train": train_loader, "val": validation_loader, "test": test_loader}
-    data_lengths = {"train": len(train_idx), "val": val_len, "test": test_len}
+    data_lengths = {"train": len(train_idx), "val": validation_len, "test": test_len}
     return data_loaders, data_lengths
 
 

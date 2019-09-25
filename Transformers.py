@@ -154,7 +154,7 @@ class DatasetFromFolders(Dataset):
             folder_imgs = []
             folder_masks = []
 
-        for fname files:
+        for fname in files:
                 if fname.startswith("File") and fname.endswith('.tiff'):
                     if "mask" not in fname:
                         image_found += 1

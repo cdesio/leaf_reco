@@ -9,7 +9,7 @@ from DataSets import UNetDatasetFromFolders
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
 
-DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','data')
+DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 data_dir = DATA_DIR_DEEPTHOUGHT
 
 root_folder = os.path.join(data_dir, "dataset")

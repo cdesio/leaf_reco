@@ -154,7 +154,7 @@ class DatasetFromFolders(Dataset):
             folder_imgs = []
             folder_masks = []
 
-        for fname in files:
+            for fname in files:
                 if fname.startswith("File") and fname.endswith('.tiff'):
                     if "mask" not in fname:
                         image_found += 1
@@ -163,20 +163,20 @@ class DatasetFromFolders(Dataset):
                         mask_found+=1
                         folder_masks.append(os.path.join(root_dir, fname))
 
-        assert len(folder_imgs) == len(folder_masks)
-        assert image_found==mask_found
+            assert len(folder_imgs) == len(folder_masks)
+            assert image_found==mask_found
 
-        folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
-        folder_masks = sorted(folder_masks, key=self.file_sort_key)
+            folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
+            folder_masks = sorted(folder_masks, key=self.file_sort_key)
 
-        images_list.extend(folder_imgs)
-        masks_list.extend(folder_masks)
+            images_list.extend(folder_imgs)
+            masks_list.extend(folder_masks)
 
 
-        if image_found or mask_found:
-            folder = root_dir.split('/')[-1]
-            dist = regex.findall(folder.split('_')[1])[0]
-            distances.extend(int(dist) for _ in range(image_found))
+            if image_found or mask_found:
+                folder = root_dir.split('/')[-1]
+                dist = regex.findall(folder.split('_')[1])[0]
+                distances.extend(int(dist) for _ in range(image_found))
 
         return distances, images_list, masks_list
 

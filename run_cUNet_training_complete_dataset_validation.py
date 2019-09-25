@@ -17,6 +17,7 @@ root_folder = os.path.join(data_dir, "dataset")
 composed = transforms.Compose([Cut(), Rescale(0.25), ChannelsFirst(), ToTensor()])
 
 complete_dataset = UNetDatasetFromFolders(root_folder, transform=composed)
+print(len(complete_dataset))
 
 data_loaders, data_lengths = splitter_train_val_test(complete_dataset, validation_split=0.2, test_split = 0.2, batch=16, workers=4)
 

@@ -4,7 +4,6 @@ from matplotlib.image import imread
 
 import re
 import os
-import nunmpy as np
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400

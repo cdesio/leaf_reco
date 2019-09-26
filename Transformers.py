@@ -21,18 +21,18 @@ class ChannelsFirst:
             image, mask = sample['image'], sample['mask']
 
         if len(image.shape) == 3:
-            image = image.swapaxes(2, 0)
-            image = image.swapaxes(2,1)
-            mask = mask.swapaxes(2, 0)
-            mask = mask.swapaxes(2,1)
+            image_sw1 = image.swapaxes(2, 0)
+            image_sw2 = image_sw1.swapaxes(2,1)
+            mask_sw1 = mask.swapaxes(2, 0)
+            mask_sw2 = mask_sw1.swapaxes(2,1)
         elif len(image.shape) == 2:
-            image = image[np.newaxis, ...]
-            mask = mask[np.newaxis, ...]
+            image_newaxis = image[np.newaxis, ...]
+            mask_newaxis = mask[np.newaxis, ...]
 
         if len(sample.keys()) == 3:
-            sample_out = {'image': image, 'mask': mask, 'dist': dist}
+            sample_out = {'image': image_sw2, 'mask': mask_sw2, 'dist': dist}
         elif len(sample.keys()) == 2:
-            sample_out = {'image': image, 'mask': mask}
+            sample_out = {'image': image_newaxis, 'mask': mask_newaxis}
         return sample_out
 
 

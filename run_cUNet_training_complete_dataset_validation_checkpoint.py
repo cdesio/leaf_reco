@@ -8,6 +8,7 @@ from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_v
 from DataSets import UNetDatasetFromFolders
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
+from torch.utils.data import DataLoader
 
 DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 data_dir = DATA_DIR_DEEPTHOUGHT
@@ -19,7 +20,11 @@ composed = transforms.Compose([Cut(), Rescale(0.25), ChannelsFirst(), ToTensor()
 complete_dataset = UNetDatasetFromFolders(root_folder, transform=composed)
 print(len(complete_dataset))
 
-data_loaders, data_lengths = splitter_train_val_test(complete_dataset, validation_split=0.2, test_split = 0.2, batch=16, workers=4)
+data_loaders, data_lengths = splitter_train_val_test(complete_dataset,
+                                                     validation_split=0.2,
+                                                     test_split = 0.2,
+                                                     batch=16,
+                                                     workers=4)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -33,7 +38,7 @@ criterion_dist = nn.MSELoss()
 model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-epochs=50
+epochs=500
 coeff_mask = 0.75
 
 #Training phase
@@ -53,22 +58,22 @@ for epoch in tqdm.tqdm(range(epochs)):
             inputs = batch['image'].float().to(device)
             labels_mask = batch['mask'].float().to(device)
             labels_dist = batch['dist'][..., np.newaxis].float().to(device)
-            # print(inputs.is_cuda, labels_mask.is_cuda, labels_dist.is_cuda)
+
             optimizer.zero_grad()
-            out_mask, out_class = model(inputs)
-            # print(out_mask.is_cuda)
-            # print(out_class.is_cuda)
+            out_mask, out_dist = model(inputs)
             loss_mask = criterion_mask(out_mask, labels_mask)
-            loss_class = criterion_dist(out_class, labels_dist)
-            loss = coeff_mask * loss_mask + (1 - coeff_mask) * loss_class
-            # print(loss_mask, loss_class)
+            loss_dist = criterion_dist(out_dist, labels_dist)
+            loss = coeff_mask * loss_mask + (1 - coeff_mask) * loss_dist
 
             if phase == 'train':
                 loss.backward()
                 optimizer.step()
 
-            # print statistics
             running_loss += loss.item()
+            if i%50==49:
+                torch.save(model.state_dict(),
+                           "model/trained_cUNet_pytorch_regression_{}epochs_coeff_mask{}_validation.pkl".format(i+1,
+                                                                                                                coeff_mask) )
         epoch_loss = running_loss / data_lengths[phase]
         print('{} Loss: {:.4f}'.format(phase, epoch_loss))
 print('Finished Training')
@@ -82,7 +87,7 @@ print('Inference step')
 
 model_inference = cUNet(out_size=1)
 model_inference.load_state_dict(torch.load(model_name))
-model_inference = model.eval()
+model_inference.eval()
 model_inference.to(device)
 
 y_true = []

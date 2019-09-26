@@ -22,7 +22,9 @@ class ChannelsFirst:
 
         if len(image.shape) == 3:
             image = image.swapaxes(2, 0)
+            image = image.swapaxes(2,1)
             mask = mask.swapaxes(2, 0)
+            mask = mask.swapaxes(2,1)
         elif len(image.shape) == 2:
             image = image[np.newaxis, ...]
             mask = mask[np.newaxis, ...]

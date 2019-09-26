@@ -1,14 +1,15 @@
-import os
+import os, sys
 import torch
 import torch.nn as nn
 import numpy as np
 from torchvision import transforms
 import tqdm
-from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter
+from Transformers import ChannelsFirst, ToTensor, Rescale, splitter
 from DataSets import UNetDataSetFromNpz
 import torch.optim as optim
 from cUNet_pytorch_pooling import cUNet, dice_loss
 from sklearn.metrics import mean_squared_error
+from torch.utils.data import DataLoader
 
 DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 data_dir = DATA_DIR_DEEPTHOUGHT
@@ -24,7 +25,7 @@ composed_npz = transforms.Compose([Rescale(0.25), ChannelsFirst(), ToTensor()])
 dataset_train = UNetDataSetFromNpz(x, y, transform=composed_npz, dist = dist[...,np.newaxis])
 print(len(dataset_train))
 
-batch_size=32
+batch_size=16
 train_loaders, train_lengths = splitter(dataset_train, validation_split=0.2, batch=batch_size, workers=4)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -73,7 +74,7 @@ for epoch in tqdm.tqdm(range(epochs)):
 print('Finished Training')
 
 print('Saving trained model')
-model_name = "model/trained_cUNet_pytorch_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz.pkl".format(epochs, coeff_mask, batch_size)
+model_name = "model/trained_cUNet_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz.pkl".format(epochs, coeff_mask, batch_size)
 
 torch.save(model.state_dict(), model_name)
 
@@ -81,7 +82,7 @@ print('Inference step')
 
 model_inference = cUNet(out_size=1)
 model_inference.load_state_dict(torch.load(model_name))
-model_inference = model.eval()
+model_inference.eval()
 model_inference.to(device)
 
 test_data = np.load(os.path.join(train_test,"Xy_test_clean_300_24_10_25.npz"))
@@ -106,7 +107,7 @@ for i, batch in enumerate(test_data_loader):
                                                 pred_classes.cpu().detach().numpy())):
         true_dist = tr_cl
         pred_dist = pr_cl
-        y_test.append(true_dist)
+        y_true.append(true_dist)
         y_pred.append(pred_dist)
 
 y_pred = np.asarray(y_pred).ravel()

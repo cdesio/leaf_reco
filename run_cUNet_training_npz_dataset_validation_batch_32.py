@@ -19,11 +19,12 @@ x = data["x"]
 y = data['y']
 dist = data['dist']
 
-composed = transforms.Compose([Rescale(0.25), ChannelsFirst(), ToTensor()])
+composed_npz = transforms.Compose([Rescale(0.25), ChannelsFirst(), ToTensor()])
 
 dataset_train = UNetDataSetFromNpz(x, y, transform=composed_npz, dist = dist[...,np.newaxis])
 print(len(dataset_train))
 
+batch_size=32
 train_loaders, train_lengths = splitter(dataset_train, validation_split=0.2, batch=batch_size, workers=4)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -36,7 +37,6 @@ criterion_dist = nn.MSELoss()
 model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-batch_size=32
 epochs=50
 coeff_mask = 0.75
 
@@ -73,7 +73,7 @@ for epoch in tqdm.tqdm(range(epochs)):
 print('Finished Training')
 
 print('Saving trained model')
-model_name = "../model/trained_cUNet_pytorch_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz_notranspose.pkl".format(epochs, coeff_mask, batch_size)
+model_name = "model/trained_cUNet_pytorch_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz.pkl".format(epochs, coeff_mask, batch_size)
 
 torch.save(model.state_dict(), model_name)
 

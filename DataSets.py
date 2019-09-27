@@ -64,7 +64,8 @@ class UNetDatasetFromFolders(Dataset):
             mask_found = 0
             folder_imgs = []
             folder_masks = []
-            dirs[:] = [d for d in dirs if d not in self.excluded]
+            if self.excluded is not None:
+                dirs[:] = [d for d in dirs if d not in self.excluded]
             for fname in files:
                 if fname.startswith("File") and fname.endswith('.tiff'):
                     if "mask" not in fname:

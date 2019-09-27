@@ -37,11 +37,11 @@ class UNetDataSetFromNpz(Dataset):
 
 class UNetDatasetFromFolders(Dataset):
 
-    def __init__(self, root_path, transform=None):
+    def __init__(self, root_path, excluded=None, transform=None):
         self.transform = transform
         self.root_path = root_path
         self.distances, self.images_list, self.masks_list = self._create_list()
-
+        self.excluded = excluded
     @staticmethod
     def file_sort_key(fpath: str):
         # os.path.split(fpath) --> base, fname
@@ -58,12 +58,12 @@ class UNetDatasetFromFolders(Dataset):
         images_list = []
         masks_list = []
 
-        for root_dir, _, files in os.walk(self.root_path):
+        for root_dir, dirs, files in os.walk(self.root_path):
             image_found = 0
             mask_found = 0
             folder_imgs = []
             folder_masks = []
-
+            dirs[:] = [d for d in dirs if d not in self.excluded]
             for fname in files:
                 if fname.startswith("File") and fname.endswith('.tiff'):
                     if "mask" not in fname:

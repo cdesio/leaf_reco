@@ -70,8 +70,8 @@ for epoch in tqdm.tqdm(range(epochs)):
                 optimizer.step()
 
             running_loss += loss.item()
-            if i%50==49:
-                torch.save(model.state_dict(),
+    if epoch%50==49:
+        torch.save(model.state_dict(),
                            "model/trained_cUNet_pytorch_regression_{}epochs_coeff_mask{}_validation.pkl".format(i+1,
                                                                                                                 coeff_mask) )
         epoch_loss = running_loss / data_lengths[phase]

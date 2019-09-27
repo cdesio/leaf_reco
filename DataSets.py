@@ -40,8 +40,9 @@ class UNetDatasetFromFolders(Dataset):
     def __init__(self, root_path, excluded=None, transform=None):
         self.transform = transform
         self.root_path = root_path
-        self.distances, self.images_list, self.masks_list = self._create_list()
         self.excluded = excluded
+        self.distances, self.images_list, self.masks_list = self._create_list()
+
     @staticmethod
     def file_sort_key(fpath: str):
         # os.path.split(fpath) --> base, fname

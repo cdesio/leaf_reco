@@ -110,7 +110,7 @@ class cUNet(nn.Module):
 
         mask = self.conv_last(convb9)
         #print("mask: {}".format(mask.size()))
-        return mask, fc, flatt
+        return mask, fc
 
 
 

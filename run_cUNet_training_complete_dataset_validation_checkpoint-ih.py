@@ -3,13 +3,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 from torchvision import transforms
-import tqdm
 from tqdm import tqdm, trange
 from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_val_test
 from DataSets import UNetDatasetFromFolders
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
-from torch.utils.data import DataLoader
+
 
 DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 DATA_DIR_IH = "/data/uob/"

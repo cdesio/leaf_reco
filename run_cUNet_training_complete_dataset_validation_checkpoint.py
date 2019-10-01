@@ -8,7 +8,7 @@ from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_v
 from DataSets import UNetDatasetFromFolders
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
-from torch.utils.data import DataLoader
+
 
 DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 data_dir = DATA_DIR_DEEPTHOUGHT
@@ -19,13 +19,13 @@ composed = transforms.Compose([Cut(), Rescale(0.25), ChannelsFirst(), ToTensor()
 
 complete_dataset = UNetDatasetFromFolders(root_folder, transform=composed)
 print(len(complete_dataset))
-
+batch_size = 16
 data_loaders, data_lengths = splitter_train_val_test(complete_dataset,
                                                      validation_split=0.2,
                                                      test_split = 0.2,
                                                      batch=16,
                                                      workers=4)
-
+print(len(data_loaders['train']), data_lengths['train'])
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 from cUNet_pytorch_pooling import cUNet, dice_loss
@@ -43,7 +43,7 @@ coeff_mask = 0.75
 
 #Training phase
 
-for epoch in trange(epochs):
+for epoch in trange(epochs, desc = "Training Epochs"):
 
     for phase in ['train', 'val']:
         if phase == 'train':
@@ -52,7 +52,7 @@ for epoch in trange(epochs):
             model.train(False)
 
         running_loss = 0.0
-        for i, batch in enumerate(data_loaders[phase]):
+        for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]// batch_size, desc = "Mini Batch"):
             inputs = batch['image'].float().to(device)
             labels_mask = batch['mask'].float().to(device)
             labels_dist = batch['dist'][..., np.newaxis].float().to(device)
@@ -68,7 +68,7 @@ for epoch in trange(epochs):
                 optimizer.step()
 
             running_loss += loss.item()
-    if epoch%1==0:
+    if epoch%50==49:
         torch.save(model.state_dict(),
                            "model/trained_cUNet_pytorch_regression_complete_dataset_{}epochs_coeff_mask{}_validation.pkl".format(epoch+1,
                                                                                                                 coeff_mask) )

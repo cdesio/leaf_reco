@@ -30,7 +30,7 @@ data_loaders, data_lengths = splitter_train_val_test(dataset,
                                                      test_split = 0.2,
                                                      batch=batch_size,
                                                      workers=4)
-print(data_lengths['train'], data_lengths['val', data_lengths['test']])
+print(data_lengths['train'], data_lengths['val'], data_lengths['test'])
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

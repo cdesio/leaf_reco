@@ -4,11 +4,13 @@ import torch.nn as nn
 import numpy as np
 from torchvision import transforms
 import tqdm
+from tqdm import tqdm, trange
 from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter
 from DataSets import UNetDataSetFromNpz
 import torch.optim as optim
 from cUNet_pytorch_pooling import cUNet, dice_loss
 from sklearn.metrics import mean_squared_error
+from torch.utils.data import DataLoader
 
 DATA_DIR_DEEPTHOUGHT = os.path.join("/",'storage','yw18581','data')
 DATA_DIR_IRON_HIDE = os.path.join("/","data","uob")
@@ -24,7 +26,7 @@ composed_npz = transforms.Compose([Rescale(0.25), ChannelsFirst(), ToTensor()])
 dataset_train = UNetDataSetFromNpz(x, y, transform=composed_npz, dist = dist[...,np.newaxis])
 print(len(dataset_train))
 
-batch_size=16
+batch_size=8
 train_loaders, train_lengths = splitter(dataset_train, validation_split=0.2, batch=batch_size, workers=4)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -37,12 +39,12 @@ criterion_dist = nn.MSELoss()
 model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-epochs=50
+epochs=100
 coeff_mask = 0.75
 
 #Training phase
 
-for epoch in tqdm.tqdm(range(epochs)):
+for epoch in trange(epochs, desc='Training Epochs'):
     print("Epoch {}/{}\n".format(epoch + 1, epochs))
     print('-' * 10)
 
@@ -53,7 +55,7 @@ for epoch in tqdm.tqdm(range(epochs)):
             model.train(False)
 
         running_loss = 0.0
-        for i, batch in enumerate(train_loaders[phase]):
+        for i, batch in tqdm(enumerate(train_loaders[phase]), total=len(dataset_train) // batch_size, desc='Mini Batch'):
             inputs = batch['image'].float().to(device)
             labels_mask = batch['mask'].float().to(device)
             labels_dist = batch['dist'].float().to(device)
@@ -73,7 +75,7 @@ for epoch in tqdm.tqdm(range(epochs)):
 print('Finished Training')
 
 print('Saving trained model')
-model_name = os.path.join(data_dir, "model/trained_cUNet_pytorch_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz.pkl".format(epochs, coeff_mask, batch_size))
+model_name = os.path.join(data_dir, "model/trained_cUNet_pytorch_regression_validation_{}epochs_coeff_mask{}_batch{}_on_npz-ih.pkl".format(epochs, coeff_mask, batch_size))
 
 torch.save(model.state_dict(), model_name)
 
@@ -81,7 +83,7 @@ print('Inference step')
 
 model_inference = cUNet(out_size=1)
 model_inference.load_state_dict(torch.load(model_name))
-model_inference = model.eval()
+model_inference.eval()
 model_inference.to(device)
 
 test_data = np.load(os.path.join(data_dir,"Xy_test_clean_300_24_10_25.npz"))
@@ -99,14 +101,14 @@ y_pred = []
 
 for i, batch in enumerate(test_data_loader):
     true_images, true_dists = batch['image'], batch['dist']
-    _, pred_classes = model_inference(true_images.float().to(device))
+    _, pred_dists = model_inference(true_images.float().to(device))
     print("batch {}".format(i + 1))
-    for j, (img, tr_cl, pr_cl) in enumerate(zip(true_images,
+    for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
                                                 true_dists.cpu().detach().numpy(),
-                                                pred_classes.cpu().detach().numpy())):
-        true_dist = tr_cl
-        pred_dist = pr_cl
-        y_test.append(true_dist)
+                                                pred_dists.cpu().detach().numpy())):
+        true_dist = tr_dist
+        pred_dist = pr_dist
+        y_true.append(true_dist)
         y_pred.append(pred_dist)
 
 y_pred = np.asarray(y_pred).ravel()

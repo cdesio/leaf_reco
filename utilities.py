@@ -104,8 +104,8 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
     y_true = []
     y_pred = []
 
-    for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths['test']//batch_size, desc = "Batch"):
-        true_images, true_dists = batch['image'], batch['dist']
+    for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"]//batch_size, desc = "Batch"):
+        true_images, true_dists = batch["image"], batch["dist"]
         _, pred_dists = model(true_images.float().to(device))
         for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
                                                         true_dists.cpu().detach().numpy(),
@@ -128,9 +128,9 @@ def inference_phase_rUNet_plot_notebook(model, data_loaders, data_lengths, batch
     model.eval()
     model.to(device);
 
-    for i, batch in tqdm(enumerate(data_loaders['test']), total=data_lengths['test'] // batch_size, desc='Batch'):
+    for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"] // batch_size, desc="Batch"):
 
-        true_images, true_masks, true_dists = batch['image'], batch['mask'], batch['dist']
+        true_images, true_masks, true_dists = batch["image"], batch["mask"], batch["dist"]
         pred_masks, pred_dists = model(true_images.float().to(device))
         print("batch {}".format(i + 1))
         for j, (img, tr_msk, tr_dist, pr_msk, pr_dist) in enumerate(zip(true_images,

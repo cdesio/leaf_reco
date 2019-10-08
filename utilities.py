@@ -107,7 +107,9 @@ def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_s
         return y_true, y_pred
 
 
-def inference_phase_rUNet_plot(model, model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
+def inference_phase_rUNet_plot_notebook(model, model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
+    from tqdm.notebook import tqdm
+    import matplotlib.pyplot as plt
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model.load_state_dict(torch.load(model_name))
     model.eval()

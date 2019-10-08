@@ -84,8 +84,9 @@ def training_phase_rUNet(model, optimizer, loss_coeff,
 
 
 
-def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_size, dev=0):
-
+def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
+    if notebook:
+        from tqdm.notebook import tqdm
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model.load_state_dict(torch.load(model_name))
     model.eval()
@@ -102,9 +103,9 @@ def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_s
                                                         pred_dists.cpu().detach().numpy())):
             y_true.append(tr_dist)
             y_pred.append(pr_dist)
-        y_true = np.asarray(y_true)
-        y_pred = np.asarray(y_pred).ravel
-        return y_true, y_pred
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred).ravel()
+    return y_true, y_pred
 
 
 def inference_phase_rUNet_plot_notebook(model, model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
@@ -114,9 +115,6 @@ def inference_phase_rUNet_plot_notebook(model, model_name, data_loaders, data_le
     model.load_state_dict(torch.load(model_name))
     model.eval()
     model.to(device);
-
-    y_true = []
-    y_pred = []
 
     for i, batch in tqdm(enumerate(data_loaders['test']), total=data_lengths['test'] // batch_size, desc='Batch'):
 

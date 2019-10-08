@@ -1,11 +1,8 @@
 from skimage.transform import rescale
 
 import torch
-from torch.utils.data import Dataset, DataLoader
 from functools import partial
 import numpy as np
-
-from torch.utils.data.sampler import SubsetRandomSampler
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
@@ -85,48 +82,6 @@ class ToTensor:
         return sample_out
 
 
-def splitter(dataset, validation_split=0.2, batch=16, workers=4):
-    dataset_len = len(dataset)
-    indices = list(range(dataset_len))
-    val_len = int(np.floor(validation_split * dataset_len))
-    validation_idx = np.random.choice(indices, size=val_len, replace=False)
-    train_idx = list(set(indices) - set(validation_idx))
-
-    train_sampler = SubsetRandomSampler(train_idx)
-    validation_sampler = SubsetRandomSampler(validation_idx)
-
-    train_loader = DataLoader(dataset, sampler=train_sampler, batch_size=batch, num_workers=workers)
-    validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch, num_workers=workers)
-
-    data_loaders = {"train": train_loader, "val": validation_loader}
-    data_lengths = {"train": len(train_idx), "val": val_len}
-    return data_loaders, data_lengths
-
-def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch=16, workers=4):
-    dataset_len = len(dataset)
-    indices = list(range(dataset_len))
-
-    test_len = int(np.floor(test_split * dataset_len))
-    train_len = dataset_len - test_len
-
-    test_idx = np.random.choice(indices, size=test_len, replace=False)
-    train_idx = list(set(indices) - set(test_idx))
-
-    test_sampler = SubsetRandomSampler(test_idx)
-
-    validation_len = int(np.floor(validation_split * train_len))
-    validation_idx = np.random.choice(train_idx, size=validation_len, replace=False)
-    train_idx_out = list(set(train_idx)- set(validation_idx))
-
-    validation_sampler = SubsetRandomSampler(validation_idx)
-    train_sampler = SubsetRandomSampler(train_idx_out)
-
-    train_loader = DataLoader(dataset, sampler=train_sampler, batch_size=batch, num_workers=workers)
-    validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch, num_workers=workers)
-    test_loader = DataLoader(dataset, sampler = test_sampler, batch_size=batch, num_workers=workers)
-    data_loaders = {"train": train_loader, "val": validation_loader, "test": test_loader}
-    data_lengths = {"train": len(train_idx_out), "val": validation_len, "test": test_len}
-    return data_loaders, data_lengths
 
 
 

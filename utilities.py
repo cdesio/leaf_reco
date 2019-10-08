@@ -87,14 +87,17 @@ def training_phase_rUNet(optimizer, loss_coeff,
 
 
 
-def inference_phase_rUNet(model_name, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
+def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
     if notebook:
         from tqdm.notebook import tqdm
     else:
         from tqdm import tqdm
+
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
-    model = cUNet(out_size=1)
-    model.load_state_dict(torch.load(model_name))
+
+    #model = cUNet(out_size=1)
+
+    #model.load_state_dict(torch.load(model_name))
     model.eval()
     model.to(device);
 
@@ -114,12 +117,14 @@ def inference_phase_rUNet(model_name, data_loaders, data_lengths, batch_size, de
     return y_true, y_pred
 
 
-def inference_phase_rUNet_plot_notebook(model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
+def inference_phase_rUNet_plot_notebook(model, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
     from tqdm.notebook import tqdm
     import matplotlib.pyplot as plt
+
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
-    model = cUNet(out_size=1)
-    model.load_state_dict(torch.load(model_name))
+    #model = cUNet(out_size=1)
+
+    #model.load_state_dict(torch.load(model_name))
     model.eval()
     model.to(device);
 

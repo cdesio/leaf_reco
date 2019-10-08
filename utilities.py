@@ -35,7 +35,7 @@ def create_history():
 
 def training_phase_rUNet(model, optimizer, loss_coeff,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint, dev=0,
-                         dataset_key=None,
+                         dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch_{}_dataset".format(dataset_key),
                          writer = None):
 

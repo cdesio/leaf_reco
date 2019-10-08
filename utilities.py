@@ -4,8 +4,10 @@ from torchvision import transforms
 from tqdm import tqdm, trange
 from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_val_test, splitter
 from DataSets import UNetDatasetFromFolders
-import torch.optim as optim
 from cUNet_pytorch_pooling import cUNet, dice_loss
+from torch.utils.data import DataLoader
+
+from torch.utils.data.sampler import SubsetRandomSampler
 
 def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25):
     excluded = excluded_list
@@ -33,13 +35,14 @@ def create_history():
     history.setdefault("epochs", [])
     return history
 
-def training_phase_rUNet(model, optimizer, loss_coeff,
+def training_phase_rUNet(optimizer, loss_coeff,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint, dev=0,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None):
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
+    model = cUNet(out_size=1)
     model.to(device)
     history = create_history()
 
@@ -84,12 +87,13 @@ def training_phase_rUNet(model, optimizer, loss_coeff,
 
 
 
-def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
+def inference_phase_rUNet(model_name, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
     if notebook:
         from tqdm.notebook import tqdm
     else:
         from tqdm import tqdm
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
+    model = cUNet(out_size=1)
     model.load_state_dict(torch.load(model_name))
     model.eval()
     model.to(device);
@@ -110,10 +114,11 @@ def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_s
     return y_true, y_pred
 
 
-def inference_phase_rUNet_plot_notebook(model, model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
+def inference_phase_rUNet_plot_notebook(model_name, data_loaders, data_lengths, batch_size, stop = 1, dev=0):
     from tqdm.notebook import tqdm
     import matplotlib.pyplot as plt
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
+    model = cUNet(out_size=1)
     model.load_state_dict(torch.load(model_name))
     model.eval()
     model.to(device);
@@ -144,3 +149,47 @@ def inference_phase_rUNet_plot_notebook(model, model_name, data_loaders, data_le
             break
         return
 
+def splitter(dataset, validation_split=0.2, batch=16, workers=4):
+
+    dataset_len = len(dataset)
+    indices = list(range(dataset_len))
+    val_len = int(np.floor(validation_split * dataset_len))
+    validation_idx = np.random.choice(indices, size=val_len, replace=False)
+    train_idx = list(set(indices) - set(validation_idx))
+
+    train_sampler = SubsetRandomSampler(train_idx)
+    validation_sampler = SubsetRandomSampler(validation_idx)
+
+    train_loader = DataLoader(dataset, sampler=train_sampler, batch_size=batch, num_workers=workers)
+    validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch, num_workers=workers)
+
+    data_loaders = {"train": train_loader, "val": validation_loader}
+    data_lengths = {"train": len(train_idx), "val": val_len}
+    return data_loaders, data_lengths
+
+def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch=16, workers=4):
+
+    dataset_len = len(dataset)
+    indices = list(range(dataset_len))
+
+    test_len = int(np.floor(test_split * dataset_len))
+    train_len = dataset_len - test_len
+
+    test_idx = np.random.choice(indices, size=test_len, replace=False)
+    train_idx = list(set(indices) - set(test_idx))
+
+    test_sampler = SubsetRandomSampler(test_idx)
+
+    validation_len = int(np.floor(validation_split * train_len))
+    validation_idx = np.random.choice(train_idx, size=validation_len, replace=False)
+    train_idx_out = list(set(train_idx)- set(validation_idx))
+
+    validation_sampler = SubsetRandomSampler(validation_idx)
+    train_sampler = SubsetRandomSampler(train_idx_out)
+
+    train_loader = DataLoader(dataset, sampler=train_sampler, batch_size=batch, num_workers=workers)
+    validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch, num_workers=workers)
+    test_loader = DataLoader(dataset, sampler = test_sampler, batch_size=batch, num_workers=workers)
+    data_loaders = {"train": train_loader, "val": validation_loader, "test": test_loader}
+    data_lengths = {"train": len(train_idx_out), "val": validation_len, "test": test_len}
+    return data_loaders, data_lengths

@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from torchvision import transforms
 from tqdm import tqdm, trange
-from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_val_test, splitter
+from Transformers import ChannelsFirst, ToTensor, Rescale, Cut
 from DataSets import UNetDatasetFromFolders
 from cUNet_pytorch_pooling import cUNet, dice_loss
 from torch.utils.data import DataLoader

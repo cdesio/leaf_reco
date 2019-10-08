@@ -87,6 +87,8 @@ def training_phase_rUNet(model, optimizer, loss_coeff,
 def inference_phase_rUNet(model, model_name, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
     if notebook:
         from tqdm.notebook import tqdm
+    else:
+        from tqdm import tqdm
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model.load_state_dict(torch.load(model_name))
     model.eval()

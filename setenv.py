@@ -1,6 +1,6 @@
 import sys, os
 
-def add_folders:
+def add_folders():
     src_folder = os.path.join("/","storage", "yw18581", "src")
 
     ml_models = os.path.join(src_folder, "ml_models")

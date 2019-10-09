@@ -1,7 +1,7 @@
 import sys, os
 
 def add_folders():
-    src_folder = os.path.join("/","storage", "yw18581", "src")
+    src_folder = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
 
     ml_models = os.path.join(src_folder, "ml_models")
     data_prep = os.path.join(src_folder, "data_preparation")

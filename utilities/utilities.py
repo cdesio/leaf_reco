@@ -6,7 +6,7 @@ from Transformers import ChannelsFirst, ToTensor, Rescale, Cut
 from DataSets import UNetDatasetFromFolders
 from cUNet_pytorch_pooling import cUNet, dice_loss
 from torch.utils.data import DataLoader
-
+import re, sys, os
 from torch.utils.data.sampler import SubsetRandomSampler
 
 def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25):
@@ -198,3 +198,20 @@ def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch
     data_loaders = {"train": train_loader, "val": validation_loader, "test": test_loader}
     data_lengths = {"train": len(train_idx_out), "val": validation_len, "test": test_len}
     return data_loaders, data_lengths
+
+
+def hasNumbers(inputString):
+    return bool(re.search(r'\d', inputString))
+
+def exclude_dist(dist_list, root_folder):
+
+    regex = re.compile(r'\d+')
+
+    excluded = []
+    for dist in dist_list:
+        for root, dirs, _ in os.walk(root_folder):
+            for d in dirs:
+                if hasNumbers(d):
+                    if int(regex.findall(d)[-1]) == dist:
+                        excluded.append(d)
+    return excluded

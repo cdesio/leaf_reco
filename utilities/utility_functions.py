@@ -36,9 +36,8 @@ def create_history():
     return history
 
 def training_phase_rUNet(optimizer, loss_coeff,
-                         data_loaders, data_lengths, epochs, batch_size, model_checkpoint, dev=0,
+                         data_loaders, data_lengths, epochs, batch_size, model_checkpoint,task_folder_name, dev=0,
                          dataset_key="complete",
-                         task_folder_name,
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None, notebook=None):
     data_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")

@@ -21,13 +21,14 @@ def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_spli
     return data_loaders, data_lengths
 
 
-def combined_loss(pred_mask, true_mask, pred_dist, true_dist, coeff):
-    criterion_mask = dice_loss
-    criterion_dist = nn.MSELoss()
-    loss_mask = criterion_mask(pred_mask, true_mask)
-    loss_dist = criterion_dist(pred_dist, true_dist)
-    loss = coeff * loss_mask + (1.0-coeff) * loss_dist
-    return loss
+#def combined_loss(pred_mask, true_mask, pred_dist, true_dist, coeff):
+#    criterion_mask = dice_loss
+#    criterion_dist = nn.MSELoss()
+#    loss_mask = criterion_mask(pred_mask, true_mask)
+#    loss_dist = criterion_dist(pred_dist, true_dist)
+#    loss = coeff * loss_mask + (1.0-coeff) * loss_dist
+#    return loss
+
 def create_history():
     history = {}
     history.setdefault("train", [])
@@ -58,6 +59,8 @@ def training_phase_rUNet(optimizer, loss_coeff,
     model = cUNet(out_size=1)
     model.to(device)
     history = create_history()
+    criterion_mask = dice_loss
+    criterion_dist = nn.MSELoss()
 
     for epoch in trange(epochs, desc = "Training Epoch"):
         print(epoch +1)
@@ -74,7 +77,9 @@ def training_phase_rUNet(optimizer, loss_coeff,
                 labels_dist = batch['dist'][..., np.newaxis].float().to(device)
                 optimizer.zero_grad()
                 out_mask, out_dist = model(inputs)
-                loss = combined_loss(out_mask, labels_mask, out_dist, labels_dist, coeff=loss_coeff)
+                loss_mask = criterion_mask(out_mask, labels_mask)
+                loss_dist = criterion_dist(out_dist, labels_dist)
+                loss = loss_coeff * loss_mask + (1.0 - loss_coeff) * loss_dist
 
                 if phase== "train":
                     loss.backward()

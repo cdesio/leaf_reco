@@ -60,7 +60,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
                 model.train(False)
             running_loss = 0.0
 
-            for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]//batch_size, desc="Mini Batch"):
+            for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]//batch_size, desc="Mini Batch {}".format(phase)):
                 inputs = batch['image'].float().to(device)
                 labels_mask = batch['mask'].float().to(device)
                 labels_dist = batch['dist'][..., np.newaxis].float().to(device)
@@ -79,7 +79,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
 
         if epoch%model_checkpoint==(model_checkpoint-1):
             torch.save(model.state_dict(), os.path.join(data_dir,"saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
-            epoch_loss = running_loss/data_lengths['phase']
+            epoch_loss = running_loss/data_lengths[phase]
             print('{} Loss: {:.4f)'.format(phase, epoch_loss))
 
         if writer:

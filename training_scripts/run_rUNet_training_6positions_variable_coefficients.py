@@ -17,7 +17,7 @@ excluded = exclude_dist(dist_list = [1,3,15,30], root_folder=root_dir)
 
 task_folder = "trained_6_positions"
 
-data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size-16, excluded_list = excluded)
+data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=16, excluded_list = excluded)
 
 print(data_lengths)
 

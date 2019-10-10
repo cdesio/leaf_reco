@@ -38,9 +38,14 @@ def create_history():
 def training_phase_rUNet(optimizer, loss_coeff,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint, dev=0,
                          dataset_key="complete",
+                         task_folder_name,
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None, notebook=None):
     data_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
+    task_folder_path = os.path.join(data_dir,"saved_models",task_folder_name)
+    if not os.path.exists(task_folder_path):
+        os.makedirs(task_folder_path)
+
     if notebook:
         from tqdm.notebook import tqdm, trange
     else:
@@ -91,13 +96,13 @@ def training_phase_rUNet(optimizer, loss_coeff,
         history['epochs'].append(epoch+1)
 
         if epoch%model_checkpoint==(model_checkpoint-1):
-            torch.save(model.state_dict(), os.path.join(data_dir,"saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
+            torch.save(model.state_dict(), os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
 
 
 
     print("Finished training")
     print('Saving trained model')
-    torch.save(model.state_dict(), os.path.join(data_dir, "saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
+    torch.save(model.state_dict(), os.path.join(task_folder_path, model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
 
     return history
 

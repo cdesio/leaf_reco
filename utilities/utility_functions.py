@@ -77,7 +77,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
         history['epochs'].append(epoch)
 
         if epoch%model_checkpoint==(model_checkpoint-1):
-            torch.save(model.state_dict(), os.path.join("model", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
+            torch.save(model.state_dict(), os.path.join("saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
             epoch_loss = running_loss/data_lengths['phase']
             print('{} Loss: {:.4f)'.format(phase, epoch_loss))
 
@@ -86,7 +86,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
 
     print("Finished training")
     print('Saving trained model')
-    torch.save(model.state_dict(), os.path.join("model", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
+    torch.save(model.state_dict(), os.path.join("saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
 
     return history
 

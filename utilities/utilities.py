@@ -39,7 +39,11 @@ def training_phase_rUNet(optimizer, loss_coeff,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint, dev=0,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
-                         writer = None):
+                         writer = None, notebook=None):
+    if notebook:
+        from tqdm.notebook import tqdm
+    else:
+        from tqdm import tqdm
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model = cUNet(out_size=1)
@@ -55,7 +59,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
             running_loss = 0.0
 
             for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]//batch_size, desc="Mini Batch"):
-                inputs = batch['image'.float().to(device)]
+                inputs = batch['image'].float().to(device)
                 labels_mask = batch['mask'].float().to(device)
                 labels_dist = batch['dist'][..., np.newaxis].float().to(device)
                 optimizer.zero_grad()

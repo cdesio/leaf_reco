@@ -87,7 +87,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
 
                 running_loss += loss.item()
 
-            epoch_loss = running_loss / data_lengths[phase]
+            epoch_loss = running_loss / (data_lengths[phase]//batch_size)
             print('{} Loss: {:.4f})'.format(phase, epoch_loss))
             if writer:
 

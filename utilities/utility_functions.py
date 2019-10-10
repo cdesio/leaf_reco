@@ -53,7 +53,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
     history = create_history()
 
     for epoch in trange(epochs, desc = "Training Epoch"):
-        print(epoch)
+        print(epoch +1)
         for phase in ["train", "val"]:
             if phase == "train":
                 model.train(True)

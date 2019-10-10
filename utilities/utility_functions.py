@@ -42,9 +42,9 @@ def training_phase_rUNet(optimizer, loss_coeff,
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None, notebook=None):
     if notebook:
-        from tqdm.notebook import tqdm
+        from tqdm.notebook import tqdm, trange
     else:
-        from tqdm import tqdm
+        from tqdm import tqdm, trange
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model = cUNet(out_size=1)

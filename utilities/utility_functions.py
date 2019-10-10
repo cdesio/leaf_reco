@@ -81,7 +81,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
         if epoch%model_checkpoint==(model_checkpoint-1):
             torch.save(model.state_dict(), os.path.join(data_dir,"saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
             epoch_loss = running_loss/data_lengths[phase]
-            print('{} Loss: {:.4f)'.format(phase, epoch_loss))
+            print('{} Loss: {:.4f})'.format(phase, epoch_loss))
 
         if writer:
             writer.add_scalar('Training_loss', running_loss, epoch)

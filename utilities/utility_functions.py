@@ -6,8 +6,9 @@ from Transformers import ChannelsFirst, ToTensor, Rescale, Cut
 from DataSets import UNetDatasetFromFolders
 from cUNet_pytorch_pooling import cUNet, dice_loss
 from torch.utils.data import DataLoader
-import re, sys, os
+import re, os
 from torch.utils.data.sampler import SubsetRandomSampler
+import torch.nn as nn
 
 def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25):
     excluded = excluded_list

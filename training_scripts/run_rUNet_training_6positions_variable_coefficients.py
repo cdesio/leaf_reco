@@ -1,12 +1,12 @@
 import sys, os
-sys.path.append('../')
+sys.path.append('/storage/yw18581/src/leaf_reco')
 from setenv import add_folders
 add_folders()
 from pickle import dump
 from utility_functions import define_dataset, training_phase_rUNet, exclude_dist
 
 from cUNet_pytorch_pooling import cUNet
-
+import torch
 import torch.optim as optim
 
 DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"

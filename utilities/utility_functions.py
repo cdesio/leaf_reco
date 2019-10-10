@@ -47,7 +47,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
         from tqdm import tqdm, trange
     if writer:
         from torch.utils.tensorboard import SummaryWriter
-        writer = SummaryWriter(os.path.join(data_dir, 'notebooks','/runs/rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
+        tb_writer = SummaryWriter(os.path.join(data_dir, 'notebooks','runs', 'rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
 
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
@@ -83,9 +83,9 @@ def training_phase_rUNet(optimizer, loss_coeff,
             if writer:
 
                 if phase == 'train':
-                    writer.add_scalar('Training_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Training_loss', epoch_loss, epoch)
                 else:
-                    writer.add_scalar('Validation_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Validation_loss', epoch_loss, epoch)
 
             history[phase].append(epoch_loss)
         history['epochs'].append(epoch+1)

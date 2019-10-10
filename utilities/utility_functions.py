@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 from torchvision import transforms
-from tqdm import tqdm, trange
 from Transformers import ChannelsFirst, ToTensor, Rescale, Cut
 from DataSets import UNetDatasetFromFolders
 from cUNet_pytorch_pooling import cUNet, dice_loss
@@ -46,6 +45,10 @@ def training_phase_rUNet(optimizer, loss_coeff,
         from tqdm.notebook import tqdm, trange
     else:
         from tqdm import tqdm, trange
+    if writer:
+        from torch.utils.tensorboard import SummaryWriter
+        writer = SummaryWriter(os.path.join(data_dir, 'notebooks','/runs/rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
+
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     model = cUNet(out_size=1)
@@ -78,13 +81,14 @@ def training_phase_rUNet(optimizer, loss_coeff,
             epoch_loss = running_loss / data_lengths[phase]
             print('{} Loss: {:.4f})'.format(phase, epoch_loss))
             if writer:
+
                 if phase == 'train':
                     writer.add_scalar('Training_loss', epoch_loss, epoch)
                 else:
                     writer.add_scalar('Validation_loss', epoch_loss, epoch)
 
             history[phase].append(epoch_loss)
-        history['epochs'].append(epoch)
+        history['epochs'].append(epoch+1)
 
         if epoch%model_checkpoint==(model_checkpoint-1):
             torch.save(model.state_dict(), os.path.join(data_dir,"saved_models", model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))

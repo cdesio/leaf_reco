@@ -1,5 +1,5 @@
 import sys, os
-sys.path.append('.../')
+sys.path.append('../')
 from setenv import add_folders
 add_folders()
 from pickle import dump

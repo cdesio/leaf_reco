@@ -11,7 +11,7 @@ import torch.optim as optim
 
 DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
 data_dir = DATA_DIR_DEEPTHOUGHT
-
+src_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
 root_dir = os.path.join(data_dir, "dataset")
 excluded = exclude_dist(dist_list = [1,3,15,30], root_folder=root_dir)
 
@@ -39,7 +39,7 @@ for coef in coeffs:
                                data_loaders=data_loaders, data_lengths=data_lengths,
                                epochs=n_epochs, batch_size=16, model_checkpoint=10,
                                dataset_key="6positions", writer=True)
-    history_filepath = os.path.join(data_dir, "saved_models", task_folder, "history_6positions_{}epochs_{}coef.pkl".format(n_epochs, coef))
+    history_filepath = os.path.join(src_dir, "saved_models", task_folder, "history_6positions_{}epochs_{}coef.pkl".format(n_epochs, coef))
     print("Save history to {}".format(history_filepath))
     dump(history, open(history_filepath, 'wb'))
     print("Done")

@@ -41,8 +41,8 @@ def training_phase_rUNet(optimizer, loss_coeff,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None, notebook=None):
-    data_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
-    task_folder_path = os.path.join(data_dir,"saved_models",task_folder_name)
+    src_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
+    task_folder_path = os.path.join(src_dir,"saved_models",task_folder_name)
     if not os.path.exists(task_folder_path):
         os.makedirs(task_folder_path)
 
@@ -52,7 +52,7 @@ def training_phase_rUNet(optimizer, loss_coeff,
         from tqdm import tqdm, trange
     if writer:
         from torch.utils.tensorboard import SummaryWriter
-        tb_writer = SummaryWriter(os.path.join(data_dir, 'notebooks','runs', 'rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
+        tb_writer = SummaryWriter(os.path.join(src_dir, 'notebooks','runs', 'rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
 
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")

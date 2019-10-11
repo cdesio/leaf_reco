@@ -105,7 +105,7 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
 
             history[phase].append(epoch_loss)
         history['epochs'].append(epoch)
-        if epoch%model_checkpoint==(model_checkpoint-1):
+        if epoch%model_checkpoint==(model_checkpoint-1) or epoch==epochs-1:
 
             torch.save({
                 'epoch': epoch,

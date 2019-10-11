@@ -99,11 +99,16 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                     tb_writer.add_scalar('Validation_loss', epoch_loss, epoch)
 
             history[phase].append(epoch_loss)
-        history['epochs'].append(epoch+1)
+        history['epochs'].append(epoch)
 
         if epoch%model_checkpoint==(model_checkpoint-1):
-            torch.save(model.state_dict(), os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
 
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': epoch_loss},
+                os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
 
 
     print("Finished training")

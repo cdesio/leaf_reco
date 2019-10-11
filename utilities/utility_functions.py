@@ -87,7 +87,7 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                     optimizer.step()
 
                 running_loss += loss.item()
-                print(running_loss)
+                #print(running_loss)
             epoch_loss = running_loss / (data_lengths[phase]//batch_size)
 
             print('{} Loss: {:.4f})'.format(phase, epoch_loss))

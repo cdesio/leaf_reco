@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 import re, os
 from torch.utils.data.sampler import SubsetRandomSampler
 import torch.nn as nn
+from pickle import dump
 
 def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25):
     excluded = excluded_list
@@ -105,20 +106,20 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
 
             history[phase].append(epoch_loss)
         history['epochs'].append(epoch)
+
         if epoch%model_checkpoint==(model_checkpoint-1) or epoch==epochs-1:
+            model_filepath = os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff ))
 
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'train_loss': train_loss,
-                'val_loss': val_loss},
-                os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
+            print("Save model checkpoint to: {}".format(model_filepath))
 
+            torch.save(dict(epoch=epoch, model_state_dict=model.state_dict(), optimizer_state_dict=optimizer.state_dict(),
+                            train_loss=train_loss, val_loss=val_loss), model_filepath)
+
+    history_filepath = os.path.join(task_folder_path, "history_"+model_prefix+"_{}epochs_{}coef.pkl".format(epochs, loss_coeff))
+    print("Save history to {}".format(history_filepath))
+    dump(history, open(history_filepath, 'wb'))
 
     print("Finished training")
-    #print('Saving trained model')
-    #torch.save(model.state_dict(), os.path.join(task_folder_path, model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
 
     return history
 

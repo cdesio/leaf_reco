@@ -36,7 +36,7 @@ def create_history():
     history.setdefault("epochs", [])
     return history
 
-def training_phase_rUNet(optimizer, loss_coeff,
+def training_phase_rUNet(model, optimizer, loss_coeff,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint,task_folder_name, dev=0,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
@@ -50,13 +50,14 @@ def training_phase_rUNet(optimizer, loss_coeff,
         from tqdm.notebook import tqdm, trange
     else:
         from tqdm import tqdm, trange
+
     if writer:
         from torch.utils.tensorboard import SummaryWriter
         tb_writer = SummaryWriter(os.path.join(src_dir, 'notebooks','runs', 'rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs, loss_coeff)))
 
 
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
-    model = cUNet(out_size=1)
+
     model.to(device)
     history = create_history()
     criterion_mask = dice_loss
@@ -79,15 +80,16 @@ def training_phase_rUNet(optimizer, loss_coeff,
                 out_mask, out_dist = model(inputs)
                 loss_mask = criterion_mask(out_mask, labels_mask)
                 loss_dist = criterion_dist(out_dist, labels_dist)
-                loss = loss_coeff * loss_mask + (1.0 - loss_coeff) * loss_dist
+                loss = (loss_coeff * loss_mask) + (1.0 - loss_coeff) * loss_dist
 
                 if phase== "train":
                     loss.backward()
                     optimizer.step()
 
                 running_loss += loss.item()
-
+                print(running_loss)
             epoch_loss = running_loss / (data_lengths[phase]//batch_size)
+
             print('{} Loss: {:.4f})'.format(phase, epoch_loss))
             if writer:
 

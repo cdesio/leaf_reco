@@ -120,8 +120,8 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
 
 
     print("Finished training")
-    print('Saving trained model')
-    torch.save(model.state_dict(), os.path.join(task_folder_path, model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
+    #print('Saving trained model')
+    #torch.save(model.state_dict(), os.path.join(task_folder_path, model_prefix+"_{}_dataset_{}epochs_{}coeff_mask_FINAL.pkl".format(dataset_key, epochs, loss_coeff )))
 
     return history
 

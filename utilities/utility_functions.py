@@ -71,8 +71,6 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
             else:
                 model.train(False)
             running_loss = 0.0
-            train_loss = 0.0
-            val_loss = 0.0
 
             for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]//batch_size, desc="Mini Batch {}".format(phase)):
                 inputs = batch['image'].float().to(device)

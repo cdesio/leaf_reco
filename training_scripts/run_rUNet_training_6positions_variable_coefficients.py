@@ -34,7 +34,7 @@ for coef in coeffs:
 
     torch.cuda.empty_cache()
     print("Train model")
-    history = training_phase_rUNet(optimizer=optimizer, loss_coeff=coef,
+    history = training_phase_rUNet(model=model, optimizer=optimizer, loss_coeff=coef,
                                task_folder_name= task_folder,
                                data_loaders=data_loaders, data_lengths=data_lengths,
                                epochs=n_epochs, batch_size=16, model_checkpoint=10,

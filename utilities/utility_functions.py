@@ -36,12 +36,12 @@ def create_history():
     history.setdefault("epochs", [])
     return history
 
-def training_phase_rUNet(model, optimizer, loss_coeff,
+def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint,task_folder_name, dev=0,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
                          writer = None, notebook=None):
-    src_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
+
     task_folder_path = os.path.join(src_dir,"saved_models",task_folder_name)
     if not os.path.exists(task_folder_path):
         os.makedirs(task_folder_path)

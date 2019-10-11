@@ -91,13 +91,15 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                 running_loss += loss.item()
                 #print(running_loss)
             epoch_loss = running_loss / (data_lengths[phase]//batch_size)
+
             if phase == 'train':
                 print('{} Loss: {:.4f})'.format(phase, epoch_loss))
                 train_loss = epoch_loss
+                print(train_loss)
             else:
                 print('{} Loss: {:.4f})'.format(phase, epoch_loss))
                 val_loss = epoch_loss
-
+                print(val_loss)
             if writer:
 
                 if phase == 'train':

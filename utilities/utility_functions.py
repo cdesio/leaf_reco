@@ -87,7 +87,6 @@ def training_phase_rUNet(model, optimizer, loss_coeff,
                     optimizer.step()
 
                 running_loss += loss.item()
-                print(running_loss)
             epoch_loss = running_loss / (data_lengths[phase]//batch_size)
 
             print('{} Loss: {:.4f})'.format(phase, epoch_loss))
@@ -242,3 +241,5 @@ def exclude_dist(dist_list, root_folder):
                     if int(regex.findall(d)[-1]) == dist:
                         excluded.append(d)
     return excluded
+
+

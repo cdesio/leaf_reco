@@ -71,6 +71,8 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
             else:
                 model.train(False)
             running_loss = 0.0
+            train_loss = 0.0
+            val_loss = 0.0
 
             for i, batch in tqdm(enumerate(data_loaders[phase]), total = data_lengths[phase]//batch_size, desc="Mini Batch {}".format(phase)):
                 inputs = batch['image'].float().to(device)
@@ -89,8 +91,13 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                 running_loss += loss.item()
                 #print(running_loss)
             epoch_loss = running_loss / (data_lengths[phase]//batch_size)
+            if phase == 'train':
+                print('{} Loss: {:.4f})'.format(phase, epoch_loss))
+                train_loss = epoch_loss
+            else:
+                print('{} Loss: {:.4f})'.format(phase, epoch_loss))
+                val_loss = epoch_loss
 
-            print('{} Loss: {:.4f})'.format(phase, epoch_loss))
             if writer:
 
                 if phase == 'train':
@@ -107,7 +114,8 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'loss': epoch_loss},
+                'train_loss': train_loss,
+                'val_loss': val_loss},
                 os.path.join(task_folder_path,  model_prefix+"_{}_dataset_{}epochs_{}coeff_mask.pkl".format(dataset_key, epoch+1, loss_coeff )))
 
 

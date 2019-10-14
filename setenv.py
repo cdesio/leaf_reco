@@ -1,7 +1,12 @@
 import sys, os
-"""
-def add_folders():
-    src_folder = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
+
+def add_folders(key=None):
+    if key=='deepthought':
+    	src_folder = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
+    elif key=='iron-hide':
+        src_folder = os.path.join("~/","HEP","uob","leaf_reco")	
+    elif(key=='notebook'):
+        src_folder = '../'
 
     ml_models = os.path.join(src_folder, "ml_models")
     data_prep = os.path.join(src_folder, "data_preparation")
@@ -11,8 +16,8 @@ def add_folders():
     sys.path.append(utilities)
     sys.path.append(data_prep)
     return
-"""
 
+"""
 def add_folders():
    # src_folder = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
 
@@ -24,3 +29,4 @@ def add_folders():
     sys.path.append(utilities)
     sys.path.append(data_prep)
     return
+"""

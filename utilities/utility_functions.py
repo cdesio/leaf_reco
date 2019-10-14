@@ -10,15 +10,18 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import torch.nn as nn
 from pickle import dump
 
-def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25):
+def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25,
+                   multi_processing=0
+):
     excluded = excluded_list
     composed = transforms.Compose([Cut(), Rescale(scale), ChannelsFirst(), ToTensor()])
     dataset = UNetDatasetFromFolders(root_folder, excluded = excluded, transform=composed)
+    
     data_loaders, data_lengths = splitter_train_val_test(dataset,
                                                          validation_split,
                                                          test_split,
                                                          batch=batch_size,
-                                                         workers = 4)
+                                                         workers = multi_processing)
     return data_loaders, data_lengths
 
 

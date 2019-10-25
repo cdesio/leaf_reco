@@ -15,7 +15,8 @@ if __name__ == '__main__':
 
     infolder_path = sys.argv[1]
     outfolder_path = sys.argv[2]
-
+    if not os.path.exists(outfolder_path):
+        os.makedirs(outfolder_path)
     infiles = [file for file in os.listdir(infolder_path) if "mask" not in file and str(file).startswith("File")]
     for f in infiles:
         print("copying {} to {}".format(f, outfolder_path))

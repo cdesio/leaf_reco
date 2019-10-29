@@ -18,3 +18,6 @@ labelImg
 notebooks/data
 notebooks/runs/*
 notebooks/runs
+
+training_scripts/.ipynb_checkpoints/
+utilities/.ipynb_checkpoints/

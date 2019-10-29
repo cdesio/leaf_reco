@@ -25,7 +25,7 @@ def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_spli
     return data_loaders, data_lengths
 
 
-#def combined_loss(pred_mask, true_mask, pred_dist, true_dist, coeff):
+# def combined_loss(pred_mask, true_mask, pred_dist, true_dist, coeff):
 #    criterion_mask = dice_loss
 #    criterion_dist = nn.MSELoss()
 #    loss_mask = criterion_mask(pred_mask, true_mask)

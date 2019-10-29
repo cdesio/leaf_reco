@@ -16,3 +16,5 @@ labelImg/*
 labelImg
 *hdf5
 notebooks/data
+notebooks/runs/*
+notebooks/runs

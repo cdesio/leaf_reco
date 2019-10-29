@@ -15,7 +15,9 @@ dist = sys.argv[3]
 out_folder = sys.argv[4]
 #data_dir = '/Users/cdesio/UoB/Jordan'
 fname_key = sys.argv[5]
-img_path =os.path.join(in_folder, '{}_{}.tiff'.format(fname_key,f_no))
+split = fname_key.split("_")
+split.append(str(f_no))
+img_path =os.path.join(in_folder, '{}.tiff'.format('_',join(split)))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")
@@ -97,5 +99,5 @@ plt.box(False)
 fig.axes.get_xaxis().set_visible(False)
 fig.axes.get_yaxis().set_visible(False)
 #plt.savefig("mask_only.tiff")
-plt.savefig(os.path.join(out_folder,'{}_{}_{}mm_mask_{}.tiff'.format(fname_key_f_no, dist, leaf_position)))
+plt.savefig(os.path.join(out_folder,'{}_{}mm_mask_{}.tiff'.format('_'.join(split), dist, leaf_position)))
 plt.close('all')

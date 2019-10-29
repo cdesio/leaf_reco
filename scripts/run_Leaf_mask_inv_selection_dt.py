@@ -4,7 +4,7 @@ import numpy as np
 import re
 import sys
     
-def run_leaf_mask_inv(in_folder, dist, out_folder):
+def run_leaf_mask_inv(in_folder, dist, out_folder, fname_key):
     src_folder = os.path.join("/","storage","yw18581","src","leaf_reco","data_preparation")
     regex = re.compile(r'\d+')
 
@@ -18,10 +18,11 @@ def run_leaf_mask_inv(in_folder, dist, out_folder):
     for nb in sorted(fbad):
      #print(nb)
         os.system("python {} {} {} {} {}".format(os.path.join(src_folder,"Leaf_mask_inv.py"),
-                                                              in_folder,
-                                                              nb,
-                                                              dist,
-                                                              out_folder))
+                                                 in_folder,
+                                                 nb,
+                                                 dist,
+                                                 out_folder,
+                                                 fname_key))
     print("masks created!")
     print("copy remaining input files to clean dir")
     for i in sorted(os.listdir(in_folder)):
@@ -33,5 +34,6 @@ if __name__ == '__main__':
     in_folder = sys.argv[1]
     dist = sys.argv[2]
     out_folder = sys.argv[3]
-    run_leaf_mask_inv(in_folder, dist, out_folder)
+    f_key=sys.argv[4]
+    run_leaf_mask_inv(in_folder, dist, out_folder, f_key)
     print("done")

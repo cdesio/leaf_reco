@@ -5,7 +5,7 @@ import re
 import sys
     
 def run_leaf_mask_inv(in_folder, dist, out_folder):
-    src_folder = os.path.join("/","storage","yw18581","src","leaf_reco","scripts")
+    src_folder = os.path.join("/","storage","yw18581","src","leaf_reco","data_preparation")
     regex = re.compile(r'\d+')
 
     f_clean = [np.int(regex.findall(i)[0]) for i in os.listdir(out_folder) if "mask" in i and str(i).endswith("tiff")]

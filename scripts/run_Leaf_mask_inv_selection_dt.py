@@ -17,7 +17,7 @@ def run_leaf_mask_inv(in_folder, dist, out_folder, fname_key):
     print(in_folder, dist, out_folder)
     for nb in sorted(fbad):
      #print(nb)
-        os.system("python {} {} {} {} {}".format(os.path.join(src_folder,"Leaf_mask_inv.py"),
+        os.system("python {} {} {} {} {} {}".format(os.path.join(src_folder,"Leaf_mask_inv.py"),
                                                  in_folder,
                                                  nb,
                                                  dist,

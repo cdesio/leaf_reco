@@ -8,8 +8,8 @@ def run_leaf_mask_inv(in_folder, dist, out_folder, fname_key):
     src_folder = os.path.join("/","storage","yw18581","src","leaf_reco","data_preparation")
     regex = re.compile(r'\d+')
 
-    f_clean = [np.int(regex.findall(i)[-1]) for i in os.listdir(out_folder) if "mask" in i and str(i).endswith("tiff")]
-    f_tot = [np.int(regex.findall(i)[-1]) for i in os.listdir(in_folder) if "mask" not in i and str(i).endswith("tiff")]
+    f_clean = [str(np.int(regex.findall(i)[-1])).zfill(2) for i in os.listdir(out_folder) if "mask" in i and str(i).endswith("tiff")]
+    f_tot = [str(np.int(regex.findall(i)[-1])).zfill(2) for i in os.listdir(in_folder) if "mask" not in i and str(i).endswith("tiff")]
     fbad = [nb for nb in f_tot if nb not in f_clean]
     print(f_clean, f_tot, fbad)
     print("files in clean dir:{}, files in original dir:{}, files to process:{}".format(len(f_clean), len(f_tot), len(fbad)))

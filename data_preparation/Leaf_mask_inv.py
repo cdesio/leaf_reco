@@ -17,7 +17,7 @@ out_folder = sys.argv[4]
 fname_key = sys.argv[5]
 split = fname_key.split("_")
 split.append(str(f_no))
-img_path =os.path.join(in_folder, '{}.tiff'.format('_',join(split)))
+img_path =os.path.join(in_folder, '{}.tiff'.format('_'.join(split)))
 image = imread(img_path)
 print(img_path)
 print("import image and select profile")

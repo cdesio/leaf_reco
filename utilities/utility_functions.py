@@ -10,14 +10,16 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import torch.nn as nn
 from pickle import dump
 
-def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2, excluded_list=None, scale=0.25,
-                   multi_processing=0
-):
+def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_split=0.2,
+                   excluded_list=None, scale=0.25, multi_processing=0, alldata=False):
     excluded = excluded_list
     composed = transforms.Compose([Cut(), Rescale(scale), ChannelsFirst(), ToTensor()])
     dataset = UNetDatasetFromFolders(root_folder, excluded = excluded, transform=composed)
-    
-    data_loaders, data_lengths = splitter_train_val_test(dataset,
+    if alldata:
+        data_loaders = DataLoader(dataset, batch_size=batch_size, num_workers=multi_processing)
+        data_lengths = len(dataset)
+    else:
+        data_loaders, data_lengths = splitter_train_val_test(dataset,
                                                          validation_split,
                                                          test_split,
                                                          batch=batch_size,
@@ -128,7 +130,7 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
 
 
 
-def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, notebook=None):
+def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, notebook=None, test=True):
     if notebook:
         from tqdm.notebook import tqdm
     else:
@@ -144,15 +146,25 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
 
     y_true = []
     y_pred = []
+    if test:
+        for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"]//batch_size, desc = "Batch"):
+            true_images, true_dists = batch["image"], batch["dist"]
+            _, pred_dists = model(true_images.float().to(device))
+            for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
+                                                            true_dists.cpu().detach().numpy(),
+                                                            pred_dists.cpu().detach().numpy())):
+                y_true.append(tr_dist)
+                y_pred.append(pr_dist)
+    else:
+        for i, batch in tqdm(enumerate(data_loaders), total=data_lengths//batch_size, desc = "Batch"):
+            true_images, true_dists = batch["image"], batch["dist"]
+            _, pred_dists = model(true_images.float().to(device))
+            for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
+                                                            true_dists.cpu().detach().numpy(),
+                                                            pred_dists.cpu().detach().numpy())):
+                y_true.append(tr_dist)
+                y_pred.append(pr_dist)
 
-    for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"]//batch_size, desc = "Batch"):
-        true_images, true_dists = batch["image"], batch["dist"]
-        _, pred_dists = model(true_images.float().to(device))
-        for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
-                                                        true_dists.cpu().detach().numpy(),
-                                                        pred_dists.cpu().detach().numpy())):
-            y_true.append(tr_dist)
-            y_pred.append(pr_dist)
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred).ravel()
     return y_true, y_pred

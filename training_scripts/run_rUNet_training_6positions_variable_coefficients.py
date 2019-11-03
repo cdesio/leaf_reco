@@ -1,12 +1,15 @@
 import sys, os
 sys.path.append('/storage/yw18581/src/leaf_reco')
 from setenv import add_folders
-add_folders()
+add_folders(key="deepthought")
 from utility_functions import define_dataset, training_phase_rUNet, exclude_dist
-
+import numpy as np
 from cUNet_pytorch_pooling import cUNet
 import torch
 import torch.optim as optim
+SEED = 42
+torch.manual_seed(SEED)
+np.random.seed(SEED)
 
 DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
 data_dir = DATA_DIR_DEEPTHOUGHT
@@ -24,7 +27,7 @@ print("Define model")
 coeffs = [0.75, 0.70, 0.60, 0.50]
 
 
-n_epochs = 30
+n_epochs = 50
 
 for coef in coeffs:
 

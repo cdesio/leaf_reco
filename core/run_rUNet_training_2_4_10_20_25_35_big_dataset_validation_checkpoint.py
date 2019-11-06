@@ -4,8 +4,8 @@ import torch.nn as nn
 import numpy as np
 from torchvision import transforms
 from tqdm.notebook import tqdm, trange
-from Transformers import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_val_test
-from DataSets import UNetDatasetFromFolders
+from .utils.data import ChannelsFirst, ToTensor, Rescale, Cut, splitter_train_val_test
+from .utils.data import UNetDatasetFromFolders
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
 
@@ -38,9 +38,9 @@ print(data_lengths['train'], data_lengths['val'], data_lengths['test'])
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-from cUNet_pytorch_pooling import cUNet, dice_loss
+from .models import rUNet, dice_loss
 
-model = cUNet(out_size=1)
+model = rUNet(out_size=1)
 
 criterion_mask = dice_loss
 criterion_dist = nn.MSELoss()
@@ -99,7 +99,7 @@ for epoch in trange(epochs, desc = "Training Epochs"):
             running_loss += loss.item()
     if epoch%10==9:
         torch.save(model.state_dict(),
-                           "model/TB_trained_cUNet_pytorch_regression_2_4_10_20_25_35_dataset_{}epochs_coeff_mask{}_validation.pkl".format(epoch+1,
+                           "model/TB_trained_rUnet_pytorch_regression_2_4_10_20_25_35_dataset_{}epochs_coeff_mask{}_validation.pkl".format(epoch+1,
                                                                                            coeff_mask) )
         epoch_loss = running_loss / data_lengths[phase]
         print('{} Loss: {:.4f}'.format(phase, epoch_loss))
@@ -112,13 +112,13 @@ print('Finished Training')
 
 
 print('Saving trained model')
-model_name = "model/TB__trained_cUNet_pytorch_regression_2_4_10_20_25_35_dataset_{}epochs_coeff_mask{}_validation.pkl".format(epochs, coeff_mask)
+model_name = "model/TB__trained_rUnet_pytorch_regression_2_4_10_20_25_35_dataset_{}epochs_coeff_mask{}_validation.pkl".format(epochs, coeff_mask)
 
 torch.save(model.state_dict(), model_name)
 
 print('Inference step')
 
-model_inference = cUNet(out_size=1)
+model_inference = rUNet(out_size=1)
 model_inference.load_state_dict(torch.load(model_name))
 model_inference.eval()
 model_inference.to(device);

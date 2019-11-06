@@ -1,5 +1,5 @@
 # data
-from .data import define_dataset, splitter, splitter_train_val_test
+from .data import define_dataset, splitter, splitter_train_val_test, select_dist
 
 # inference
 from .inference import inference_phase_rUNet, inference_phase_rUNet_plot_notebook

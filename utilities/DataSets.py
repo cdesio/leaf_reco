@@ -68,7 +68,7 @@ class UNetDatasetFromFolders(Dataset):
             if self.excluded is not None:
                 dirs[:] = [d for d in dirs if d not in self.excluded]
             if self.include is not None:
-                dirs[:] = [d for d in dire if d in self.include]
+                dirs[:] = [d for d in dirs if d in self.include]
             #print(dirs)
             for fname in files:
                 if fname.startswith("File") and fname.endswith('.tiff'):

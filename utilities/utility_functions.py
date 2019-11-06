@@ -152,6 +152,7 @@ def retrain_rUNet(model, checkpoint_file, optimizer, loss_coeff, src_dir,
     checkpoint = torch.load(checkpoint_file)
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    optimizer.to(device)
     model.to(device)
     train_loss = checkpoint['train_loss']
     val_loss = checkpoint['val_loss']

@@ -66,7 +66,7 @@ class UNetDatasetFromFolders(Dataset):
             folder_imgs = []
             folder_masks = []
             r_folder = os.path.split(root_dir)[1]
-            if (self.included and r_folder not in self.included) or r_folder in self.excluded:
+            if (self.included and r_folder not in self.included) or (self.excluded and r_folder in self.excluded):
                 continue
 
             for fname in files:

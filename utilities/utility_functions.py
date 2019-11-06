@@ -378,7 +378,7 @@ def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch
 def hasNumbers(inputString):
     return bool(re.search(r'\d', inputString))
 
-def exclude_dist(dist_list, root_folder):
+def select_dist(dist_list, root_folder):
 
     regex = re.compile(r'\d+')
 

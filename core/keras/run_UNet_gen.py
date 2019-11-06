@@ -6,30 +6,19 @@ COL_SLICE = slice(1000, None)
 import os
 from UNet import get_unet
 from data_loaders_km3 import data_generator, get_n_iterations
-from network_models_km3 import train_neural_network
 from os import path as p
 import tensorflow as tf
 
-
 tf.keras.backend.clear_session()
 
-DATA_DIR_IH="/data/uob"
-DATA_DIR_DEEPTHOUGHT="/storage/yw18581/data"
-
-data_folder = DATA_DIR_IH
-TRAIN_VAL_TEST_DIR = os.path.join(data_folder,"train_validation_test")
-
+DATA_DIR_IH = "/data/uob"
+DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
 
 N_FILES = 1
-BATCH_SIZE=3
-N_EPOCHS = 500
+BATCH_SIZE = 3
 
-model = get_unet()
-model.summary()
-
-
-CHECKPOINT_FOLDER_PATH = p.join(data_folder, 'trained_models')
-TASK_NAME = 'UNet_training_generator_{}epochs'.format(N_EPOCHS)
+CHECKPOINT_FOLDER_PATH = p.join(p.abspath(p.curdir), 'model')
+TASK_NAME = 'UNet_training_generator_10epochs'
 TASK_FOLDER_PATH = os.path.join(CHECKPOINT_FOLDER_PATH, TASK_NAME)
 
 if not os.path.exists(TASK_FOLDER_PATH):
@@ -43,32 +32,40 @@ HISTORY_FILEPATH = os.path.join(TASK_FOLDER_PATH,
 
 MODEL_JSON_FILEPATH = os.path.join(TASK_FOLDER_PATH, '{}.json'.format(model.name))
 
+data_folder = DATA_DIR_DEEPTHOUGHT
 
-
-fname_train = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_train.npz")]
-fname_val = [os.path.join(TRAIN_VAL_TEST_DIR,"Xy_val.npz")]
+TRAIN_VAL_TEST_DIR = os.path.join(data_folder, "train_validation_test")
+fname_train = os.path.join(data_folder, "Xy_train.npz")
+fname_val = os.path.join(data_folder, "Xy_val.npz")
 
 steps_per_epoch, n_events = get_n_iterations(fname_train, batch_size=BATCH_SIZE)
-print("training steps per epoc:{}, number of events:{}".format(steps_per_epoch, n_events))
+print(steps_per_epoch, n_events)
 
-validation_steps, n_evts_val = get_n_iterations(fname_val, batch_size=BATCH_SIZE)
-print("validation steps per epoch:{}, number of events:{}".format(validation_steps, n_evts_val))
+# validation_steps, n_evts_val = get_n_iterations(fnames_val[:N_FILES], batch_size=BATCH_SIZE)
+# print(validation_steps, n_evts_val)
 
-#prediction_steps, n_evts_test = get_n_iterations(fname_test, batch_size=BATCH_SIZE)
-#print(prediction_steps, n_evts_test)
+prediction_steps, n_evts_test = get_n_iterations(fname_test, batch_size=BATCH_SIZE)
+print(prediction_steps, n_evts_test)
+validation_steps, n_evts_val = get_n_iterations(fname_test, batch_size=BATCH_SIZE)
+print(validation_steps, n_evts_val)
 
 training_generator = data_generator(fname_train, batch_size=BATCH_SIZE,
                                     ftarget=lambda y: y)
 
 validation_generator = data_generator(fname_val, batch_size=BATCH_SIZE,
-                                     ftarget=lambda y: y)
-#data_dir = DATA_DIR_IH
+                                      fdata=get_Time_Coord, ftarget=process_cosz)
+# data_dir = DATA_DIR_IH
 
+model = get_unet()
+model.summary()
 
 training_history = train_neural_network(model, training_generator, steps_per_epoch,
                                         validation_generator,
-                                        validation_steps, batch_size=BATCH_SIZE, epochs = N_EPOCHS)
+                                        validation_steps, batch_size=BATCH_SIZE)
 
+model.fit(x=X_train, y=y_train, epochs=200, batch_size=2, verbose=1, validation_split=.2)
+
+model.save(os.path.join(data_dir, "trained_UNet_200epochs.hdf5"))
 
 print('Saving Model (JSON), Training History & Weights...', end='')
 model_json_str = model.to_json()

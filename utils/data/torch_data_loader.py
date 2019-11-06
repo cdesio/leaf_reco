@@ -1,9 +1,7 @@
-import os
 import torch
-from matplotlib.image import imread
+
 import numpy as np
-from torch.utils.data import DataLoader
-from torchvision import transforms, utils
+from torch.utils.data import Dataset
 
 
 class UNet_Dataset(Dataset):
@@ -11,7 +9,7 @@ class UNet_Dataset(Dataset):
         self.infile = infile
 
         self.transform = transform
-        #def __len__(self):
+        # def __len__(self):
         #    return len(self.input_images)
 
     def __getitem__(self, idx):
@@ -24,10 +22,8 @@ class UNet_Dataset(Dataset):
             sample = self.transform(sample)
         return sample
 
-
     def __len__(self):
         return len(np.load(self.infile))
-
 
 
 class ToTensor(object):
@@ -43,4 +39,5 @@ class ToTensor(object):
         return {'image': torch.from_numpy(image),
                 'masks': torch.from_numpy(mask)}
 
-dataset = UNet_Dataset(infile = "Xy_train_clean_300_24_10_25.npz", transform=ToTensor())
+
+dataset = UNet_Dataset(infile="Xy_train_clean_300_24_10_25.npz", transform=ToTensor())

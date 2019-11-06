@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 from matplotlib.image import imread
@@ -37,6 +36,7 @@ def get_filename_and_data(folder):
     df_masks = pd.DataFrame.from_records(masks_list, columns=('path', 'dist'))
     return df_images, df_masks
 
+
 def train_validation_test(df, stratification_key=None):
     if stratification_key is not None:
         stratify_arr = df[stratification_key].values
@@ -45,7 +45,7 @@ def train_validation_test(df, stratification_key=None):
 
     indices = np.arange(len(df))
     training_indices, test_indices = train_test_split(indices, test_size=0.20,
-                                                   random_state=42, stratify=stratify_arr)
+                                                      random_state=42, stratify=stratify_arr)
 
     if stratification_key is not None:
         stratify_arr = df.iloc[training_indices][stratification_key]
@@ -56,7 +56,6 @@ def train_validation_test(df, stratification_key=None):
 
 
 if __name__ == '__main__':
-
     ## Loading data
     print("Loading data filenames")
 
@@ -78,26 +77,21 @@ if __name__ == '__main__':
     print(len(fnames_orig_2mm), len(fnames_orig_4mm), len(fnames_orig_10mm),
           len(fnames_orig_15mm), len(fnames_orig_25mm))
 
-    df_mask = pd.concat([fnames_mask_2mm, fnames_mask_4mm, fnames_mask_10mm, 
+    df_mask = pd.concat([fnames_mask_2mm, fnames_mask_4mm, fnames_mask_10mm,
                          fnames_mask_15mm, fnames_mask_25mm], ignore_index=True)
-    df_orig = pd.concat([fnames_orig_2mm, fnames_orig_4mm, fnames_orig_10mm, 
+    df_orig = pd.concat([fnames_orig_2mm, fnames_orig_4mm, fnames_orig_10mm,
                          fnames_orig_15mm, fnames_orig_25mm], ignore_index=True)
     print("check total number of files")
     print("original images:{}, mask files:{}".format(len(df_orig), len(df_mask)))
 
     print("Train test split")
 
+    _, test_indices, train_indices, val_indices = train_validation_test(df_mask,
+                                                                        stratification_key='dist')
 
-
-
-    _, test_indices, train_indices, val_indices = train_validation_test(df_mask, 
-                                                                stratification_key='dist')
-
-    print("Train dataset:{} files, Validation dataset:{}, Test dataset:{} files".format(len(train_indices), 
+    print("Train dataset:{} files, Validation dataset:{}, Test dataset:{} files".format(len(train_indices),
                                                                                         len(val_indices),
                                                                                         len(test_indices)))
-
-
 
     df_mask_train = df_mask.iloc[train_indices]
     df_mask_test = df_mask.iloc[test_indices]
@@ -134,12 +128,13 @@ if __name__ == '__main__':
     train_out_str = 'Xy_train_strat_dist_5classes.npz'
     val_out_str = 'Xy_val_strat_dist_5classes.npz'
     test_out_str = 'Xy_test_strat_dist_5classes.npz'
-    print("Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                                       train_out_str),
-                                                                                          os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                                       val_out_str),
-                                                                                          os.path.join(TRAIN_VAL_TEST_DIR,
-                                                                                                       test_out_str)))
+    print(
+        "Save train, validation and test data to output files in {} , {} and {}".format(os.path.join(TRAIN_VAL_TEST_DIR,
+                                                                                                     train_out_str),
+                                                                                        os.path.join(TRAIN_VAL_TEST_DIR,
+                                                                                                     val_out_str),
+                                                                                        os.path.join(TRAIN_VAL_TEST_DIR,
+                                                                                                     test_out_str)))
 
     np.savez_compressed(os.path.join(TRAIN_VAL_TEST_DIR, train_out_str),
                         x=X_train, y=y_train, dist=metadata_train)

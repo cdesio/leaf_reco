@@ -30,7 +30,6 @@ class UNet(nn.Module):
 
         self.conv_last = nn.Conv2d(64, n_class, 1)
 
-
     def forward(self, x):
         convb1 = self.conv_block_down1(x)
         x = self.maxpool(convb1)
@@ -59,8 +58,6 @@ class UNet(nn.Module):
         out = self.conv_last(x)
 
         return out
-
-
 
 
 def dice_loss(pred, target, smooth=1.):

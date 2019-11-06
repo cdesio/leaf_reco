@@ -2,9 +2,9 @@ import sys, os
 sys.path.append('/storage/yw18581/src/leaf_reco')
 from setenv import add_folders
 add_folders(key="deepthought")
-from utility_functions import define_dataset, exclude_dist, retrain_rUNet
+from utilities.utility_functions import define_dataset, select_dist, retrain_rUNet
 import numpy as np
-from cUNet_pytorch_pooling import cUNet
+from core.models.rUNet_pytorch_pooling import rUNet
 import torch
 import torch.optim as optim
 SEED = 42
@@ -15,7 +15,7 @@ DATA_DIR_DEEPTHOUGHT = "/storage/yw18581/data"
 data_dir = DATA_DIR_DEEPTHOUGHT
 src_dir = os.path.join("/","storage", "yw18581", "src", "leaf_reco")
 root_dir = os.path.join(data_dir, "dataset")
-excluded = exclude_dist(dist_list = [1,3,15,30], root_folder=root_dir)
+excluded = select_dist(dist_list = [1,3,15,30], root_folder=root_dir)
 print(excluded)
 
 print("Load dataset")
@@ -34,7 +34,7 @@ for coef in coeffs:
     print("combined loss: {}*dice_loss + {} mse".format(coef, 1.0-coef))
     torch.cuda.empty_cache()
     print("Train model")
-    model = cUNet(out_size=1)
+    model = rUNet(out_size=1)
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
     checkpoint_file = os.path.join(src_dir, 'saved_models','trained_6positions','Trained_rUNet_pytorch_6positions_dataset_50epochs_{}coeff_mask.pkl'.format(coef))
 

@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from ml_models.cUNet_pytorch_pooling import dice_loss
+from core.models.rUNet_pytorch_pooling import dice_loss
 import os
 import torch.nn as nn
 from pickle import dump

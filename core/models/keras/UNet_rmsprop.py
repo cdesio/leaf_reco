@@ -1,17 +1,12 @@
-import numpy as np
+IMG_WIDTH = 1400
+IMG_HEIGHT = 1400
+
 from keras.models import Model
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose
-from keras.optimizers import Adam,RMSprop
-from keras.callbacks import ModelCheckpoint
+from keras.optimizers import Adam, RMSprop
 from keras import backend as K
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
-
-IMG_WIDTH = 1400
-IMG_HEIGHT = 1400
 
 K.set_image_data_format('channels_last')  # TF dimension ordering in this code
-
 
 smooth = 1.
 
@@ -24,10 +19,10 @@ def dice_coef(y_true, y_pred):
 
 
 def dice_coef_loss(y_true, y_pred):
-    return 1-dice_coef(y_true, y_pred)
+    return -dice_coef(y_true, y_pred)
 
 
-def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
+def get_unet(img_rows=IMG_HEIGHT, img_cols=IMG_WIDTH):
     """"""
     inputs = Input((img_rows, img_cols, 1))
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same', name='conv1_1')(inputs)
@@ -49,22 +44,22 @@ def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same', name='conv5_1')(pool4)
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same', name='conv5_2')(conv5)
 
-    up6 = concatenate([Conv2DTranspose(256, (3, 3), strides=(2, 2), name='convT_5')(conv5), conv4], 
+    up6 = concatenate([Conv2DTranspose(256, (3, 3), strides=(2, 2), name='convT_5')(conv5), conv4],
                       axis=-1, name='up_convT5_conv4')
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same', name='conv6_1')(up6)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same', name='conv6_2')(conv6)
 
-    up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same', name='convT_6')(conv6), conv3], 
+    up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same', name='convT_6')(conv6), conv3],
                       axis=-1, name='up_convT6_conv3')
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same', name='conv7_1')(up7)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same', name='conv7_2')(conv7)
 
-    up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same', name='convT_7')(conv7), conv2], 
+    up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same', name='convT_7')(conv7), conv2],
                       axis=-1, name='up_convT7_conv2')
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv8_1')(up8)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv8_2')(conv8)
 
-    up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same', name='convT_8')(conv8), conv1], 
+    up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same', name='convT_8')(conv8), conv1],
                       axis=-1, name='up_convT8_conv1')
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same', name='conv9_1')(up9)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same', name='conv9_2')(conv9)
@@ -73,6 +68,6 @@ def get_unet(img_rows = IMG_HEIGHT, img_cols = IMG_WIDTH):
 
     model = Model(inputs=[inputs], outputs=[conv10])
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
-#adam ls=1e-5, RMSprop(lr=2e-4)
+    model.compile(optimizer=RMSprop(lr=2e-4), loss=dice_coef_loss, metrics=[dice_coef])
+    # adam ls=1e-5, RMSprop(lr=2e-4)
     return model

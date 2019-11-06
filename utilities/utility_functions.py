@@ -1,9 +1,9 @@
 import torch
 import numpy as np
 from torchvision import transforms
-from Transformers import ChannelsFirst, ToTensor, Rescale, Cut
-from DataSets import UNetDatasetFromFolders
-from cUNet_pytorch_pooling import cUNet, dice_loss
+from utilities.Transformers import ChannelsFirst, ToTensor, Rescale, Cut
+from utilities.DataSets import UNetDatasetFromFolders
+from ml_models.cUNet_pytorch_pooling import cUNet, dice_loss
 from torch.utils.data import DataLoader
 import re, os
 from torch.utils.data.sampler import SubsetRandomSampler

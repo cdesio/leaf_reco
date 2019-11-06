@@ -15,7 +15,7 @@ def define_dataset(root_folder, batch_size=16, validation_split = 0.2, test_spli
     excluded = excluded_list
     include = include_list
     composed = transforms.Compose([Cut(), Rescale(scale), ChannelsFirst(), ToTensor()])
-    dataset = UNetDatasetFromFolders(root_folder, excluded = excluded, include = include, transform=composed)
+    dataset = UNetDatasetFromFolders(root_folder, excluded = excluded, included= include, transform=composed)
     if alldata:
         data_loaders = DataLoader(dataset, batch_size=batch_size, num_workers=multi_processing)
         data_lengths = len(dataset)

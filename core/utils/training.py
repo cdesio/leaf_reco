@@ -1,6 +1,5 @@
 import torch
 import numpy as np
-from core.models.rUNet_pytorch_pooling import dice_loss
 import os
 import torch.nn as nn
 from pickle import dump
@@ -22,12 +21,11 @@ def create_history():
     return history
 
 
-def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
+def training_phase_rUNet(model, optimizer, criterion_mask, criterion_dist, loss_coeff, src_dir,
                          data_loaders, data_lengths, epochs, batch_size, model_checkpoint, task_folder_name, dev=0,
                          dataset_key="complete",
                          model_prefix="Trained_rUNet_pytorch",
                          writer=None, notebook=None):
-
     task_folder_path = os.path.join(src_dir, "saved_models", task_folder_name)
     if not os.path.exists(task_folder_path):
         os.makedirs(task_folder_path)
@@ -47,8 +45,6 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
 
     model.to(device)
     history = create_history()
-    criterion_mask = dice_loss
-    criterion_dist = nn.MSELoss()
 
     for epoch in trange(epochs, desc="Training Epoch"):
         print(epoch + 1)
@@ -116,9 +112,12 @@ def training_phase_rUNet(model, optimizer, loss_coeff, src_dir,
     return history
 
 
-def retrain_rUNet(model, checkpoint_file, optimizer, loss_coeff, src_dir,
-                  data_loaders, data_lengths, epochs, batch_size, model_checkpoint, task_folder_name, dev=0,
-                  dataset_key="complete",
+def retrain_rUNet(model,
+                  optimizer, criterion_mask, criterion_dist, loss_coeff,
+                  data_loaders, data_lengths,
+                  checkpoint_file, epochs, batch_size,
+                  model_checkpoint, src_dir,
+                  task_folder_name, dev=0, dataset_key="complete",
                   model_prefix="Trained_rUNet_pytorch",
                   writer=None, notebook=None):
     task_folder_path = os.path.join(src_dir, "saved_models", task_folder_name)
@@ -151,8 +150,6 @@ def retrain_rUNet(model, checkpoint_file, optimizer, loss_coeff, src_dir,
     start_epoch = checkpoint['epoch']
 
     history = create_history()
-    criterion_mask = dice_loss
-    criterion_dist = nn.MSELoss()
 
     for epoch in trange(start_epoch + 1, epochs, desc="Training Epoch"):
         print(epoch + 1)

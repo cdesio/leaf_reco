@@ -36,7 +36,7 @@ for coef in coeffs:
     print("Train model")
     model = cUNet(out_size=1)
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
-    checkpoint_file = os.path.join(src_dir, 'saved_models','trained_6positions','Trained_rUNet_pytorch_6positions_dataset_50epochs_{}coeff_mask.pkl'.format(coeffs))
+    checkpoint_file = os.path.join(src_dir, 'saved_models','trained_6positions','Trained_rUNet_pytorch_6positions_dataset_50epochs_{}coeff_mask.pkl'.format(coef))
 
     history = retrain_rUNet(model=model, checkpoint_file=checkpoint_file, optimizer=optimizer, loss_coeff=coef,
                                src_dir='/storage/yw18581/src/leaf_reco', 

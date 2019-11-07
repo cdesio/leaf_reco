@@ -25,10 +25,10 @@ data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=16,
 print(data_lengths)
 print("Define model")
 coeffs = [0.75, 0.70, 0.60, 0.50]
+coeffs_2 = [0.25, 0.30, 0.40]
+n_epochs = 100
 
-n_epochs = 50
-
-for coef in coeffs:
+for coef in coeffs_2:
     print("combined loss: {}*dice_loss + {} mse".format(coef, 1.0 - coef))
     torch.cuda.empty_cache()
     print("Train model")

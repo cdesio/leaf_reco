@@ -72,15 +72,12 @@ def mse_vs_epochs(coeff, key, data_loaders, data_lengths, only_test=True):
     return mse, epochs
 
 #coeff_list_test = [25, 3, 4, 5, 6, 7, 75]
-coeff_list_test = None
+
 coeff_list_test = sys.argv[3]
-if coeff_list_test:
-    for c in coeff_list_test:
-        _, _ = mse_vs_epochs(c, 'testdata', data_loaders_test, data_lengths_test)
+for c in coeff_list_test:
+    _, _ = mse_vs_epochs(c, 'testdata', data_loaders_test, data_lengths_test)
 
 #coeff_list_unseen = [25, 3, 4, 5, 6, 7, 75]
-coeff_list_unseen = None
 coeff_list_unseen = sys.argv[4]
-if coeff_list_unseen:
-    for cu in coeff_list_unseen:
-        _, _ = mse_vs_epochs(cu, 'unseen', data_loaders_unseen, data_lengths_unseen, only_test=False)
+for cu in coeff_list_unseen:
+    _, _ = mse_vs_epochs(cu, 'unseen', data_loaders_unseen, data_lengths_unseen, only_test=False)

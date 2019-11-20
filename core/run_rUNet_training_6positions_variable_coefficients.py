@@ -1,8 +1,8 @@
 import os
-from .utils.data import define_dataset, select_dist
-from .utils.training import training_phase_rUNet
+from utils.data import define_dataset, select_dist
+from utils.training import training_phase_rUNet
 import numpy as np
-from .models import rUNet, dice_loss
+from models import rUNet, dice_loss
 import torch
 import torch.optim as optim
 import torch.nn as nn

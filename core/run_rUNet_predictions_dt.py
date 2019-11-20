@@ -39,21 +39,24 @@ print(data_lengths_unseen)
 
 model_names = os.listdir(saved_models)
 
-def get_fnames(key):
+def get_fnames(coeff):
     f_list = []
     epochs = []
     for fname in model_names:
         if fname.startswith("Trained"):
-            if regex.findall(fname.split("_")[6])[1]==str(key):
-                f_list.append(fname)
-                epochs.append(int(regex.findall(fname.split("_")[5])[0]))
-    return f_list, epochs
+            if regex.findall(fname.split("_")[6])[1]==str(coeff):
+                epoch = int(regex.findall(fname.split("_")[5])[0]) 
+                epochs.append(epoch)
+                if int(regex.findall(fname.split("_")[5])[0])==epoch:
+                    f_list.append(fname)
+    
+    return np.array(f_list)[np.argsort(epochs)], np.sort(epochs)
 
 
 def mse_vs_epochs(coeff, key, data_loaders, data_lengths, only_test=True):
     mse = []
     f_list, epochs = get_fnames(coeff)
-    for fname, e in zip(f_list, epochs):
+    for fname, e in zip(f_list[20:], epochs[20:]):
         print(fname, e)
 
         torch.cuda.empty_cache()
@@ -73,13 +76,13 @@ def mse_vs_epochs(coeff, key, data_loaders, data_lengths, only_test=True):
     #plt.plot(epochs, mse)
     return mse, epochs
 
-#coeff_list_test = [25, 3, 4, 5, 6, 7, 75]
+coeff_list_test = [5, 6, 7, 75]
 
 #coeff_list_test = sys.argv[3]
-#for c in coeff_list_test:
-#    _, _ = mse_vs_epochs(c, 'testdata', data_loaders_test, data_lengths_test)
+for c in coeff_list_test:
+    _, _ = mse_vs_epochs(c, 'testdata', data_loaders_test, data_lengths_test)
 
-coeff_list_unseen = [25, 3, 4]
+coeff_list_unseen = [5, 6, 7, 75]
 #coeff_list_unseen = sys.argv[4]
 
 for cu in coeff_list_unseen:

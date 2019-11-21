@@ -19,7 +19,7 @@ selected_distances = select_dist(dist_list=[2, 4, 10, 20, 25, 35], root_folder=r
 print(selected_distances)
 
 print("Load dataset")
-data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=16, include_list=selected_distances,
+data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=32, include_list=selected_distances,
                                             multi_processing=4)
 
 print(data_lengths)

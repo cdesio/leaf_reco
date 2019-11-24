@@ -2,12 +2,16 @@ import os, sys
 from sklearn.metrics import mean_squared_error
 import re
 import numpy as np
-from .utils.data import define_dataset, select_dist
-from .utils.inference import inference_phase_rUNet
-from .models import rUNet
 import torch
 from functools import partial
-
+try:
+    from .utils.data import define_dataset, select_dist
+    from .utils.inference import inference_phase_rUNet
+    from .models import rUNet
+except ModuleNotFoundError:
+    from utils.data import define_dataset, select_dist
+    from utils.inference import inference_phase_rUNet
+    from models import rUNet
 # data_dir = sys.argv[1]
 # saved_models = sys.argv[2]
 data_dir = '/data/uob'

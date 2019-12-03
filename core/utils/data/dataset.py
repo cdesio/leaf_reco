@@ -38,12 +38,14 @@ class UNetDataSetFromNpz(Dataset):
 
 class UNetDatasetFromFolders(Dataset):
 
-    def __init__(self, root_path, excluded=None, included=None, transform=None):
+    def __init__(self, root_path, excluded=None, included=None, transform=None, fname_key='File', file_extension='.tiff'):
         self.transform = transform
         self.root_path = root_path
         self.excluded = excluded
         self.included = included
         self.distances, self.images_list, self.masks_list = self._create_list()
+        self.key = fname_key
+        self.extension = file_extension
 
     @staticmethod
     def file_sort_key(fpath: str):
@@ -71,7 +73,7 @@ class UNetDatasetFromFolders(Dataset):
                 continue
 
             for fname in files:
-                if fname.startswith("File") and fname.endswith('.tiff'):
+                if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:
                         image_found += 1
                         folder_imgs.append(os.path.join(root_dir, fname))

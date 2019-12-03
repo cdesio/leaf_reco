@@ -56,7 +56,11 @@ class UNetDatasetFromFolders(Dataset):
         _, fname = os.path.split(fpath)
         fname, _ = os.path.splitext(fname)
         _, dist, *rest = fname.split('_')
-        return int(dist)
+        try:
+            return int(dist)
+        except ValueError:
+            print('file number in a different position')
+            return int(rest[-1])
 
     def _create_list(self):
         regex = re.compile(r'\d+')

@@ -41,11 +41,12 @@ class UNetDatasetFromFolders(Dataset):
     def __init__(self, root_path, fname_key, file_extension, excluded=None, included=None, transform=None):
         self.transform = transform
         self.root_path = root_path
+        self.key = fname_key
+        self.extension = file_extension
         self.excluded = excluded
         self.included = included
         self.distances, self.images_list, self.masks_list = self._create_list()
-        self.key = fname_key
-        self.extension = file_extension
+
 
     @staticmethod
     def file_sort_key(fpath: str):

@@ -59,7 +59,7 @@ class UNetDatasetFromFolders(Dataset):
         try:
             return int(dist)
         except ValueError:
-            print('file number in a different position')
+            #print('file number in a different position')
             return int(rest[-1])
 
     def _create_list(self):

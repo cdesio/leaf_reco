@@ -38,7 +38,7 @@ class UNetDataSetFromNpz(Dataset):
 
 class UNetDatasetFromFolders(Dataset):
 
-    def __init__(self, root_path, excluded=None, included=None, transform=None, fname_key='File', file_extension='.tiff'):
+    def __init__(self, root_path, fname_key, file_extension, excluded=None, included=None, transform=None):
         self.transform = transform
         self.root_path = root_path
         self.excluded = excluded

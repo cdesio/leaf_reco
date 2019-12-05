@@ -70,17 +70,33 @@ def splitter_train_val_test(dataset, validation_split=0.2, test_split=0.2, batch
     return data_loaders, data_lengths
 
 
-def select_dist(dist_list, root_folder):
+def select_dist(root_folder, dist_list = None, keys_list=None):
     regex = re.compile(r'\d+')
-
     def hasNumbers(inputString):
         return bool(re.search(r'\d', inputString))
-
-    excluded = []
-    for dist in dist_list:
+    selected=[]
+    if dist_list:
+        for dist in dist_list:
+            for root, dirs, _ in os.walk(root_folder):
+                for d in dirs:
+                    if keys_list:
+                        for k in keys_list:
+                            if k in d:
+                                if hasNumbers(d):
+                                    if int(regex.findall(d)[-1]) == dist:
+                                        selected.append(d)
+                    else:
+                        if hasNumbers(d):
+                            if int(regex.findall(d)[-1]) == dist:
+                                selected.append(d)
+    else:
         for root, dirs, _ in os.walk(root_folder):
             for d in dirs:
-                if hasNumbers(d):
-                    if int(regex.findall(d)[-1]) == dist:
-                        excluded.append(d)
-    return excluded
+                if keys_list:
+                    for k in keys_list:
+                        if k in d:
+                            if hasNumbers(d):
+                                selected.append(d)
+                else:
+                    return
+    return selected

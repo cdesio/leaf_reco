@@ -207,6 +207,7 @@ def inference_phase_UNet_save_plots_notebook(model, data_loaders, data_lengths, 
                 out_masks.append(tr_msk)
                 out_umasks.append(pr_msk)
                 out_dist.append(tr_dist)
+        print(len(out_dist), len(out_umasks), len(out_masks))
         out_masks = np.asarray(out_masks)
         out_umasks = np.asarray(out_umasks)
         out_dist = np.asarray(out_dist)

@@ -162,3 +162,52 @@ def inference_phase_UNet_plot_notebook(model, data_loaders, data_lengths, batch_
             if i == stop:
                 break
         return
+
+
+
+def inference_phase_UNet_save_plots_notebook(model, data_loaders, data_lengths, batch_size=1, dev=0, test=True):
+    from tqdm.notebook import tqdm
+    import matplotlib.pyplot as plt
+
+    device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
+    # model = cUNet(out_size=1)
+
+    # model.load_state_dict(torch.load(model_name))
+    model.eval()
+    model.to(device);
+    out_masks = []
+    out_umasks = []
+    out_dist = []
+    if test:
+        for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"] // batch_size,
+                             desc="Batch"):
+
+            true_images, true_masks, true_dists = batch["image"], batch["mask"], batch["dist"]
+            pred_masks = model(true_images.float().to(device))
+            print("batch {}".format(i + 1))
+            for j, (img, tr_msk, tr_dist, pr_msk) in enumerate(zip(true_images,
+                                                                            true_masks,
+                                                                            true_dists.cpu().detach().numpy(),
+                                                                            pred_masks.cpu().detach().numpy())):
+                out_masks.append(tr_msk)
+                out_umasks.append(pr_msk)
+                out_dist.append(tr_dist)
+
+    else:
+        for i, batch in tqdm(enumerate(data_loaders), total=data_lengths // batch_size,
+                             desc="Batch"):
+
+            true_images, true_masks, true_dists = batch["image"], batch["mask"], batch["dist"]
+            pred_masks = model(true_images.float().to(device))
+            print("batch {}".format(i + 1))
+            for j, (img, tr_msk, tr_dist, pr_msk) in enumerate(zip(true_images,
+                                                                            true_masks,
+                                                                            true_dists.cpu().detach().numpy(),
+                                                                            pred_masks.cpu().detach().numpy())):
+                out_masks.append(tr_msk)
+                out_umasks.append(pr_msk)
+                out_dist.append(tr_dist)
+        out_masks = np.asarray(out_masks)
+        out_umasks = np.asarray(out_umasks)
+        out_dist = np.asarray(out_dist)
+        return out_masks, out_umasks, out_dist

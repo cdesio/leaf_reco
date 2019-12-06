@@ -24,8 +24,8 @@ data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=32,
 
 print(data_lengths)
 print("Define model")
-coeffs = [0.70, 0.75, 0.60]
-#coeffs_2 = [0.25, 0.30, 0.40]
+#coeffs = [0.70, 0.75, 0.60]
+coeffs = [0.25, 0.30, 0.40]
 n_epochs = 100
 
 for coef in coeffs:

@@ -27,7 +27,7 @@ excluded_distances = select_dist(root_folder=root_dir, keys_list=['second', 'thi
 print(selected_distances)
 
 print("Load dataset")
-data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=32, include_list=selected_distances,
+data_loaders, data_lengths = define_dataset(root_folder=root_dir, batch_size=16, include_list=selected_distances,
                                             excluded_list=excluded_distances, multi_processing=4)
 
 print(data_lengths)
@@ -36,13 +36,13 @@ n_epochs = 100
 
 torch.cuda.empty_cache()
 print("Train model")
-model = UNet
+model = UNet()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
-
+print("here")
 history = training_UNet(model=model, optimizer=optimizer, criterion_mask=dice_loss,
                                src_dir='/storage/yw18581/src/leaf_reco',
                                task_folder_name="trained_UNet_4positions_firstbatch",
                                data_loaders=data_loaders, data_lengths=data_lengths,
-                               epochs=n_epochs, batch_size=32, model_checkpoint=5,
+                               epochs=n_epochs, batch_size=16, model_checkpoint=5,
                                dataset_key="4positions_firstbatch", writer=True)
 print("Done")

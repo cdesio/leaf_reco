@@ -6,9 +6,9 @@ import numpy as np
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
-ROW_SLICE = slice(0, 1400)
+#ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
-
+ROW_SLICE = slice(1000, 2400)
 
 class ChannelsFirst:
     def __call__(self, sample):

@@ -3,16 +3,20 @@ import re
 import numpy as np
 from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision import transforms
-from .dataset import UNetDatasetFromFolders, UNetDataSetFromNpz
+from .dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
 from .transformers import ChannelsFirst, Rescale, ToTensor, Cut
 
 
 def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_size=16, validation_split=0.2, test_split=0.2,
-                   excluded_list=None, include_list=None, load_masks = True,  scale=0.25, multi_processing=0, alldata=False):
+                   excluded_list=None, include_list=None, load_mask = True,  scale=0.25, multi_processing=0, alldata=False):
     excluded = excluded_list
     include = include_list
     composed = transforms.Compose([Cut(), Rescale(scale), ChannelsFirst(), ToTensor()])
-    dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, load_masks= load_masks, excluded=excluded, included=include, transform=composed)
+    if load_mask:
+        dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded, included=include, transform=composed)
+    else:
+        dataset = UNetDatasetImagesOnly(root_folder, fname_key=fname_key, file_extension=file_extension,
+                                         excluded=excluded, included=include, transform=composed)
     if alldata:
         data_loaders = DataLoader(dataset, batch_size=batch_size, num_workers=multi_processing)
         data_lengths = len(dataset)

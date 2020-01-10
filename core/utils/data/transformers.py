@@ -14,23 +14,28 @@ class ChannelsFirst:
     def __call__(self, sample):
         if 'image' in sample.keys():
             image = sample['image']
+
         if 'mask' in sample.keys():
             mask = sample['mask']
+        else:
+            mask = None
         if 'dist' in sample.keys():
             dist = sample['dist']
+        else:
+            dist = None
 
         if len(image.shape) == 3:
             image_sw1 = image.swapaxes(2, 0)
             image_sw2 = image_sw1.swapaxes(2,1)
             image_out = image_sw2
-            if mask:
+            if mask is not None:
                 mask_sw1 = mask.swapaxes(2, 0)
                 mask_sw2 = mask_sw1.swapaxes(2,1)
                 mask_out = mask_sw2
 
         elif len(image.shape) == 2:
             image_out = image[np.newaxis, ...]
-            if mask:
+            if mask is not None:
                 mask_out = mask[np.newaxis, ...]
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
@@ -51,20 +56,25 @@ class Rescale:
     def __call__(self, sample):
         if 'image' in sample.keys():
             image = sample['image']
+
         if 'mask' in sample.keys():
             mask = sample['mask']
+        else:
+            mask = None
         if 'dist' in sample.keys():
             dist = sample['dist']
+        else:
+            dist = None
 
         if len(image.shape) == 3:
             resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
             image_out = resizer(image)
-            if mask:
+            if mask is not None:
                 mask_out = resizer(mask)
         elif len(image.shape) == 2:
             resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=False)
             image_out = resizer(image)
-            if mask:
+            if mask is not None:
                 mask_out = resizer(mask)
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
@@ -111,18 +121,23 @@ class Cut:
     def __call__(self, sample):
         if 'image' in sample.keys():
             image = sample['image']
+
         if 'mask' in sample.keys():
             mask = sample['mask']
+        else:
+            mask=None
         if 'dist' in sample.keys():
             dist = sample['dist']
+        else:
+            dist=None
 
         if self.cut:
             image_out = image[ROW_SLICE, COL_SLICE]
-            if mask:
+            if mask is not None:
                 mask_out = mask[ROW_SLICE, COL_SLICE]
         else:
             image_out = image
-            if mask:
+            if mask is not None:
                 mask_out = mask
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():

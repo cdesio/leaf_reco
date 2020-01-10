@@ -117,13 +117,13 @@ class Cut:
             dist = sample['dist']
 
         if self.cut:
-            out_image = image[ROW_SLICE, COL_SLICE]
+            image_out = image[ROW_SLICE, COL_SLICE]
             if mask:
-                out_mask = mask[ROW_SLICE, COL_SLICE]
+                mask_out = mask[ROW_SLICE, COL_SLICE]
         else:
-            out_image = image
+            image_out = image
             if mask:
-                out_mask = mask
+                mask_out = mask
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
             sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}

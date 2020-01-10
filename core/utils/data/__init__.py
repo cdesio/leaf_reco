@@ -3,9 +3,12 @@ import re
 import numpy as np
 from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision import transforms
-from .dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
-from .transformers import ChannelsFirst, Rescale, ToTensor, Cut
-
+try:
+    from .dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
+    from .transformers import ChannelsFirst, Rescale, ToTensor, Cut
+except ModuleNotFoundError:
+    from dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
+    from transformers import ChannelsFirst, Rescale, ToTensor, Cut
 
 def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_size=16, validation_split=0.2, test_split=0.2,
                    excluded_list=None, include_list=None, load_mask = True,  scale=0.25, multi_processing=0, alldata=False):

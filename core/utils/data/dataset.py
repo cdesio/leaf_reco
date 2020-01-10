@@ -67,8 +67,7 @@ class UNetDatasetFromFolders(Dataset):
         regex = re.compile(r'\d+')
         distances = []
         images_list = []
-        if self.load_masks:
-            masks_list = []
+        masks_list = []
 
         for root_dir, _, files in os.walk(self.root_path):
             image_found = 0

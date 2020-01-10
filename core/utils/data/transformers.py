@@ -58,14 +58,14 @@ class Rescale:
 
         if len(image.shape) == 3:
             resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
-            out_image = resizer(image)
+            image_out = resizer(image)
             if mask:
-                out_mask = resizer(mask)
+                mask_out = resizer(mask)
         elif len(image.shape) == 2:
             resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=False)
-            out_image = resizer(image)
+            image_out = resizer(image)
             if mask:
-                out_mask = resizer(mask)
+                mask_out = resizer(mask)
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
             sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}

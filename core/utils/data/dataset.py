@@ -7,9 +7,9 @@ import os
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
-ROW_SLICE = slice(0, 1400)
+#ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
-
+ROW_SLICE = slice(1000, 2400)
 
 class UNetDataSetFromNpz(Dataset):
     def __init__(self, X, Y, transform=None, dist=None):

@@ -2,9 +2,14 @@ import os, sys
 from sklearn.metrics import mean_squared_error
 import re
 import numpy as np
-from utils.data import define_dataset, select_dist
-from utils.inference import inference_phase_rUNet
-from models import rUNet
+try:
+    from .utils.data import define_dataset, select_dist
+    from .utils.inference import inference_phase_rUNet
+    from .models import rUNet
+except ModuleNotFoundError:
+    from utils.data import define_dataset, select_dist
+    from utils.inference import inference_phase_rUNet
+    from models import rUNet
 import torch
 
 

@@ -86,8 +86,9 @@ class UNetDatasetFromFolders(Dataset):
                         mask_found += 1
                         folder_masks.append(os.path.join(root_dir, fname))
 
-            assert len(folder_imgs) == len(folder_masks)
-            assert image_found == mask_found
+            if len(folder_masks)!=0:
+                assert len(folder_imgs) == len(folder_masks)
+                assert image_found == mask_found
 
             folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
             folder_masks = sorted(folder_masks, key=self.file_sort_key)

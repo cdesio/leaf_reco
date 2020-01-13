@@ -114,9 +114,11 @@ class ToTensor:
 
 class Cut:
 
-    def __init__(self, cut=True):
+    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE):
         assert isinstance(cut, bool)
         self.cut = cut
+        self.row_slice = row_slice
+        self.col_slice = col_slice
 
     def __call__(self, sample):
         if 'image' in sample.keys():
@@ -132,9 +134,9 @@ class Cut:
             dist=None
 
         if self.cut:
-            image_out = image[ROW_SLICE, COL_SLICE]
+            image_out = image[self.row_slice, self.col_slice]
             if mask is not None:
-                mask_out = mask[ROW_SLICE, COL_SLICE]
+                mask_out = mask[self.row_slice, self.col_slice]
         else:
             image_out = image
             if mask is not None:

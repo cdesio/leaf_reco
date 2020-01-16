@@ -160,7 +160,7 @@ class UNetDatasetImagesOnly(Dataset):
                         image_found += 1
                         folder_imgs.append(os.path.join(root_dir, fname))
 
-            assert image_found !=0
+            assert image_found !=0, "No Image found in {}".format(root_dir)
 
             folder_imgs = sorted(folder_imgs, key=self.file_sort_key)
 

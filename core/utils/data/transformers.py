@@ -172,7 +172,7 @@ class GaussianNoise:
     """
     @staticmethod
 
-    def noisy(image, self):
+    def noisy(image, var):
         import numpy as np
         """
          Gaussian-distributed additive noise.
@@ -193,7 +193,7 @@ class GaussianNoise:
             elif shape[0]==1:
                 _, row, col = image.shape
         mean = 0
-        var = self.var
+        #var = var
         sigma = var ** 0.5
         gauss = np.random.normal(mean, sigma, (row, col))
         gauss = gauss.reshape(row, col)
@@ -213,7 +213,7 @@ class GaussianNoise:
             dist = None
 
         if self.add_noise:
-            image_out = self.noisy(image)
+            image_out = self.noisy(image, self.var)
             if mask is not None:
                 mask_out = mask
 

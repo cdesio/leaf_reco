@@ -260,7 +260,7 @@ def retrain_rUNet(model,
 
     history = create_history()
 
-    for epoch in trange(start_epoch + 1, epochs, desc="Training Epoch"):
+    for epoch in trange(start_epoch + 1, start_epoch + 1 + epochs, desc="Training Epoch"):
         print(epoch + 1)
         for phase in ["train", "val"]:
             if phase == "train":

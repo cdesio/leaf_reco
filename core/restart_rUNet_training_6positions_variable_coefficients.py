@@ -6,10 +6,12 @@ from torch import nn
 try:
     from .utils.data import define_dataset, select_dist
     from .utils.training import retrain_rUNet
+    from .models import rUNet, dice_loss
+
 except ModuleNotFoundError:
     from utils.data import define_dataset, select_dist
     from utils.training import retrain_rUNet
-from models import rUNet, dice_loss
+    from models import rUNet, dice_loss
 
 SEED = 42
 torch.manual_seed(SEED)

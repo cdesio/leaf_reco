@@ -183,9 +183,9 @@ class GaussianNoise:
         
 
         """
-        if len(image.shape==2):
+        if len(image.shape)==2:
            row, col = image.shape
-        elif len(image.shape==3):
+        elif len(image.shape)==3:
             shape = image.shape
             if shape[-1]==1:
                 row, col, _ = image.shape

@@ -152,9 +152,10 @@ class Cut:
 
 
 class GaussianNoise:
-    def __init__(self, add_noise=True):
+    def __init__(self, add_noise=True, variance = 0.1):
         assert isinstance(add_noise, bool)
         self.add_noise = add_noise
+        self.var = variance
     """
     def __init__(self, range):
         assert isinstance(range, tuple)
@@ -192,7 +193,7 @@ class GaussianNoise:
             elif shape[0]==1:
                 _, row, col = image.shape
         mean = 0
-        var = 0.1
+        var = self.var
         sigma = var ** 0.5
         gauss = np.random.normal(mean, sigma, (row, col))
         gauss = gauss.reshape(row, col)

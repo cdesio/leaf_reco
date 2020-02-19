@@ -19,7 +19,7 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_
     excluded = excluded_list
     include = include_list
     if add_noise:
-        composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), GaussianNoise(var=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
+        composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     else:
         composed = transforms.Compose(
             [Cut(row_slice=row_slice, col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()])

@@ -151,8 +151,11 @@ class Cut:
         return sample_out
 
 
-class RandomNoise:
-
+class GaussianNoise:
+    def __init__(self, add_noise=True):
+        assert isinstance(add_noise, bool)
+        self.add_noise = add_noise
+    """
     def __init__(self, range):
         assert isinstance(range, tuple)
         self.corr_min, self.corr_max=range
@@ -164,3 +167,59 @@ class RandomNoise:
             image_corr =+ corr
             sample['image']= image_corr
         return sample
+
+    """
+    @staticmethod
+
+    def noisy(image):
+        import numpy as np
+        """
+         Gaussian-distributed additive noise.
+
+        Parameters
+        ----------
+        image : ndarray
+            Input image data. Will be converted to float.
+        
+
+        """
+        if len(image.shape==2):
+           row, col = image.shape
+        elif len(image.shape==3):
+            shape = image.shape
+            if shape[-1]==1:
+                row, col, _ = image.shape
+            elif shape[0]==1:
+                _, row, col = image.shape
+        mean = 0
+        var = 0.1
+        sigma = var ** 0.5
+        gauss = np.random.normal(mean, sigma, (row, col))
+        gauss = gauss.reshape(row, col)
+        noisy = image + gauss
+        return noisy
+
+    def __call__(self, sample):
+        if 'image' in sample.keys():
+            image = sample['image']
+        if 'mask' in sample.keys():
+            mask = sample['mask']
+        else:
+            mask = None
+        if 'dist' in sample.keys():
+            dist = sample['dist']
+        else:
+            dist = None
+
+        if self.add_noise:
+            image_out = self.noisy(image)
+            if mask is not None:
+                mask_out = mask
+
+        if 'mask' in sample.keys() and 'dist' in sample.keys():
+            sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
+        elif 'dist' not in sample.keys() and 'mask' in sample.keys():
+            sample_out = {'image': image_out, 'mask': mask_out}
+        elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
+            sample_out = {'image': image_out}
+        return sample_out

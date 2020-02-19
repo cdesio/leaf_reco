@@ -172,7 +172,7 @@ class GaussianNoise:
     """
     @staticmethod
 
-    def noisy(image):
+    def noisy(image, self):
         import numpy as np
         """
          Gaussian-distributed additive noise.

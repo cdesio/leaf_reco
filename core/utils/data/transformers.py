@@ -149,3 +149,18 @@ class Cut:
         elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
             sample_out = {'image': image_out}
         return sample_out
+
+
+class RandomNoise:
+
+    def __init__(self, range):
+        assert isinstance(range, tuple)
+        self.corr_min, self.corr_max=range
+        self.corrections = np.arange(self.corr_min, self.corr_max, 0.02, dtype=np.float16)
+    def __call__(self, sample):
+        if 'image' in sample.keys():
+            image_corr = sample['image']
+            corr = np.random.choice(self.corrections)
+            image_corr =+ corr
+            sample['image']= image_corr
+        return sample

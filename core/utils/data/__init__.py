@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision import transforms
 try:
     from .dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
-    from .transformers import ChannelsFirst, Rescale, ToTensor, Cut
+    from .transformers import ChannelsFirst, Rescale, ToTensor, Cut, GaussianNoise
 except ModuleNotFoundError:
     from dataset import UNetDatasetFromFolders, UNetDataSetFromNpz, UNetDatasetImagesOnly
-    from transformers import ChannelsFirst, Rescale, ToTensor, Cut
+    from transformers import ChannelsFirst, Rescale, ToTensor, Cut, GaussianNoise
 
 COL_SLICE = slice(1000, None)
 ROW_SLICE = slice(1000, 2400)
@@ -18,7 +18,7 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_
                    row_slice=ROW_SLICE, col_slice=COL_SLICE):
     excluded = excluded_list
     include = include_list
-    composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()])
+    composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), GaussianNoise(), Rescale(scale), ChannelsFirst(), ToTensor()])
     if load_mask:
         dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded, included=include, transform=composed)
     else:

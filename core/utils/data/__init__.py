@@ -22,7 +22,7 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_
         composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice, flip = swap_axes), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     else:
         composed = transforms.Compose(
-            [Cut(row_slice=row_slice, col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()])
+            [Cut(row_slice=row_slice, col_slice=col_slice, flip = swap_axes), Rescale(scale), ChannelsFirst(), ToTensor()])
     if load_mask:
         dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded, included=include, transform=composed)
     else:

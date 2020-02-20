@@ -114,7 +114,7 @@ class ToTensor:
 
 class Cut:
 
-    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, swap=False, ,flip_lr=False, flip_ud=False):
+    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, swap=False, flip_lr=False, flip_ud=False):
         assert isinstance(cut, bool)
         self.cut = cut
         self.flip_lr = flip_lr

@@ -114,10 +114,12 @@ class ToTensor:
 
 class Cut:
 
-    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, flip=False):
+    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, swap=False, ,flip_lr=False, flip_ud=False):
         assert isinstance(cut, bool)
         self.cut = cut
-        self.flip = flip
+        self.flip_lr = flip_lr
+        self.flip_ud = flip_ud
+        self.swap = swap
         self.row_slice = row_slice
         self.col_slice = col_slice
 
@@ -142,10 +144,39 @@ class Cut:
             image_out = image
             if mask is not None:
                 mask_out = mask
-        if self.flip:
+
+        if self.swap and self.flip_lr:
+            image_out = np.fliplr(image_out.swapaxes(1,0))
+            if mask is not None:
+                mask_out = np.fliplr(mask_out.swapaxes(1,0))
+        if self.swap and self.flip_ud:
+            image_out = np.flipud(image_out.swapaxes(1,0))
+            if mask is not None:
+                mask_out = np.flipud(mask_out.swapaxes(1,0))
+
+        if self.swap and not (self.flip_lr and self.flip_ud):
             image_out = image_out.swapaxes(1,0)
             if mask is not None:
                 mask_out = mask_out.swapaxes(1,0)
+
+        if self.flip_lr and not(self.swap and self.flip_ud):
+            image_out = np.fliplr(image_out)
+            if mask is not None:
+                mask_out = np.fliplr(mask_out)
+        if self.flip_ud and not(self.swap and self.flip_lr):
+            image_out = np.flipud(image_out)
+            if mask is not None:
+                mask_out = np.flipud(mask_out)
+
+         if self.flip_lr and self.flip_ud and not self.swap:
+            image_out = np.flipud(np.fliplr(image_out))
+            if mask in not None:
+                mask_out = np.flipud(np.fliplr(mask_out))
+
+        if self.flip_lr and self.flip_ud and self.swap:
+            image_out = np.flipud(np.fliplr(image_out.swapaxes(0,1)))
+            if mask in not None:
+                mask_out = np.flipud(np.fliplr(mask_out.swapaxes(0.1)))
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
             sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}

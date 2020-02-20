@@ -15,9 +15,10 @@ ROW_SLICE = slice(1000, 2400)
 #ROW_SLICE = slice(0, 1400)
 def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_size=16, validation_split=0.2, test_split=0.2,
                    excluded_list=None, include_list=None, load_mask = True,  add_noise = 0, scale=0.25, multi_processing=0, alldata=False,
-                   row_slice=ROW_SLICE, col_slice=COL_SLICE, transform = False, rotation_parameters = (None, None, None)):
+                   row_slice=ROW_SLICE, col_slice=COL_SLICE, rotation_parameters = (None, None, None)):
     excluded = excluded_list
     include = include_list
+    """
     if add_noise and not transform:
         composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     elif add_noise and transform:
@@ -28,7 +29,10 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_
         sw, fliplr, flipud = rotation_parameters
         composed = transforms.Compose(
             [Cut(row_slice=row_slice, col_slice=col_slice, swap=sw, flip_lr=fliplr, flip_ud=flipud), Rescale(scale), ChannelsFirst(), ToTensor()])
-
+    """
+    sw, fliplr, flipud = rotation_parameters
+    composed = transforms.Compose(
+            [Cut(row_slice=row_slice, col_slice=col_slice, swap=sw, flip_lr=fliplr, flip_ud=flipud), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     if load_mask:
         dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded, included=include, transform=composed)
     else:

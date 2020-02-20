@@ -114,9 +114,10 @@ class ToTensor:
 
 class Cut:
 
-    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE):
+    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, flip=False):
         assert isinstance(cut, bool)
         self.cut = cut
+        self.flip = flip
         self.row_slice = row_slice
         self.col_slice = col_slice
 
@@ -141,6 +142,10 @@ class Cut:
             image_out = image
             if mask is not None:
                 mask_out = mask
+        if self.flip:
+            image_out = image_out.swapaxes(1,0)
+            if mask is not None:
+                mask_out = mask_out.swapaxes(1,0)
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
             sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
@@ -224,3 +229,6 @@ class GaussianNoise:
         elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
             sample_out = {'image': image_out}
         return sample_out
+
+
+

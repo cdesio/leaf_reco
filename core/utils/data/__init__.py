@@ -21,11 +21,11 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff', batch_
     if add_noise and not transform:
         composed = transforms.Compose([Cut(row_slice=row_slice,col_slice=col_slice), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     elif add_noise and transform:
-        sw, fliplr, flipup = rotation_parameters
+        sw, fliplr, flipud = rotation_parameters
         composed = transforms.Compose(
             [Cut(row_slice=row_slice, col_slice=col_slice, swap=sw, flip_lr=fliplr, flip_ud=flipud), GaussianNoise(variance=add_noise), Rescale(scale), ChannelsFirst(), ToTensor()])
     elif transform and not add_noise:
-        sw, fliplr, flipup = rotation_parameters
+        sw, fliplr, flipud = rotation_parameters
         composed = transforms.Compose(
             [Cut(row_slice=row_slice, col_slice=col_slice, swap=sw, flip_lr=fliplr, flip_ud=flipud), Rescale(scale), ChannelsFirst(), ToTensor()])
 

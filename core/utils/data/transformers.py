@@ -177,7 +177,7 @@ class Cut:
         if self.flip_lr and self.flip_ud and self.swap:
             image_out = np.flipud(np.fliplr(image_out.swapaxes(0,1)))
             if mask is not None:
-                mask_out = np.flipud(np.fliplr(mask_out.swapaxes(0.1)))
+                mask_out = np.flipud(np.fliplr(mask_out.swapaxes(0,1)))
 
         if 'mask' in sample.keys() and 'dist' in sample.keys():
             sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}

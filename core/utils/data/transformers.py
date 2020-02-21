@@ -121,7 +121,7 @@ class ToTensor(SampleTransformer):
 class Crop(SampleTransformer):
 
     def __init__(self, row_slice=ROW_SLICE, col_slice=COL_SLICE):
-        super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
+        #super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
         self.row_slice = row_slice
         self.col_slice = col_slice
 

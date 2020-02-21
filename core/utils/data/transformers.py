@@ -203,7 +203,7 @@ class GaussianNoise(SampleTransformer):
         self._random_noise_gen = np.random.RandomState(seed=noise_seed)
 
     def transform(self, tensor):
-        row, col, _ = tensor.shape
+        row, col, *rest = tensor.shape
         if row == 1:  # 3D, channels first
             _, row, col = tensor.shape
         mean = self._random_noise_gen.randint(0, 30)

@@ -11,8 +11,8 @@ except ModuleNotFoundError:
     from transformers import ChannelsFirst, Rescale, ToTensor, Crop, GaussianNoise, RandomCrop, Swap, FlipUD, FlipLR
 
 COL_SLICE = slice(1000, None)
-ROW_SLICE = slice(1000, 2400)
-#ROW_SLICE = slice(0, 1400)
+#ROW_SLICE = slice(1000, 2400)
+ROW_SLICE = slice(0, 1400)
 def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
                    batch_size=16, validation_split=0.2, test_split=0.2,
                    excluded_list=None, include_list=None, load_mask = True, scale=0.25, multi_processing=0, alldata=False,

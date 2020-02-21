@@ -178,8 +178,8 @@ class RandomCrop(SampleTransformer):
         self._col_slice = COL_SLICE
         self._random_choice_gen = np.random.RandomState(seed=crop_seed)
 
-    @staticmethod
-    def _crop(tensor, row_slice, col_slice):
+
+    def transform(tensor, row_slice, col_slice):
         if tensor is None:
             return None
         return tensor[row_slice, col_slice]

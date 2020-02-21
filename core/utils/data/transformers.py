@@ -195,8 +195,8 @@ class RandomCrop(SampleTransformer):
 
 class GaussianNoise(SampleTransformer):
 
-    def __init__(self, variance, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_TRANSFORM_PROB, noise_seed=DEFAULT_RANDOM_SEED):
-        super(GaussianNoise, self).__init__(p=p, seed=seed)
+    def __init__(self, variance, p=RANDOM_TRANSFORM_PROB, noise_seed=DEFAULT_RANDOM_SEED):#seed=DEFAULT_TRANSFORM_PROB, noise_seed=DEFAULT_RANDOM_SEED):
+        super(GaussianNoise, self).__init__(p=p)#, seed=seed)
         self.var = variance
         self._random_noise_gen = np.random.RandomState(seed=noise_seed)
 

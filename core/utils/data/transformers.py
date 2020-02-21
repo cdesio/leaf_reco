@@ -6,9 +6,9 @@ from abc import abstractmethod, ABC
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
-# ROW_SLICE = slice(0, 1400)
+ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
-ROW_SLICE = slice(1000, 2400)
+#ROW_SLICE = slice(1000, 2400)
 
 DEFAULT_TRANSFORM_PROB = 1.0
 RANDOM_TRANSFORM_PROB = 0.5
@@ -121,7 +121,7 @@ class ToTensor(SampleTransformer):
 class Crop(SampleTransformer):
 
     def __init__(self, row_slice=ROW_SLICE, col_slice=COL_SLICE):
-        #super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
+        super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
         self.row_slice = row_slice
         self.col_slice = col_slice
 
@@ -172,7 +172,7 @@ class RandomCrop(SampleTransformer):
     CROP_CHOICES = [0, 200, 500, 750, 1000]
     COLS_OFFSET = 1400
 
-    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
+    def __init__(self, p=DEFAULT_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
         super(RandomCrop, self).__init__(p=p)
         self._row_crop_slices = np.asarray([(a, a + self.COLS_OFFSET) for a in self.CROP_CHOICES])
         self._col_slice = COL_SLICE

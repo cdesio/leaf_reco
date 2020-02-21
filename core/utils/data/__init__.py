@@ -53,7 +53,9 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
 
         training_transformers = [RandomCrop(),
                                  #Swap(), FlipLR(), FlipUD(), GaussianNoise(variance=2),
-                                 Rescale(scale), ChannelsFirst(), ToTensor()]
+                                 #Rescale(scale),
+                                 ChannelsFirst(),
+                                 ToTensor()]
 
 
         if load_mask:

@@ -1,266 +1,217 @@
-from skimage.transform import rescale
-
 import torch
 from functools import partial
 import numpy as np
+from skimage.transform import rescale
+from abc import abstractmethod, ABC
 
 IMG_WIDTH = 1400
 IMG_HEIGHT = 1400
-#ROW_SLICE = slice(0, 1400)
+# ROW_SLICE = slice(0, 1400)
 COL_SLICE = slice(1000, None)
 ROW_SLICE = slice(1000, 2400)
 
-class ChannelsFirst:
+DEFAULT_TRANSFORM_PROB = 1.0
+RANDOM_TRANSFORM_PROB = 0.5
+DEFAULT_RANDOM_SEED = 8
+
+
+class SampleTransformer(ABC):
+
+    def __init__(self, p: float = DEFAULT_TRANSFORM_PROB, seed: int = DEFAULT_RANDOM_SEED):
+        self._transform_p = p
+        self._random_state = np.random.RandomState()
+        self._random_state.seed(seed)
+
+    @abstractmethod
+    def transform(self, tensor: np.array) -> np.array:
+        raise NotImplementedError
+
+    def apply_transform(self, image, mask):
+        apply_transform = self._random_state.random_sample()
+        if apply_transform < self._transform_p:
+            image = self.transform(image)
+            mask = self.transform(mask)
+        return image, mask
+
     def __call__(self, sample):
-        if 'image' in sample.keys():
-            image = sample['image']
+        if not 'image' in sample.keys:
+            return None
+        image = sample['image']
+        mask = sample['mask'] if 'mask' in sample.keys() else None
+        dist = sample['dist'] if 'dist' in sample.keys() else None
 
-        if 'mask' in sample.keys():
-            mask = sample['mask']
-        else:
-            mask = None
-        if 'dist' in sample.keys():
-            dist = sample['dist']
-        else:
-            dist = None
+        image, mask = self.apply_transform(image, mask)
 
-        if len(image.shape) == 3:
-            image_sw1 = image.swapaxes(2, 0)
-            image_sw2 = image_sw1.swapaxes(2,1)
-            image_out = image_sw2
-            if mask is not None:
-                mask_sw1 = mask.swapaxes(2, 0)
-                mask_sw2 = mask_sw1.swapaxes(2,1)
-                mask_out = mask_sw2
-
-        elif len(image.shape) == 2:
-            image_out = image[np.newaxis, ...]
-            if mask is not None:
-                mask_out = mask[np.newaxis, ...]
-
-        if 'mask' in sample.keys() and 'dist' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
-        elif 'dist' not in sample.keys() and 'mask' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out}
-        elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
-            sample_out = {'image': image_out}
+        sample_out = {'image': image}
+        if mask:
+            sample_out['mask'] = mask
+        if dist:
+            sample_out['dist'] = dist
         return sample_out
 
 
-class Rescale:
+class ChannelsFirst(SampleTransformer):
 
-    def __init__(self, scale):
+    def transform(self, tensor: np.array) -> np.array:
+        """
+        Apply Channel-first transformation input tensor (as numpy array)
+
+        Cases:
+        1. If input tensor is None, None is returned.
+
+        2. If the input tensor is three-dimensional, it is
+        transformed with channel-first, unless first dimension
+        is already 1.
+
+        3. If input tensor is 2D, a new axis (`np.newaxis`)
+        is added as first dimension.
+
+        Parameters:
+        tensor: numpy.ndarray
+
+        """
+        if tensor is None:
+            return None
+
+        if len(tensor.shape) == 3:
+            if tensor.shape[0] == 1:
+                return tensor
+            else:
+                return np.transpose(tensor, (2, 0, 1))
+        else:
+            # 2D image, Add Channel
+            return tensor[np.newaxis, ...]
+
+
+class Rescale(SampleTransformer):
+
+    def __init__(self, scale: float):
+        super(Rescale, self).__init__(p=DEFAULT_TRANSFORM_PROB)
         assert isinstance(scale, float)
         self.output_scale = scale
 
+    def transform(self, tensor: np.array) -> np.array:
+        """Apply Rescale transformation to input tensor (`numpy.ndarray`)
+        """
+        resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True)
+        if len(tensor.shape) == 3:
+            multichannel = True
+        else:
+            multichannel = False
+        return resizer(tensor, multichannel=multichannel)
+
+
+class ToTensor(SampleTransformer):
+
+    def transform(self, tensor):
+        """Transform input tensor into a torch.Tensor object"""
+        if tensor is None:
+            return None
+        return torch.from_numpy(tensor)
+
     def __call__(self, sample):
-        if 'image' in sample.keys():
-            image = sample['image']
-
-        if 'mask' in sample.keys():
-            mask = sample['mask']
-        else:
-            mask = None
-        if 'dist' in sample.keys():
-            dist = sample['dist']
-        else:
-            dist = None
-
-        if len(image.shape) == 3:
-            resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=True)
-            image_out = resizer(image)
-            if mask is not None:
-                mask_out = resizer(mask)
-        elif len(image.shape) == 2:
-            resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True, multichannel=False)
-            image_out = resizer(image)
-            if mask is not None:
-                mask_out = resizer(mask)
-
-        if 'mask' in sample.keys() and 'dist' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
-        elif 'dist' not in sample.keys() and 'mask' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out}
-        elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
-            sample_out = {'image': image_out}
+        sample_out = super(ToTensor, self).__call__(sample)
+        if 'dist' in sample_out:
+            dist = sample_out['dist']
+            dist_out = torch.from_numpy(np.asarray(dist))
+            sample_out['dist'] = dist_out
         return sample_out
 
 
-class ToTensor:
+class Crop(SampleTransformer):
 
-    def __call__(self, sample):
-        if len(sample.keys()) == 3:
-            image, mask, dist = sample['image'], sample['mask'], sample['dist']
-            img_tensor = torch.from_numpy(image)
-            mask_tensor = torch.from_numpy(mask)
-            # dist_tensor = torch.from_numpy(np.unique(dist, return_inverse=True)[1])
-            dist_tensor = torch.from_numpy(np.asarray(dist))
-            sample_out = {'image': img_tensor, 'mask': mask_tensor, 'dist': dist_tensor}
-        elif len(sample.keys()) == 2:
-            image, mask = sample['image'], sample['mask']
-            img_tensor = torch.from_numpy(image)
-            mask_tensor = torch.from_numpy(mask)
-            sample_out = {'image': img_tensor, 'mask': mask_tensor}
-        elif len(sample.keys()) == 1:
-            image = sample['image']
-            img_tensor = torch.from_numpy(image)
-            sample_out = {'image': img_tensor}
-        return sample_out
-
-
-
-
-
-
-class Cut:
-
-    def __init__(self, cut=True, row_slice=ROW_SLICE, col_slice=COL_SLICE, swap=False, flip_lr=False, flip_ud=False):
-        assert isinstance(cut, bool)
-        self.cut = cut
-        self.flip_lr = flip_lr
-        self.flip_ud = flip_ud
-        self.swap = swap
+    def __init__(self, row_slice=ROW_SLICE, col_slice=COL_SLICE):
+        super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
         self.row_slice = row_slice
         self.col_slice = col_slice
 
-    def __call__(self, sample):
-        if 'image' in sample.keys():
-            image = sample['image']
-
-        if 'mask' in sample.keys():
-            mask = sample['mask']
-        else:
-            mask=None
-        if 'dist' in sample.keys():
-            dist = sample['dist']
-        else:
-            dist=None
-
-        if self.cut:
-            image_out = image[self.row_slice, self.col_slice]
-            if mask is not None:
-                mask_out = mask[self.row_slice, self.col_slice]
-        else:
-            image_out = image
-            if mask is not None:
-                mask_out = mask
-
-        if self.swap and self.flip_lr:
-            image_out = np.fliplr(image_out.swapaxes(1,0))
-            if mask is not None:
-                mask_out = np.fliplr(mask_out.swapaxes(1,0))
-        if self.swap and self.flip_ud:
-            image_out = np.flipud(image_out.swapaxes(1,0))
-            if mask is not None:
-                mask_out = np.flipud(mask_out.swapaxes(1,0))
-
-        if self.swap and not (self.flip_lr and self.flip_ud):
-            image_out = image_out.swapaxes(1,0)
-            if mask is not None:
-                mask_out = mask_out.swapaxes(1,0)
-
-        if self.flip_lr and not(self.swap and self.flip_ud):
-            image_out = np.fliplr(image_out)
-            if mask is not None:
-                mask_out = np.fliplr(mask_out)
-
-        if self.flip_ud and not(self.swap and self.flip_lr):
-            image_out = np.flipud(image_out)
-            if mask is not None:
-                mask_out = np.flipud(mask_out)
-
-        if self.flip_lr and self.flip_ud and not self.swap:
-            image_out = np.flipud(np.fliplr(image_out))
-            if mask is not None:
-                mask_out = np.flipud(np.fliplr(mask_out))
-
-        if self.flip_lr and self.flip_ud and self.swap:
-            image_out = np.flipud(np.fliplr(image_out.swapaxes(0,1)))
-            if mask is not None:
-                mask_out = np.flipud(np.fliplr(mask_out.swapaxes(0,1)))
-
-        if 'mask' in sample.keys() and 'dist' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
-        elif 'dist' not in sample.keys() and 'mask' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out}
-        elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
-            sample_out = {'image': image_out}
-        return sample_out
+    def transform(self, tensor):
+        """Slice input tensor with pre-defined slices"""
+        if tensor is None:
+            return None
+        return tensor[self.row_slice, self.col_slice]
 
 
-class GaussianNoise:
-    def __init__(self, add_noise=True, variance = 0.1):
-        assert isinstance(add_noise, bool)
-        self.add_noise = add_noise
-        self.var = variance
-    """
-    def __init__(self, range):
-        assert isinstance(range, tuple)
-        self.corr_min, self.corr_max=range
-        self.corrections = np.arange(self.corr_min, self.corr_max, 0.02, dtype=np.float16)
-    def __call__(self, sample):
-        if 'image' in sample.keys():
-            image_corr = sample['image']
-            corr = np.random.choice(self.corrections)
-            image_corr =+ corr
-            sample['image']= image_corr
-        return sample
+class Swap(SampleTransformer):
 
-    """
+    def __init__(self, p=RANDOM_TRANSFORM_PROB):
+        super(Swap, self).__init__(p=p)
+
+    def transform(self, tensor):
+        """"""
+        if tensor is None:
+            return None
+        return tensor.swapaxes(0, 1)
+
+
+class FlipLR(SampleTransformer):
+
+    def __init__(self, p=RANDOM_TRANSFORM_PROB):
+        super(FlipLR, self).__init__(p=p)
+
+    def transform(self, tensor):
+        """"""
+        if tensor is None:
+            return None
+        return np.fliplr(tensor)
+
+
+class FlipUD(SampleTransformer):
+
+    def __init__(self, p=RANDOM_TRANSFORM_PROB):
+        super(FlipUD, self).__init__(p=p)
+
+    def transform(self, tensor):
+        """"""
+        if tensor is None:
+            return None
+        return np.flipud(tensor)
+
+
+class RandomCrop(SampleTransformer):
+    CROP_CHOICES = [0, 200, 500, 750, 1000]
+    COLS_OFFSET = 1400
+
+    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
+        super(RandomCrop, self).__init__(p=p)
+        self._row_crop_slices = np.asarray([(a, a + self.COLS_OFFSET) for a in self.CROP_CHOICES])
+        self._col_slice = COL_SLICE
+        self._random_choice_gen = np.random.RandomState(seed=crop_seed)
+
     @staticmethod
+    def _crop(tensor, row_slice, col_slice):
+        if tensor is None:
+            return None
+        return tensor[row_slice, col_slice]
 
-    def noisy(image, var):
-        import numpy as np
-        """
-         Gaussian-distributed additive noise.
-
-        Parameters
-        ----------
-        image : ndarray
-            Input image data. Will be converted to float.
-        
-
-        """
-        if len(image.shape)==2:
-           row, col = image.shape
-        elif len(image.shape)==3:
-            shape = image.shape
-            if shape[-1]==1:
-                row, col, _ = image.shape
-            elif shape[0]==1:
-                _, row, col = image.shape
-        mean = 0
-        #var = var
-        sigma = var ** 0.5
-        gauss = np.random.normal(mean, sigma, (row, col))
-        gauss = gauss.reshape(row, col)
-        noisy = image + gauss
-        return noisy
-
-    def __call__(self, sample):
-        if 'image' in sample.keys():
-            image = sample['image']
-        if 'mask' in sample.keys():
-            mask = sample['mask']
-        else:
-            mask = None
-        if 'dist' in sample.keys():
-            dist = sample['dist']
-        else:
-            dist = None
-
-        if self.add_noise:
-            image_out = self.noisy(image, self.var)
-            if mask is not None:
-                mask_out = mask
-
-        if 'mask' in sample.keys() and 'dist' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out, 'dist': dist}
-        elif 'dist' not in sample.keys() and 'mask' in sample.keys():
-            sample_out = {'image': image_out, 'mask': mask_out}
-        elif 'dist' not in sample.keys() and 'mask' not in sample.keys():
-            sample_out = {'image': image_out}
-        return sample_out
+    def apply_transform(self, image, mask):
+        apply_transform = self._random_state.random_sample()
+        if apply_transform < self._transform_p:
+            row_slice = self._random_choice_gen.choice(self._row_crop_slices)
+            image = self._crop(image, row_slice, self._col_slice)
+            mask = self._crop(mask, row_slice, self._col_slice)
+        return image, mask
 
 
+class GaussianNoise(SampleTransformer):
 
+    def __init__(self, variance, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_TRANSFORM_PROB, noise_seed=DEFAULT_RANDOM_SEED):
+        super(GaussianNoise, self).__init__(p=p, seed=seed)
+        self.var = variance
+        self._random_noise_gen = np.random.RandomState(seed=noise_seed)
+
+    def transform(self, tensor):
+        row, col, _ = tensor.shape
+        if row == 1:  # 3D, channels first
+            _, row, col = tensor.shape
+        mean = self._random_noise_gen.randint(0, 30)
+        # var = var
+        sigma = self.var ** 0.5
+        gauss = self._random_noise_gen.normal(mean, sigma, (row, col)).reshape(row, col)
+        return tensor + gauss
+
+    def apply_transform(self, image, mask):
+        apply_transform = self._random_state.random_sample()
+        if apply_transform < self._transform_p:
+            image = self.transform(image)
+        return image, mask

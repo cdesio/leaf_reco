@@ -34,7 +34,7 @@ class SampleTransformer(ABC):
         return image, mask
 
     def __call__(self, sample):
-        if not 'image' in sample.keys():
+        if not 'image' in sample.keys:
             return None
         image = sample['image']
         mask = sample['mask'] if 'mask' in sample.keys() else None
@@ -43,9 +43,9 @@ class SampleTransformer(ABC):
         image, mask = self.apply_transform(image, mask)
 
         sample_out = {'image': image}
-        if mask is not None:
+        if mask:
             sample_out['mask'] = mask
-        if dist is not None:
+        if dist:
             sample_out['dist'] = dist
         return sample_out
 
@@ -176,20 +176,21 @@ class RandomCrop(SampleTransformer):
         super(RandomCrop, self).__init__(p=p)
         self._row_crop_slices = np.asarray([(a, a + self.COLS_OFFSET) for a in self.CROP_CHOICES])
         self._col_slice = COL_SLICE
+        # This is None by default, will be overwritten every time a transformation op is applied.
+        self._row_slice = None
         self._random_choice_gen = np.random.RandomState(seed=crop_seed)
 
-
-    def transform(tensor, row_slice, col_slice):
+    def transform(self, tensor):
         if tensor is None:
             return None
-        return tensor[row_slice, col_slice]
+        return tensor[self._row_slice, self._col_slice]
 
     def apply_transform(self, image, mask):
         apply_transform = self._random_state.random_sample()
         if apply_transform < self._transform_p:
-            row_slice = self._random_choice_gen.choice(self._row_crop_slices)
-            image = self._crop(image, row_slice, self._col_slice)
-            mask = self._crop(mask, row_slice, self._col_slice)
+            self._row_slice = self._random_choice_gen.choice(self._row_crop_slices)
+            image = self.transform(image)
+            mask = self.transform(mask)
         return image, mask
 
 

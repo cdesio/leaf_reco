@@ -189,6 +189,7 @@ class RandomCrop(SampleTransformer):
         apply_transform = self._random_state.random_sample()
         if apply_transform < self._transform_p:
             self._row_slice = self._random_choice_gen.choice(self._row_crop_slices)
+            print(self.row_slice)
             image = self.transform(image)
             mask = self.transform(mask)
         return image, mask

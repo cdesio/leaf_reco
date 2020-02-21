@@ -51,7 +51,7 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
         validation_sampler = SubsetRandomSampler(validation_idx)
         train_sampler = SubsetRandomSampler(train_idx_out)
 
-        training_transformers = [RandomCrop(), Swap(), FlipLR, FlipUD, GaussianNoise(variance=2), Rescale(scale), ChannelsFirst(), ToTensor()]
+        training_transformers = [RandomCrop(), Swap(), FlipLR(), FlipUD(), GaussianNoise(variance=2), Rescale(scale), ChannelsFirst(), ToTensor()]
 
 
         if load_mask:

@@ -29,8 +29,10 @@ class SampleTransformer(ABC):
     def apply_transform(self, image, mask):
         apply_transform = self._random_state.random_sample()
         if apply_transform < self._transform_p:
+            print('{}: type: {} dtype: {}'.format(self.__class__.__name__, type(image), image.dtype))
             image = self.transform(image)
             mask = self.transform(mask)
+            print('{}: type: {} dtype: {}'.format(self.__class__.__name__, type(image), image.dtype))
         return image, mask
 
     def __call__(self, sample):
@@ -107,7 +109,6 @@ class ToTensor(SampleTransformer):
         """Transform input tensor into a torch.Tensor object"""
         if tensor is None:
             return None
-        
         return torch.from_numpy(tensor)
 
     def __call__(self, sample):

@@ -214,8 +214,11 @@ class GaussianNoise(SampleTransformer):
         #sigma = 400
         #sigma **= 0.5
         gauss = self._random_noise_gen.normal(self._mean, self._sigma, (row, col))
-        print(np.min(tensor), np.max(tensor), tensor.dtype, gauss.dtype)
+        #print(np.min(tensor), np.max(tensor), tensor.dtype, gauss.dtype)
         tensor_g = tensor+gauss
+        tensor_g /= tensor_g.max()
+        print(np.min(tensor_g), np.max(tensor_g), tensor_g.dtype)
+        tensor_g = tensor_g.astype(np.uint8)
         print(np.min(tensor_g), np.max(tensor_g), tensor_g.dtype)
         return tensor_g
 

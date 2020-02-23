@@ -13,21 +13,23 @@ except ModuleNotFoundError:
 COL_SLICE = slice(1000, None)
 #ROW_SLICE = slice(1000, 2400)
 ROW_SLICE = slice(0, 1400)
+#base_transformers = [Crop(row_slice=row_slice, col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()]
+#training_transformers = [RandomCrop(), Rescale(scale), Swap(), FlipLR(), FlipUD(), GaussianNoise(variance=2), ChannelsFirst(),ToTensor()]
 def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
                    batch_size=16, validation_split=0.2, test_split=0.2,
-                   excluded_list=None, include_list=None, load_mask = True, scale=0.25, multi_processing=0, alldata=False,
-                   row_slice=ROW_SLICE, col_slice=COL_SLICE):
+                   excluded_list=None, include_list=None, load_mask = True, multi_processing=0, alldata=False,
+                   base_transformers, train_transformers):
 
     excluded = excluded_list
     include = include_list
-    transformers_val_test = [Crop(row_slice=row_slice, col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()]
+
 
     if load_mask:
         dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
-                                         included=include, transform=Compose(transformers_val_test))
+                                         included=include, transform=Compose(base_transformers))
     else:
         dataset = UNetDatasetImagesOnly(root_folder, fname_key=fname_key, file_extension=file_extension,
-                                         excluded=excluded, included=include, transform=Compose(transformers_val_test))
+                                         excluded=excluded, included=include, transform=Compose(base_transformers))
 
     if alldata:
         data_loaders = DataLoader(dataset, batch_size=batch_size, num_workers=multi_processing)
@@ -51,20 +53,14 @@ def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
         validation_sampler = SubsetRandomSampler(validation_idx)
         train_sampler = SubsetRandomSampler(train_idx_out)
 
-        training_transformers = [#RandomCrop(),
-                                 Rescale(scale),
-                                 #Swap(), FlipLR(), FlipUD(),
-                                 GaussianNoise(variance=2),
-                                 ChannelsFirst(),
-                                 ToTensor()]
 
 
         if load_mask:
             train_dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
-                                             included=include, transform=Compose(training_transformers))
+                                             included=include, transform=Compose(train_transformers))
         else:
             train_dataset = UNetDatasetImagesOnly(root_folder, fname_key=fname_key, file_extension=file_extension,
-                                           excluded=excluded, included=include, transform=Compose(training_transformers))
+                                           excluded=excluded, included=include, transform=Compose(train_transformers))
 
         train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size, num_workers=4)
         validation_loader = DataLoader(dataset, sampler=validation_sampler, batch_size=batch_size, num_workers=4)

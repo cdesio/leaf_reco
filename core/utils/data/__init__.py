@@ -15,10 +15,10 @@ COL_SLICE = slice(1000, None)
 ROW_SLICE = slice(0, 1400)
 #base_transformers = [Crop(row_slice=row_slice, col_slice=col_slice), Rescale(scale), ChannelsFirst(), ToTensor()]
 #training_transformers = [RandomCrop(), Rescale(scale), Swap(), FlipLR(), FlipUD(), GaussianNoise(variance=2), ChannelsFirst(),ToTensor()]
-def define_dataset(root_folder, fname_key='File', file_extension='.tiff',
+def define_dataset(root_folder, base_transformers, train_transformers, fname_key='File', file_extension='.tiff',
                    batch_size=16, validation_split=0.2, test_split=0.2,
                    excluded_list=None, include_list=None, load_mask = True, multi_processing=0, alldata=False,
-                   base_transformers, train_transformers):
+                   ):
 
     excluded = excluded_list
     include = include_list

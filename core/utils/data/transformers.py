@@ -72,7 +72,7 @@ class ChannelsFirst(SampleTransformer):
         """
         if tensor is None:
             return None
-
+        
         if len(tensor.shape) == 3:
             if tensor.shape[0] == 1:
                 return tensor
@@ -107,6 +107,7 @@ class ToTensor(SampleTransformer):
         """Transform input tensor into a torch.Tensor object"""
         if tensor is None:
             return None
+        
         return torch.from_numpy(tensor)
 
     def __call__(self, sample):
@@ -153,7 +154,7 @@ class FlipLR(SampleTransformer):
         """"""
         if tensor is None:
             return None
-        return np.fliplr(tensor)
+        return np.fliplr(tensor).copy()
 
 
 class FlipUD(SampleTransformer):
@@ -165,14 +166,14 @@ class FlipUD(SampleTransformer):
         """"""
         if tensor is None:
             return None
-        return np.flipud(tensor)
+        return np.flipud(tensor).copy()
 
 
 class RandomCrop(SampleTransformer):
     CROP_CHOICES = [0, 200, 500, 750, 1000]
-    COLS_OFFSET = 1400
+    ROWS_OFFSET = 1400
 
-    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
+    def __init__(self, p=DEFAULT_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
         super(RandomCrop, self).__init__(p=p)
         self._row_crop_choices = np.asarray([a for a in self.CROP_CHOICES])
         self._col_slice = COL_SLICE
@@ -184,12 +185,12 @@ class RandomCrop(SampleTransformer):
         if tensor is None:
             return None
         return tensor[self._row_slice, self._col_slice]
-
+    
     def apply_transform(self, image, mask):
         apply_transform = self._random_state.random_sample()
         if apply_transform < self._transform_p:
             crop_row = self._random_choice_gen.choice(self._row_crop_choices)
-            self._row_slice = slice(crop_row, crop_row + self.COLS_OFFSET)
+            self._row_slice = slice(crop_row, crop_row + self.ROWS_OFFSET)
             image = self.transform(image)
             mask = self.transform(mask)
         return image, mask
@@ -197,19 +198,19 @@ class RandomCrop(SampleTransformer):
 
 class GaussianNoise(SampleTransformer):
 
-    def __init__(self, variance, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, noise_seed=DEFAULT_RANDOM_SEED):
+    def __init__(self, mean, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, 
+                 noise_seed=DEFAULT_RANDOM_SEED):
         super(GaussianNoise, self).__init__(p=p, seed=seed)
-        self.var = variance
+        self._mean = mean
         self._random_noise_gen = np.random.RandomState(seed=noise_seed)
 
     def transform(self, tensor):
         row, col, *rest = tensor.shape
         if row == 1:  # 3D, channels first
             _, row, col = tensor.shape
-        mean = self._random_noise_gen.randint(0, 30)
-        # var = var
-        sigma = self.var ** 0.5
-        gauss = self._random_noise_gen.normal(mean, sigma, (row, col)).reshape(row, col)
+        sigma = self._random_noise_gen.randint(0, 10000)
+        sigma **= 0.5
+        gauss = self._random_noise_gen.normal(self._mean, sigma, (row, col)).reshape(row, col)
         return tensor + gauss
 
     def apply_transform(self, image, mask):

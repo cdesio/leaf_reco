@@ -198,19 +198,21 @@ class RandomCrop(SampleTransformer):
 
 class GaussianNoise(SampleTransformer):
 
-    def __init__(self, mean, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, 
+    def __init__(self, mean=0, sigma=400, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED,
                  noise_seed=DEFAULT_RANDOM_SEED):
         super(GaussianNoise, self).__init__(p=p, seed=seed)
         self._mean = mean
+        self._sigma = sigma
         self._random_noise_gen = np.random.RandomState(seed=noise_seed)
 
     def transform(self, tensor):
         row, col, *rest = tensor.shape
         if row == 1:  # 3D, channels first
             _, row, col = tensor.shape
-        sigma = self._random_noise_gen.randint(0, 10000)
-        sigma **= 0.5
-        gauss = self._random_noise_gen.normal(self._mean, sigma, (row, col)).reshape(row, col)
+        #sigma = self._random_noise_gen.randint(0, 10000)
+        #sigma = 400
+        #sigma **= 0.5
+        gauss = self._random_noise_gen.normal(self._mean, self._sigma, (row, col)).reshape(row, col)
         return tensor + gauss
 
     def apply_transform(self, image, mask):

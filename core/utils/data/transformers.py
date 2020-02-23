@@ -218,7 +218,7 @@ class GaussianNoise(SampleTransformer):
         tensor_g = tensor+gauss
         tensor_g /= tensor_g.max()
         print(np.min(tensor_g), np.max(tensor_g), tensor_g.dtype)
-        tensor_g = tensor_g.astype(np.uint8)
+        tensor_g = (tensor_g*255).astype(np.uint8)
         print(np.min(tensor_g), np.max(tensor_g), tensor_g.dtype)
         return tensor_g
 

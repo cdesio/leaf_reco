@@ -39,7 +39,7 @@ data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transforme
                                            batch_size=16, excluded_list=EXCLUDED,
                                             alldata=False, multi_processing=4)
 
-print(data_lengths)
+print(data_length)
 print("Define model")
 coeffs = [0.40, 0.70]
 
@@ -57,7 +57,7 @@ for coef in coeffs:
     history = retrain_rUNet(model=model, optimizer=optimizer,
                             criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,
                             loss_coeff=coef, data_loaders=data_loaders,
-                            data_lengths=data_lengths, checkpoint_file=checkpoint_file,
+                            data_lengths=data_length, checkpoint_file=checkpoint_file,
                             epochs=n_epochs, batch_size=16,
                             model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
                             task_folder_name="trained_6positions_multi_loss_augmentation",

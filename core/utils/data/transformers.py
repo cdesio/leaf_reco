@@ -86,9 +86,11 @@ class ChannelsFirst(SampleTransformer):
 
 
 class Rescale(SampleTransformer):
-
-    def __init__(self, scale: float):
-        super(Rescale, self).__init__(p=DEFAULT_TRANSFORM_PROB)
+    DEFAULT_SEED = 33
+    def __init__(self, scale: float, seed=None):
+        if not seed:
+            seed = self.DEFAULT_SEED
+        super(Rescale, self).__init__(p=DEFAULT_TRANSFORM_PROB, seed=seed)
         assert isinstance(scale, float)
         self.output_scale = scale
 
@@ -121,9 +123,12 @@ class ToTensor(SampleTransformer):
 
 
 class Crop(SampleTransformer):
+    DEFAULT_SEED = 42
 
-    def __init__(self, row_slice=ROW_SLICE, col_slice=COL_SLICE):
-        super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB)
+    def __init__(self, row_slice=ROW_SLICE, col_slice=COL_SLICE, seed=None):
+        if not seed:
+            seed = self.DEFAULT_SEED
+        super(Crop, self).__init__(p=DEFAULT_TRANSFORM_PROB, seed=seed)
         self.row_slice = row_slice
         self.col_slice = col_slice
 
@@ -135,9 +140,11 @@ class Crop(SampleTransformer):
 
 
 class Swap(SampleTransformer):
-
-    def __init__(self, p=RANDOM_TRANSFORM_PROB):
-        super(Swap, self).__init__(p=p)
+    DEFAULT_SEED = 27
+    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=None):
+        if not seed:
+            seed = self.DEFAULT_SEED
+        super(Swap, self).__init__(p=p, seed=seed)
 
     def transform(self, tensor):
         """"""
@@ -147,9 +154,12 @@ class Swap(SampleTransformer):
 
 
 class FlipLR(SampleTransformer):
+    DEFAULT_SEED = 87
 
-    def __init__(self, p=RANDOM_TRANSFORM_PROB):
-        super(FlipLR, self).__init__(p=p)
+    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=None):
+        if not seed:
+            seed = self.DEFAULT_SEED
+        super(FlipLR, self).__init__(p=p, seed=seed)
 
     def transform(self, tensor):
         """"""
@@ -159,9 +169,12 @@ class FlipLR(SampleTransformer):
 
 
 class FlipUD(SampleTransformer):
+    DEFAULT_SEED = 56
 
-    def __init__(self, p=RANDOM_TRANSFORM_PROB):
-        super(FlipUD, self).__init__(p=p)
+    def __init__(self, p=RANDOM_TRANSFORM_PROB, seed=None):
+        if not seed:
+            seed = self.DEFAULT_SEED
+        super(FlipUD, self).__init__(p=p, seed=seed)
 
     def transform(self, tensor):
         """"""
@@ -174,8 +187,18 @@ class RandomCrop(SampleTransformer):
     CROP_CHOICES = [0, 200, 500, 750, 1000]
     ROWS_OFFSET = 1400
 
-    def __init__(self, p=DEFAULT_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED, crop_seed=DEFAULT_RANDOM_SEED):
-        super(RandomCrop, self).__init__(p=p)
+    # Default Random Seed
+    DEFAULT_SEED = 92
+    DEFAULT_CROP_SEED = 43
+
+    def __init__(self, p=DEFAULT_TRANSFORM_PROB, seed=None, crop_seed=None):
+
+        if not seed:
+            seed = self.DEFAULT_SEED
+        if not crop_seed:
+            crop_seed = self.DEFAULT_CROP_SEED
+
+        super(RandomCrop, self).__init__(p=p, seed=seed)
         self._row_crop_choices = np.asarray([a for a in self.CROP_CHOICES])
         self._col_slice = COL_SLICE
         # This is None by default, will be overwritten every time a transformation op is applied.
@@ -198,9 +221,16 @@ class RandomCrop(SampleTransformer):
 
 
 class GaussianNoise(SampleTransformer):
+    DEFAULT_SEED = 29
+    DEFAULT_NOISE_SEED = 9
 
-    def __init__(self, mean=0, sigma=20, p=RANDOM_TRANSFORM_PROB, seed=DEFAULT_RANDOM_SEED,
-                 noise_seed=DEFAULT_RANDOM_SEED):
+    def __init__(self, mean=0, sigma=20, p=RANDOM_TRANSFORM_PROB, seed=None,
+                 noise_seed=None):
+        if not seed:
+            seed=self.DEFAULT_SEED
+        if not noise_seed:
+            noise_seed=self.DEFAULT_NOISE_SEED
+
         super(GaussianNoise, self).__init__(p=p, seed=seed)
         self._mean = mean
         self._sigma = sigma

@@ -95,6 +95,8 @@ class Rescale(SampleTransformer):
         self.output_scale = scale
 
     def transform(self, tensor: np.array) -> np.array:
+        if tensor is None:
+            return None
         """Apply Rescale transformation to input tensor (`numpy.ndarray`)
         """
         resizer = partial(rescale, scale=self.output_scale, anti_aliasing=True)
@@ -237,6 +239,8 @@ class GaussianNoise(SampleTransformer):
         self._random_noise_gen = np.random.RandomState(seed=noise_seed)
 
     def transform(self, tensor):
+        if tensor is None:
+            return None
         row, col, *rest = tensor.shape
         if row == 1:  # 3D, channels first
             _, row, col = tensor.shape

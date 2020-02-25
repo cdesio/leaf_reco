@@ -112,7 +112,7 @@ class UNetDatasetFromFolders(Dataset):
 
         if self.transform:
             sample = self.transform(sample)
-        return sample, self.fnames_list
+        return sample
 
     def __len__(self):
         return len(self.images_list)

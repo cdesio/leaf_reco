@@ -101,7 +101,7 @@ class UNetDatasetFromFolders(Dataset):
                 dist = regex.findall(folder.split('_')[1])[0]
                 distances.extend(int(dist) for _ in range(image_found))
 
-        return distances, images_list, masks_list, fnames_list
+        return distances, images_list, masks_list
 
     def __getitem__(self, idx):
         image = imread(self.images_list[idx])

@@ -45,7 +45,7 @@ class UNetDatasetFromFolders(Dataset):
         self.extension = file_extension
         self.excluded = excluded
         self.included = included
-        self.distances, self.images_list, self.masks_list self.fnames_list = self._create_list()
+        self.distances, self.images_list, self.masks_list, self.fnames_list = self._create_list()
 
 
     @staticmethod

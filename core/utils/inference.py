@@ -26,7 +26,7 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
             for j, (img, tr_dist, pr_dist, fname) in enumerate(zip(true_images,
                                                                    true_dists.cpu().detach().numpy(),
                                                                    pred_dists.cpu().detach().numpy()),
-                                                               fnames_batch.cpu().detach().numpy):
+                                                               fnames_batch.cpu().detach().numpy()):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
                 fnb.append(regex.findall(i.split('/')[-1])[0])
@@ -37,7 +37,7 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
             for j, (img, tr_dist, pr_dist, fname) in enumerate(zip(true_images,
                                                             true_dists.cpu().detach().numpy(),
                                                             pred_dists.cpu().detach().numpy()),
-                                                            fnames_batch.cpu().detach().numpy):
+                                                            fnames_batch.cpu().detach().numpy()):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
                 fnb.append(regex.findall(i.split('/')[ -1])[0])

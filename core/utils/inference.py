@@ -30,7 +30,7 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
                                                                fnames_batch)):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
-                fnb.append(regex.findall(fname.split('/')[-1])[0])
+                fnb.append(int(regex.findall(fname.split('/')[-1])[0]))
     else:
         for i, batch in tqdm(enumerate(data_loaders), total=data_lengths // batch_size, desc="Batch"):
             true_images, true_dists, fnames_batch = batch["image"], batch["dist"], batch['fname']
@@ -41,7 +41,7 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
                                                             fnames_batch)):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
-                fnb.append(regex.findall(fname.split('/')[ -1])[0])
+                fnb.append(int(regex.findall(fname.split('/')[ -1])[0]))
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred).ravel()
     fnb = np.asarray(fnb)

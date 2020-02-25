@@ -1,8 +1,9 @@
 import numpy as np
 import torch
-
+import re
 
 def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, notebook=None, test=True):
+    regex = re.compile(r'\d+')
     if notebook:
         from tqdm.notebook import tqdm
     else:

@@ -81,6 +81,7 @@ class UNetDatasetFromFolders(Dataset):
                 if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:
                         image_found += 1
+                        print(fname)
                         folder_imgs.append(os.path.join(root_dir, fname))
                     elif 'mask' in fname:
                         mask_found += 1

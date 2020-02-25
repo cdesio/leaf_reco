@@ -76,7 +76,7 @@ class UNetDatasetFromFolders(Dataset):
             r_folder = os.path.split(root_dir)[1]
             if (self.included and r_folder not in self.included) or (self.excluded and r_folder in self.excluded):
                 continue
-
+            print(root_dir)
             for fname in files:
                 if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:

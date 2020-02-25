@@ -45,7 +45,7 @@ class UNetDatasetFromFolders(Dataset):
         self.extension = file_extension
         self.excluded = excluded
         self.included = included
-        self.distances, self.images_list, self.masks_list, self.fnames_list = self._create_list()
+        self.distances, self.images_list, self.masks_list = self._create_list()
 
 
     @staticmethod
@@ -76,13 +76,13 @@ class UNetDatasetFromFolders(Dataset):
             r_folder = os.path.split(root_dir)[1]
             if (self.included and r_folder not in self.included) or (self.excluded and r_folder in self.excluded):
                 continue
-            print(root_dir)
-            fnames_list = []
+            #print(root_dir)
+            #fnames_list = []
             for fname in sorted(files):
                 if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:
                         image_found += 1
-                        fnames_list.append(fname)
+                        #fnames_list.append(fname)
                         folder_imgs.append(os.path.join(root_dir, fname))
                     elif 'mask' in fname:
                         mask_found += 1
@@ -107,7 +107,8 @@ class UNetDatasetFromFolders(Dataset):
         image = imread(self.images_list[idx])
         mask = imread(self.masks_list[idx])
         distance = self.distances[idx]
-        sample = {'image': image, 'mask': mask, 'dist': distance}
+        fname = self.images_list[idx]
+        sample = {'image': image, 'mask': mask, 'dist': distance, 'fname': fname}
 
         if self.transform:
             sample = self.transform(sample)

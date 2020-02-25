@@ -25,7 +25,7 @@ def define_dataset(root_folder, base_transformers, train_transformers, fname_key
 
 
     if load_mask:
-        dataset, fnames_list = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
+        dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
                                          included=include, transform=Compose(base_transformers))
     else:
         dataset = UNetDatasetImagesOnly(root_folder, fname_key=fname_key, file_extension=file_extension,
@@ -56,7 +56,7 @@ def define_dataset(root_folder, base_transformers, train_transformers, fname_key
 
 
         if load_mask:
-            train_dataset, fnames_list = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
+            train_dataset = UNetDatasetFromFolders(root_folder, fname_key=fname_key, file_extension=file_extension, excluded=excluded,
                                              included=include, transform=Compose(train_transformers))
         else:
             train_dataset = UNetDatasetImagesOnly(root_folder, fname_key=fname_key, file_extension=file_extension,
@@ -69,7 +69,7 @@ def define_dataset(root_folder, base_transformers, train_transformers, fname_key
         data_loaders = {"train": train_loader, "val": validation_loader, "test": test_loader}
         data_lengths = {"train": len(train_idx_out), "val": validation_len, "test": test_len}
 
-    return data_loaders, data_lengths, fnames_list
+    return data_loaders, data_lengths
 
     #     data_loaders, data_lengths = splitter_train_val_test(dataset,
     #                                                          validation_split,

@@ -41,7 +41,7 @@ class SampleTransformer(ABC):
         image = sample['image']
         mask = sample['mask'] if 'mask' in sample.keys() else None
         dist = sample['dist'] if 'dist' in sample.keys() else None
-
+        fname = sample['fname'] if 'fname' in sample.keys() else None
         image, mask = self.apply_transform(image, mask)
 
         sample_out = {'image': image}
@@ -49,6 +49,8 @@ class SampleTransformer(ABC):
             sample_out['mask'] = mask
         if dist is not None:
             sample_out['dist'] = dist
+        if fname is not None:
+            sample_out['fname'] = fname
         return sample_out
 
 

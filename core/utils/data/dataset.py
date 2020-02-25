@@ -77,16 +77,17 @@ class UNetDatasetFromFolders(Dataset):
             if (self.included and r_folder not in self.included) or (self.excluded and r_folder in self.excluded):
                 continue
             print(root_dir)
+            fnames_list = []
             for fname in sorted(files):
                 if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:
                         image_found += 1
-                        print(fname)
+                        fnames_list.append(fname)
                         folder_imgs.append(os.path.join(root_dir, fname))
                     elif 'mask' in fname:
                         mask_found += 1
                         folder_masks.append(os.path.join(root_dir, fname))
-
+            print(fnames_list)
             assert len(folder_imgs) == len(folder_masks)
             assert image_found == mask_found
 

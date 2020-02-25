@@ -78,7 +78,7 @@ class UNetDatasetFromFolders(Dataset):
                 continue
             #print(root_dir)
             #fnames_list = []
-            for fname in sorted(files):
+            for fname in files:
                 if fname.startswith(str(self.key)) and fname.endswith(str(self.extension)):
                     if "mask" not in fname:
                         image_found += 1

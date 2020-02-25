@@ -18,28 +18,33 @@ def inference_phase_rUNet(model, data_loaders, data_lengths, batch_size, dev=0, 
 
     y_true = []
     y_pred = []
+    fnb = []
     if test:
         for i, batch in tqdm(enumerate(data_loaders["test"]), total=data_lengths["test"] // batch_size, desc="Batch"):
-            true_images, true_dists = batch["image"], batch["dist"]
+            true_images, true_dists, fnames_batch = batch["image"], batch["dist"], batch['fname']
             _, pred_dists = model(true_images.float().to(device))
-            for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
-                                                            true_dists.cpu().detach().numpy(),
-                                                            pred_dists.cpu().detach().numpy())):
+            for j, (img, tr_dist, pr_dist, fname) in enumerate(zip(true_images,
+                                                                   true_dists.cpu().detach().numpy(),
+                                                                   pred_dists.cpu().detach().numpy()),
+                                                               fnames_batch.cpu().detach().numpy):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
+                fnb.append(regex.findall(i.split('/')[-1])[0])
     else:
         for i, batch in tqdm(enumerate(data_loaders), total=data_lengths // batch_size, desc="Batch"):
-            true_images, true_dists = batch["image"], batch["dist"]
+            true_images, true_dists, fnames_batch = batch["image"], batch["dist"], batch['fname']
             _, pred_dists = model(true_images.float().to(device))
-            for j, (img, tr_dist, pr_dist) in enumerate(zip(true_images,
+            for j, (img, tr_dist, pr_dist, fname) in enumerate(zip(true_images,
                                                             true_dists.cpu().detach().numpy(),
-                                                            pred_dists.cpu().detach().numpy())):
+                                                            pred_dists.cpu().detach().numpy()),
+                                                            fnames_batch.cpu().detach().numpy):
                 y_true.append(tr_dist)
                 y_pred.append(pr_dist)
-
+                fnb.append(regex.findall(i.split('/')[ -1])[0])
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred).ravel()
-    return y_true, y_pred
+    fnb = np.asarray(fnb)
+    return y_true, y_pred, fnb
 
 
 def inference_phase_rUNet_plot_notebook(model, data_loaders, data_lengths, batch_size, stop=1, dev=0, test=True):

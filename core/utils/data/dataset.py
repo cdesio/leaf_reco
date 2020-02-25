@@ -45,7 +45,7 @@ class UNetDatasetFromFolders(Dataset):
         self.extension = file_extension
         self.excluded = excluded
         self.included = included
-        self.distances, self.images_list, self.masks_list = self._create_list()
+        self.distances, self.images_list, self.masks_list self.fnames_list = self._create_list()
 
 
     @staticmethod
@@ -87,7 +87,6 @@ class UNetDatasetFromFolders(Dataset):
                     elif 'mask' in fname:
                         mask_found += 1
                         folder_masks.append(os.path.join(root_dir, fname))
-            print(fnames_list)
             assert len(folder_imgs) == len(folder_masks)
             assert image_found == mask_found
 
@@ -102,7 +101,7 @@ class UNetDatasetFromFolders(Dataset):
                 dist = regex.findall(folder.split('_')[1])[0]
                 distances.extend(int(dist) for _ in range(image_found))
 
-        return distances, images_list, masks_list
+        return distances, images_list, masks_list, fnames_list
 
     def __getitem__(self, idx):
         image = imread(self.images_list[idx])
@@ -112,7 +111,7 @@ class UNetDatasetFromFolders(Dataset):
 
         if self.transform:
             sample = self.transform(sample)
-        return sample
+        return sample, self.fnames_list
 
     def __len__(self):
         return len(self.images_list)

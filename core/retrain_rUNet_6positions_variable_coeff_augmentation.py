@@ -41,25 +41,34 @@ data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transforme
 
 print(data_length)
 print("Define model")
-coeffs = [0.40, 0.70]
+coeffs = [0.40]
 
 n_epochs = 50
 
 for coef in coeffs:
-    print("combined loss: {}*dice_loss + {} mse".format(coef, 1.0 - coef))
-    torch.cuda.empty_cache()
-    print("Train model")
-    model = rUNet(out_size=1)
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
-    checkpoint_file = os.path.join(SRC_DIR, 'saved_models', 'trained_6positions_multi_loss',
-                                   'Trained_rUNet_pytorch_6positions_dataset_100epochs_{}coeff_mask.pkl'.format(coef))
-    print(torch.load(checkpoint_file).keys())
-    history = retrain_rUNet(model=model, optimizer=optimizer,
-                            criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,
-                            loss_coeff=coef, data_loaders=data_loaders,
-                            data_lengths=data_length, checkpoint_file=checkpoint_file,
-                            epochs=n_epochs, batch_size=16,
-                            model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
-                            task_folder_name="trained_6positions_multi_loss_augmentation_gaus30",
-                            dataset_key="6positions", writer=True)
-    print("Done")
+    for noise in [10,25, 50, 75, 100]:
+        train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
+                              GaussianNoise(p=0.75, mean=noise, sigma=.5), Rescale(0.25), ChannelsFirst(), ToTensor()]
+        print("Load dataset")
+
+        data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,
+                                                   train_transformers=train_transformers,
+                                                   batch_size=16, excluded_list=EXCLUDED,
+                                                   alldata=False, multi_processing=4)
+        print("combined loss: {}*dice_loss + {} mse".format(coef, 1.0 - coef))
+        torch.cuda.empty_cache()
+        print("Train model")
+        model = rUNet(out_size=1)
+        optimizer = optim.Adam(model.parameters(), lr=1e-4)
+        checkpoint_file = os.path.join(SRC_DIR, 'saved_models', 'trained_6positions_multi_loss',
+                                       'Trained_rUNet_pytorch_6positions_dataset_100epochs_{}coeff_mask_gaus{}.pkl'.format(coef, noise))
+        print(torch.load(checkpoint_file).keys())
+        history = retrain_rUNet(model=model, optimizer=optimizer,
+                                criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,
+                                loss_coeff=coef, data_loaders=data_loaders,
+                                data_lengths=data_length, checkpoint_file=checkpoint_file,
+                                epochs=n_epochs, batch_size=16,
+                                model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
+                                task_folder_name="trained_6positions_multi_loss_augmentation_gaus",
+                                dataset_key="6positions", writer=True)
+        print("Done")

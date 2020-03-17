@@ -31,7 +31,7 @@ print(EXCLUDED)
 base_transformers = [Crop(row_slice=slice(0,1400), col_slice=slice(1000,None)),
                            Rescale(scale=0.25), ChannelsFirst(),ToTensor()]
 train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
-                      GaussianNoise(p=0.75, sigma=10), Rescale(0.25), ChannelsFirst(),ToTensor()]
+                      GaussianNoise(p=0.75, mean=30, sigma=2), Rescale(0.25), ChannelsFirst(),ToTensor()]
 print("Load dataset")
 
 data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,
@@ -60,6 +60,6 @@ for coef in coeffs:
                             data_lengths=data_length, checkpoint_file=checkpoint_file,
                             epochs=n_epochs, batch_size=16,
                             model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
-                            task_folder_name="trained_6positions_multi_loss_augmentation",
+                            task_folder_name="trained_6positions_multi_loss_augmentation_gaus30",
                             dataset_key="6positions", writer=True)
     print("Done")

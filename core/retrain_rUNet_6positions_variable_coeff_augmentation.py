@@ -61,7 +61,7 @@ for coef in coeffs:
         model = rUNet(out_size=1)
         optimizer = optim.Adam(model.parameters(), lr=1e-4)
         checkpoint_file = os.path.join(SRC_DIR, 'saved_models', 'trained_6positions_multi_loss',
-                                       'Trained_rUNet_pytorch_6positions_dataset_100epochs_{}coeff_mask_gaus{}.pkl'.format(coef, noise))
+                                       'Trained_rUNet_pytorch_6positions_dataset_100epochs_{}coeff_mask.pkl'.format(coef))
         print(torch.load(checkpoint_file).keys())
         history = retrain_rUNet(model=model, optimizer=optimizer,
                                 criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,
@@ -69,6 +69,6 @@ for coef in coeffs:
                                 data_lengths=data_length, checkpoint_file=checkpoint_file,
                                 epochs=n_epochs, batch_size=16,
                                 model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
-                                task_folder_name="trained_6positions_multi_loss_augmentation_gaus",
+                                task_folder_name="trained_6positions_multi_loss_augmentation_gaus{}".format(noise),
                                 dataset_key="6positions", writer=True)
         print("Done")

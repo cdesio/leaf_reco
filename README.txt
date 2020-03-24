@@ -1,0 +1,46 @@
+### ML for radiotherapy
+
+All code is contained in the directory leaf_reco (accessible at `/storage/yw18581/src/leaf_reco`
+on deepthough, or downloadable from the github repo: `git@github.com:cdesio/leaf_reco.git`)
+
+in `./core` there are models and various utils, like pytorch dataframes, transformers (to load data and perform operations),
+utility functions used in the training and test processes (i.e. function for training, for inference etc...)
+
+It all runs on `deepthough.phys.bris.ac.uk`, under the conda environment `mlearning`,
+using the GPU included in deepthough.
+
+Data is contained in `/storage/yw18581/data/dataset`,
+divided in 3 batches, each containing a folder with the data corresponding to a leaf
+position (1, 2, 3, 4, 10, 15, 20, 25, 30, 35). Each folder contains sensor images
+(converted to 8bit) and corresponding masks.
+
+`transformers` are imported from: `utils.data.transformers`
+    `ToTensor` and `ChannelsFirst` are always used, in order to transform the input
+    images (`np.ndarray` once loaded) to pytorch tensors, and to swap axes or add a dimension
+    in case it is needed.
+
+`select_dist` is used to select folders of leaf positions to include or exclude
+from the dataset.
+
+the `define_dataset` function gets a `root_folder`,
+a list of transformers (`base` and `train`, to be able to apply some operations
+    only in training or on the test data: `base` contains the operations
+    to be applied to test and validation data, whereas `train` contains the
+    list of transformers to apply only to the training data: e.g. in case
+    you want to perform data augmentation, this does not have to be done to
+    validation and test data, but only to training data);
+`included` and `excluded` lists, which are lists of paths to include or exclude respectively, created by select_dist;
+`alldata`: if `False`, data is imported and split into a train, validation and test
+datasets, all contained into a dataset dictionary, accessible with the `train`,
+`val` and `test` keywords; if `True`, all data is imported and not split (convenient
+    for inference with a dataset not shown in the training phase).
+
+the `data_loaders` and a `data_length` dictionaries returned by `define_dataset`
+are used by the training functions to load the data.
+
+A training function usually takes as input the model, the optimizer,
+the loss function(s), the data loaders, batch size and other parameters like paths
+and number of epochs. It is usually run on with a script, in a screen session,
+because it would take too long to run on a notebook, and the training will be lost if
+the connection to the notebook is lost.
+A checkpoint is also implemented, to save the status of the models every `model_checkpoint` epochs.

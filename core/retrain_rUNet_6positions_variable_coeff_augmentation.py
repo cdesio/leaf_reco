@@ -46,9 +46,9 @@ coeffs = [0.40]
 n_epochs = 50
 
 for coef in coeffs:
-    for noise in [10,25, 50, 75, 100]:
+    for noise in [150, 200]:
         train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
-                              GaussianNoise(p=0.75, mean=noise, sigma=.5), Rescale(0.25), ChannelsFirst(), ToTensor()]
+                              GaussianNoise(p=0.75, mean=noise, sigma=1), Rescale(0.25), ChannelsFirst(), ToTensor()]
         print("Load dataset")
 
         data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,

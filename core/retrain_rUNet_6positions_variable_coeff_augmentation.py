@@ -30,14 +30,14 @@ print(EXCLUDED)
 
 base_transformers = [Crop(row_slice=slice(0,1400), col_slice=slice(1000,None)),
                            Rescale(scale=0.25), ChannelsFirst(),ToTensor()]
-train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
-                      GaussianNoise(p=0.75, mean=30, sigma=2), Rescale(0.25), ChannelsFirst(),ToTensor()]
-print("Load dataset")
+#train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
+#                      GaussianNoise(p=0.75, mean=30, sigma=2), Rescale(0.25), ChannelsFirst(),ToTensor()]
+#print("Load dataset")
 
-data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,
-                                           train_transformers=train_transformers,
-                                           batch_size=16, excluded_list=EXCLUDED,
-                                            alldata=False, multi_processing=4)
+#data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,
+#                                           train_transformers=train_transformers,
+#                                           batch_size=16, excluded_list=EXCLUDED,
+#                                            alldata=False, multi_processing=4)
 
 print(data_length)
 print("Define model")

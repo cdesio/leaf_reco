@@ -42,7 +42,7 @@ for coef in coeffs:
                           GaussianNoise(p=0.75, mean=150, sigma=1), Rescale(0.25), ChannelsFirst(), ToTensor()]
     print("Load dataset")
 
-    data_loaders, data_length = define_dataset(root_folder=ROOT_DIR, base_transformers=base_transformers,
+    data_loaders, data_length = define_dataset(root_folder=root_dir, base_transformers=base_transformers,
                                                train_transformers=train_transformers,
                                                batch_size=16, include_list=selected_distances,
                                                alldata=False, multi_processing=4)

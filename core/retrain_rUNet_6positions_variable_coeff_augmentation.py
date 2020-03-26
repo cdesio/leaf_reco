@@ -5,14 +5,14 @@ import torch.optim as optim
 from torch import nn
 try:
     from .utils.data import define_dataset, select_dist
-    from .utils.training import retrain_rUNet
+    from .utils.training import retrain_rUNet_multi_loss
     from .models import rUNet, dice_loss
     from .utils.data.transformers import ChannelsFirst, Rescale, ToTensor, Crop, GaussianNoise, RandomCrop, Swap, \
         FlipUD, FlipLR
 
 except ModuleNotFoundError:
     from utils.data import define_dataset, select_dist
-    from utils.training import retrain_rUNet
+    from utils.training import retrain_rUNet_multi_loss
     from models import rUNet, dice_loss
     from utils.data.transformers import ChannelsFirst, Rescale, ToTensor, Crop, GaussianNoise, RandomCrop, Swap, \
         FlipUD, FlipLR
@@ -39,14 +39,13 @@ base_transformers = [Crop(row_slice=slice(0,1400), col_slice=slice(1000,None)),
 #                                           batch_size=16, excluded_list=EXCLUDED,
 #                                            alldata=False, multi_processing=4)
 
-print(data_length)
 print("Define model")
 coeffs = [0.40]
 
 n_epochs = 50
 
 for coef in coeffs:
-    for noise in [150, 200]:
+    for noise in [100, 150, 200]:
         train_transformers = [RandomCrop(p=1), Swap(p=0.7), FlipLR(p=0.7), FlipUD(p=0.7),
                               GaussianNoise(p=0.75, mean=noise, sigma=1), Rescale(0.25), ChannelsFirst(), ToTensor()]
         print("Load dataset")
@@ -63,7 +62,7 @@ for coef in coeffs:
         checkpoint_file = os.path.join(SRC_DIR, 'saved_models', 'trained_6positions_multi_loss',
                                        'Trained_rUNet_pytorch_6positions_dataset_100epochs_{}coeff_mask.pkl'.format(coef))
         print(torch.load(checkpoint_file).keys())
-        history = retrain_rUNet(model=model, optimizer=optimizer,
+        history = retrain_rUNet_multi_loss(model=model, optimizer=optimizer,
                                 criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,
                                 loss_coeff=coef, data_loaders=data_loaders,
                                 data_lengths=data_length, checkpoint_file=checkpoint_file,
@@ -72,3 +71,4 @@ for coef in coeffs:
                                 task_folder_name="trained_6positions_multi_loss_augmentation_gaus{}".format(noise),
                                 dataset_key="6positions", writer=True)
         print("Done")
+

@@ -373,6 +373,8 @@ def retrain_rUNet_multi_loss(model,
             else:
                 model.train(False)
             running_loss = 0.0
+            running_dice_loss = 0.0
+            running_mse_loss = 0.0
 
             for i, batch in tqdm(enumerate(data_loaders[phase]), total=data_lengths[phase] // batch_size,
                                  desc="Mini Batch {}".format(phase)):

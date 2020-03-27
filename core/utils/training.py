@@ -364,8 +364,8 @@ def retrain_rUNet_multi_loss(model,
     start_epoch = checkpoint['epoch']
 
     history = create_history_multi_loss()
-
-    for epoch in trange(start_epoch + 1, start_epoch + 1 + epochs, desc="Training Epoch"):
+    finish_epoch = start_epoch +1 +epochs
+    for epoch in trange(start_epoch + 1, finish_epoch, desc="Training Epoch"):
         print(epoch + 1)
         for phase in ["train", "val"]:
             if phase == "train":
@@ -431,7 +431,8 @@ def retrain_rUNet_multi_loss(model,
                      train_loss=train_loss, val_loss=val_loss), model_filepath)
 
     history_filepath = os.path.join(task_folder_path,
-                                    "history_" + model_prefix + "_{}epochs_{}coef.pkl".format(epochs, loss_coeff))
+                                    "history_" + model_prefix + "{}_to_{}epochs_{}coef.pkl".format(start_epoch+1,
+                                                                                                   finish_epoch, loss_coeff))
     print("Save history to {}".format(history_filepath))
     dump(history, open(history_filepath, 'wb'))
 

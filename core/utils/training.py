@@ -191,8 +191,12 @@ def training_phase_rUNet_multi_loss(model, optimizer, criterion_mask, criterion_
 
                 if phase == 'train':
                     tb_writer.add_scalar('Training_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Training_dice_loss', epoch_dice_loss, epoch)
+                    tb_writer.add_scalar('Training_mse_loss', epoch_mse_loss, epoch)
                 else:
                     tb_writer.add_scalar('Validation_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Validation_dice_loss', epoch_dice_loss, epoch)
+                    tb_writer.add_scalar('Validation_mse_loss', epoch_mse_loss, epoch)
 
             history[phase].append(epoch_loss)
             history['{}_dice'.format(phase)].append(epoch_dice_loss)
@@ -410,8 +414,12 @@ def retrain_rUNet_multi_loss(model,
 
                 if phase == 'train':
                     tb_writer.add_scalar('Training_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Training_dice_loss', epoch_dice_loss, epoch)
+                    tb_writer.add_scalar('Training_mse_loss', epoch_mse_loss, epoch)
                 else:
                     tb_writer.add_scalar('Validation_loss', epoch_loss, epoch)
+                    tb_writer.add_scalar('Validation_dice_loss', epoch_dice_loss, epoch)
+                    tb_writer.add_scalar('Validation_mse_loss', epoch_mse_loss, epoch)
 
             history[phase].append(epoch_loss)
             history['{}_dice'.format(phase)].append(epoch_dice_loss)

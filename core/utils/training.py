@@ -242,12 +242,6 @@ def retrain_rUNet(model,
     else:
         from tqdm import tqdm, trange
 
-    if writer:
-        from torch.utils.tensorboard import SummaryWriter
-        tb_writer = SummaryWriter(os.path.join(src_dir, 'notebooks', 'runs',
-                                               'rUNet-{}_dataset_{}epochs_{}coeff_mask.pkl'.format(dataset_key, epochs,
-                                                                                                   loss_coeff)))
-
     device = torch.device("cuda:{}".format(dev) if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(checkpoint_file)
     model.load_state_dict(checkpoint['model_state_dict'])
@@ -264,6 +258,11 @@ def retrain_rUNet(model,
 
     history = create_history()
 
+    if writer:
+        from torch.utils.tensorboard import SummaryWriter
+        tb_writer = SummaryWriter(os.path.join(src_dir, 'notebooks', 'runs',
+                                               'rUNet-{}_dataset_{}_to_{}epochs_{}coeff_mask.pkl'.format(dataset_key, start_epoch +1, epochs+start_epoch+1,
+                                                                                                   loss_coeff)))
     for epoch in trange(start_epoch + 1, start_epoch + 1 + epochs, desc="Training Epoch"):
         print(epoch + 1)
         for phase in ["train", "val"]:

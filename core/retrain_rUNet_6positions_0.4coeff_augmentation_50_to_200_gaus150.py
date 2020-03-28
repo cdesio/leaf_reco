@@ -69,7 +69,7 @@ for coef in coeffs:
                                 data_lengths=data_length, checkpoint_file=checkpoint_file,
                                 epochs=n_epochs, batch_size=8,
                                 model_checkpoint=5, src_dir='/storage/yw18581/src/leaf_reco',
-                                task_folder_name="trained_6positions_multi_loss_augmentation_from epoch50_gaus{}".format(noise),
+                                task_folder_name="trained_6positions_multi_loss_augmentation_from_epoch50_gaus{}".format(noise),
                                 dataset_key="6positions", writer=True)
         print("Done")
 

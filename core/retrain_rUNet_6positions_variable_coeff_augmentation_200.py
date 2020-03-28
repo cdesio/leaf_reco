@@ -42,7 +42,8 @@ base_transformers = [Crop(row_slice=slice(0,1400), col_slice=slice(1000,None)),
 print("Define model")
 coeffs = [0.40]
 
-n_epochs = 150
+n_epochs = 200
+start_epoch = 300
 
 for coef in coeffs:
     for noise in [200]:
@@ -60,7 +61,7 @@ for coef in coeffs:
         model = rUNet(out_size=1)
         optimizer = optim.Adam(model.parameters(), lr=1e-4)
         checkpoint_file = os.path.join(SRC_DIR, 'saved_models', 'trained_6positions_multi_loss_augmentation_gaus200',
-                                       'Trained_rUNet_pytorch_6positions_dataset_150epochs_{}coeff_mask.pkl'.format(coef))
+                                       'Trained_rUNet_pytorch_6positions_dataset_{}epochs_{}coeff_mask.pkl'.format(start_epoch, coef))
         print(torch.load(checkpoint_file).keys())
         history = retrain_rUNet_multi_loss(model=model, optimizer=optimizer,
                                 criterion_dist=nn.MSELoss(), criterion_mask=dice_loss,

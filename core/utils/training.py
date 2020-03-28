@@ -368,6 +368,13 @@ def retrain_rUNet_multi_loss(model,
 
     history = create_history_multi_loss()
     finish_epoch = start_epoch +1 +epochs
+
+    if writer:
+        from torch.utils.tensorboard import SummaryWriter
+        tb_writer = SummaryWriter(os.path.join(src_dir, 'notebooks', 'runs',
+                                               'rUNet-{}_dataset_{}_to_{}epochs_{}coeff_mask.pkl'.format(dataset_key,
+                                                                                                         start_epoch +1, finish_epoch,
+                                                                                                   loss_coeff)))
     for epoch in trange(start_epoch + 1, finish_epoch, desc="Training Epoch"):
         print(epoch + 1)
         for phase in ["train", "val"]:
